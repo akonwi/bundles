@@ -13,5 +13,17 @@ var BundleList = View.prototype.extend('ul', {
   }
 })
 
+var AddButton = View.prototype.extend('a', {
+  onClick: function(e) {
+    e.preventDefault()
+    // TODO: Trigger showing input
+  },
+  content: function() {
+    return 'New'
+  }
+})
+
+var addBtn = new AddButton({ class: 'add', href: '#' })
+addBtn.render('.new-button')
 var list = new BundleList({ class: 'bundles' })
 list.render('.content')

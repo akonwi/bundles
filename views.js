@@ -2,7 +2,6 @@
  * View object
  *
  * @param tag Name of HTML tag
- * @param content
  * @param [{attrs}] HTML attributes in an object
  */
 function View(tag, attrs) {
@@ -12,6 +11,7 @@ function View(tag, attrs) {
   this.element = document.createElement(tag)
   for (attr in attrs)
     this.element.setAttribute(attr, attrs[attr])
+  this.element.onclick = this.onClick
 }
 
 /**
@@ -42,6 +42,6 @@ View.prototype.content = function() { return '' }
  */
 View.prototype.render = function(parent) {
   this.element.innerHTML = this.content()
-  document.querySelector(parent).innerHTML = this.element.outerHTML
+  document.querySelector(parent).append(this.element)
 }
 
