@@ -1,17 +1,18 @@
 var Core = {
   actions: {},
-  on: function(event, fn) {
+  on: function(event, fn, ctx) {
+    ctx = ctx || this
     var todos = this.actions[event]
     if (!!todos)
-      todos.push(fn)
+      todos.push({ do: fn, ctx: ctx})
     else
-      this.actions[event] = [fn]
+      this.actions[event] = [{ do: fn, ctx: ctx}]
   },
   trigger: function(event, data) {
     var todos = this.actions[event]
     if (!!todos)
       todos.forEach(function(todo) {
-        todo(data)
+        todo.do.call(todo.ctx, data)
       })
   }
 }
@@ -22,11 +23,34 @@ Core.on('replace-new-bundle-input', function() {
 
 var BundleList = View.prototype.extend('ul', {
   bundles: [],
+  parent: '.content',
   init: function() {
-    Core.on('add-bundle', this.addBundle)
+    var v = this
+    ChromeStorage.all(function(error, data) {
+      if (error)
+        console.error(error)
+      else {
+        v.bundles = Object.keys(data)
+        v.render()
+      }
+    })
+    Core.on('add-bundle', this.addBundle, this)
   },
   addBundle: function(name) {
-    // TODO: save in chrome.storage
+    var v = this
+    ChromeStorage.set(name, [], function(error) {
+      if (error)
+        console.error(error)
+      else
+        this.all(function(error, data) {
+          if (error)
+            console.error(error)
+          else {
+            v.bundles = Object.keys(data)
+            v.render()
+          }
+        })
+    })
   },
   content: function() {
     var bundleItems = this.bundles.map(function(name) {
@@ -39,6 +63,7 @@ var BundleList = View.prototype.extend('ul', {
 })
 
 var NewInput = View.prototype.extend('input', {
+  parent: '.logo',
   focus: function() { this.element.focus() },
   onKeypress: function(e) {
     if (e.keyIdentifier === 'Enter') {
@@ -53,6 +78,7 @@ var NewInput = View.prototype.extend('input', {
 })
 
 var AddButton = View.prototype.extend('a', {
+  parent: '.new-button',
   onClick: function(e) {
     e.preventDefault()
     var input = new NewInput({
@@ -60,7 +86,7 @@ var AddButton = View.prototype.extend('a', {
       type: 'text',
       placeholder: 'Bundle name...'
     })
-    input.render('.logo')
+    input.render()
     input.focus()
   },
   content: function() {
@@ -69,6 +95,6 @@ var AddButton = View.prototype.extend('a', {
 })
 
 var addBtn = new AddButton({ class: 'add', href: '#' })
-addBtn.render('.new-button')
+addBtn.render()
 var list = new BundleList({ class: 'bundles' })
-list.render('.content')
+list.render()

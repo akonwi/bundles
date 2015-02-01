@@ -8,11 +8,14 @@ function View(tag, attrs) {
   if (attrs === undefined)
     attrs = {}
   this.actions = {}
+  this.parent = this.parent || 'body'
   this.element = document.createElement(tag)
   for (attr in attrs)
     this.element.setAttribute(attr, attrs[attr])
   this.element.onclick = this.onClick
   this.element.onkeypress = this.onKeypress
+  if (this.init !== undefined)
+    this.init()
 }
 
 /**
@@ -24,8 +27,6 @@ function View(tag, attrs) {
 View.prototype.extend = function(tag, props) {
   var V = function(attrs) {
     View.call(this, tag, attrs)
-    if (props.init !== undefined)
-      props.init()
   }
   V.prototype = Object.create(View.prototype)
   for (p in props)
@@ -43,9 +44,9 @@ View.prototype.content = function() { return '' }
  *
  * @param parent CSS selector for node to insert View into
  */
-View.prototype.render = function(parent) {
+View.prototype.render = function() {
   this.element.innerHTML = this.content()
-  var p = document.querySelector(parent)
+  var p = document.querySelector(this.parent)
   p.innerHTML = ''
   p.appendChild(this.element)
 }

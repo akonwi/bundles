@@ -11,6 +11,7 @@
     "default_title": "Bundle up"
   },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage"
   ]
 }
