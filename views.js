@@ -7,11 +7,12 @@
 function View(tag, attrs) {
   if (attrs === undefined)
     attrs = {}
-  this.actions = []
+  this.actions = {}
   this.element = document.createElement(tag)
   for (attr in attrs)
     this.element.setAttribute(attr, attrs[attr])
   this.element.onclick = this.onClick
+  this.element.onkeypress = this.onKeypress
 }
 
 /**
@@ -20,13 +21,15 @@ function View(tag, attrs) {
  * @param tag Name of HTML tag
  * @param attrs attributes for new object
  */
-View.prototype.extend = function(tag, attrs) {
+View.prototype.extend = function(tag, props) {
   var V = function(attrs) {
     View.call(this, tag, attrs)
+    if (props.init !== undefined)
+      props.init()
   }
   V.prototype = Object.create(View.prototype)
-  for (attr in attrs)
-    V.prototype[attr] = attrs[attr]
+  for (p in props)
+    V.prototype[p] = props[p]
   return V
 }
 
@@ -42,6 +45,23 @@ View.prototype.content = function() { return '' }
  */
 View.prototype.render = function(parent) {
   this.element.innerHTML = this.content()
-  document.querySelector(parent).append(this.element)
+  var p = document.querySelector(parent)
+  p.innerHTML = ''
+  p.appendChild(this.element)
 }
 
+View.prototype.on = function(event, fn) {
+  var todos = this.actions[event]
+  if (!!todos)
+    todos.push(fn)
+  else
+    this.actions[event] = [fn]
+}
+
+View.prototype.trigger = function(event, data) {
+  var todos = this.actions[event]
+  if (!!todos)
+    todos.forEach(function(todo) {
+      todo(data)
+    })
+}

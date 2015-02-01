@@ -1,7 +1,32 @@
+var Core = {
+  actions: {},
+  on: function(event, fn) {
+    var todos = this.actions[event]
+    if (!!todos)
+      todos.push(fn)
+    else
+      this.actions[event] = [fn]
+  },
+  trigger: function(event, data) {
+    var todos = this.actions[event]
+    if (!!todos)
+      todos.forEach(function(todo) {
+        todo(data)
+      })
+  }
+}
+
+Core.on('replace-new-bundle-input', function() {
+  document.querySelector('.logo').textContent = 'Bundles'
+})
+
 var BundleList = View.prototype.extend('ul', {
   bundles: [],
+  init: function() {
+    Core.on('add-bundle', this.addBundle)
+  },
   addBundle: function(name) {
-    this.bundles.push(name)
+    // TODO: save in chrome.storage
   },
   content: function() {
     var bundleItems = this.bundles.map(function(name) {
@@ -13,10 +38,30 @@ var BundleList = View.prototype.extend('ul', {
   }
 })
 
+var NewInput = View.prototype.extend('input', {
+  focus: function() { this.element.focus() },
+  onKeypress: function(e) {
+    if (e.keyIdentifier === 'Enter') {
+      var name = e.target.value
+      if (name.trim().length > 0) {
+        Core.trigger('add-bundle', name)
+        Core.trigger('replace-new-bundle-input')
+        e.target.remove()
+      }
+    }
+  }
+})
+
 var AddButton = View.prototype.extend('a', {
   onClick: function(e) {
     e.preventDefault()
-    // TODO: Trigger showing input
+    var input = new NewInput({
+      class: 'new-bundle-input',
+      type: 'text',
+      placeholder: 'Bundle name...'
+    })
+    input.render('.logo')
+    input.focus()
   },
   content: function() {
     return 'New'
