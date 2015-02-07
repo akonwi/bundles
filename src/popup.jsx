@@ -21,31 +21,31 @@ Core.on('replace-new-bundle-input', function() {
   document.querySelector('.logo').textContent = 'Bundles'
 })
 Core.on('show-new-bundle-input', function() {
-  React.render(React.createElement(NewInput, null), document.querySelector('.logo'))
+  React.render(<NewInput />, document.querySelector('.logo'))
 })
 
-var Navbar = React.createClass({displayName: "Navbar",
+var Navbar = React.createClass({
   render: function() {
     return (
-      React.createElement("div", null, 
-        React.createElement("h2", {className: "logo"}, "Bundles"), 
-        React.createElement(AddBtn, null)
-      )
+      <div>
+        <h2 className='logo'>Bundles</h2>
+        <AddBtn />
+      </div>
     )
   }
 })
 
-var AddBtn = React.createClass({displayName: "AddBtn",
+var AddBtn = React.createClass({
   onClick: function(e) {
     e.preventDefault()
     Core.trigger('show-new-bundle-input')
   },
   render: function() {
-    return React.createElement("a", {id: "add-btn", href: "#", onClick: this.onClick}, "New")
+    return <a id='add-btn' href='#' onClick={this.onClick}>New</a>
   }
 })
 
-var NewInput = React.createClass({displayName: "NewInput",
+var NewInput = React.createClass({
   onkeypress: function(e) {
     if (e.keyIdentifier === 'Enter') {
       var name = e.targetNode.value
@@ -61,40 +61,40 @@ var NewInput = React.createClass({displayName: "NewInput",
     this.getDOMNode().focus()
   },
   render: function() {
-    return React.createElement("input", {id: "new-bundle-input", type: "text", placeholder: "Bundle name..."})
+    return <input id='new-bundle-input' type='text' placeholder='Bundle name...' />
   }
 })
 
-var BundleList = React.createClass({displayName: "BundleList",
+var BundleList = React.createClass({
   getInitialProps: function() { return {} },
   render: function() {
     var bundles = this.props.bundles
     return (
-      React.createElement("ul", {id: "bundles"}, 
-        
+      <ul id='bundles'>
+        {
           Object.keys(bundles).map(function(name) {
             var b = { name: name, links: bundles[name] }
-            return React.createElement(BundleItem, {bundle: b})
+            return <BundleItem bundle={b} />
           })
-        
-      )
+        }
+      </ul>
     )
   }
 })
 
-var BundleItem = React.createClass({displayName: "BundleItem",
+var BundleItem = React.createClass({
   render: function() {
     return (
-      React.createElement("li", null, 
-        React.createElement("h4", null,  this.props.bundle.name), 
-          React.createElement("ul", {id: "links"}, 
-          
+      <li>
+        <h4>{ this.props.bundle.name }</h4>
+          <ul id='links'>
+          {
             this.props.bundle.links.map(function(link) {
-              return React.createElement("li", null, link )
+              return <li>{ link }</li>
             })
-          
-          )
-      )
+          }
+          </ul>
+      </li>
     )
   }
 })
@@ -103,7 +103,7 @@ ChromeStorage.all(function(error, data) {
   if (error)
     console.error(error)
   else {
-    React.render(React.createElement(BundleList, {bundles: data}), document.querySelector('.content'))
-    React.render(React.createElement(Navbar, null), document.querySelector('.navbar'))
+    React.render(<BundleList bundles={data} />, document.querySelector('.content'))
+    React.render(<Navbar />, document.querySelector('.navbar'))
   }
 })
