@@ -15,15 +15,13 @@ html
   display: block
 
 #bundles
-  padding-left: .5rem
-
-#links
   list-style-type: none
+  padding: 0 .5rem 0 .5rem
 
 #add-btn
   position: absolute
   right: 5%
-  top: 15%
+  top: 10%
   text-decoration: none
   color: white
   font-weight: bold
@@ -52,4 +50,17 @@ html
   padding-bottom: .5rem
   min-height: inherit
   max-height: 10rem
+
+.bundle
+  border-bottom: .1rem solid grey
+  padding: .4rem
+
+.links
+  list-style-type: none
+  transition: all .2s ease-in-out
+  max-height: 0px
+  overflow: hidden
+  &.open
+    max-height: 2rem
+    overflow: scroll
 
