@@ -1,3 +1,6 @@
 node_modules
 .sass-cache
 .module-cache/
+popup.js
+*.css.map
+*.css

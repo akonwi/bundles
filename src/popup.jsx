@@ -23,7 +23,7 @@ var Navbar = React.createClass({
   render: function() {
     return (
       <div>
-        <div className='nav-block small left'><AddToBtn /></div>
+        <div className='nav-block small left'></div>
         <div className='nav-block big'>
           <NewInput hidden={true} />
           <h2 className='logo'>Bundles</h2>
@@ -31,15 +31,6 @@ var Navbar = React.createClass({
         <div className='nav-block small right'><AddBtn /></div>
       </div>
     )
-  }
-})
-
-var AddToBtn = React.createClass({
-  onClick: function(e) {
-    e.preventDefault()
-  },
-  render: function() {
-    return <a className='nav-btn' href='#' onClick={this.onClick}>Add to</a>
   }
 })
 

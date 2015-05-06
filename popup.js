@@ -23,7 +23,7 @@ var Navbar = React.createClass({displayName: "Navbar",
   render: function() {
     return (
       React.createElement("div", null, 
-        React.createElement("div", {className: "nav-block small left"}, React.createElement(AddToBtn, null)), 
+        React.createElement("div", {className: "nav-block small left"}), 
         React.createElement("div", {className: "nav-block big"}, 
           React.createElement(NewInput, {hidden: true}), 
           React.createElement("h2", {className: "logo"}, "Bundles")
@@ -31,15 +31,6 @@ var Navbar = React.createClass({displayName: "Navbar",
         React.createElement("div", {className: "nav-block small right"}, React.createElement(AddBtn, null))
       )
     )
-  }
-})
-
-var AddToBtn = React.createClass({displayName: "AddToBtn",
-  onClick: function(e) {
-    e.preventDefault()
-  },
-  render: function() {
-    return React.createElement("a", {className: "nav-btn", href: "#", onClick: this.onClick}, "Add to")
   }
 })
 
