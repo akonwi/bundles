@@ -93,22 +93,15 @@ var BundleList = React.createClass({
   componentWillMount: function() {
     var comp = this
     Core.on('add-bundle', function(name) {
-      ChromeStorage.set(name, [], function(err) {
-        if (err)
-          console.error(err)
-        else
-         ChromeStorage.all(function(err, data) {
-           comp.setState({ bundles: data })
-         })
-      })
+      ChromeStorage.set(name, [])
+      .then(function() { return ChromeStorage.all() })
+      .then(function(bundles) { comp.setState({ bundles: bundles }) })
+      .catch(function(err) { console.error(err) })
     })
     Core.on('delete-bundle', function() {
-      ChromeStorage.all(function(err, data) {
-        if (err)
-          console.error('Could not retrieve all items')
-        else
-          comp.setState({ bundles: data })
-      })
+      ChromeStorage.all()
+      .then(function(bundles) { comp.setState({ bundles: bundles }) })
+      .catch(function(err) { console.error('Could not retrieve all items', err) })
     })
   },
   render: function() {
@@ -132,46 +125,59 @@ var BundleItem = React.createClass({
   },
   onClick: function(e) {
     e.preventDefault()
-    this.refs.links.getDOMNode().classList.toggle('open')
+    this.setState({ open: !this.state.open })
   },
   addLink: function(e) {
     e.preventDefault()
     var name = this.props.bundle.name
     var comp = this
     chrome.tabs.getSelected(null, function(tab) {
-      ChromeStorage.get(name, function(err, links) {
-        links.push(tab.url)
-        this.set(name, links, function(err) {
-          if (err)
-            console.error("Could not save new bundle")
-          else
-            comp.setState({ links: links })
-        })
+      ChromeStorage.get(name)
+      .then(function(links) {
+        links.push({ title: tab.title, url: tab.url })
+        return ChromeStorage.set(name, links)
+      })
+      .then(function(links) {
+        comp.setState({ links: links })
+      })
+      .catch(function(err) {
+        console.error("Could not save new bundle", err)
       })
     })
   },
   delete: function (e) {
     e.preventDefault()
     var comp = this
-    ChromeStorage.remove(this.props.bundle.name, function(err) {
-      if (err)
-        console.error("Couldn't delete %s from storage", comp.props.bundle.name)
-      else
-        Core.trigger('delete-bundle')
+    ChromeStorage.remove(this.props.bundle.name)
+    .then(function() {
+      Core.trigger('delete-bundle')
+    })
+    .catch(function(err) {
+      console.error(err)
+      console.error("Couldn't delete %s from storage", comp.props.bundle.name)
     })
   },
   render: function() {
+    var linksClasses = cx({
+      links: true,
+      open: this.state.open
+    })
+    var triangleClasses = cx({
+      triangle: true,
+      down: this.state.open
+    })
     return (
       <li className='bundle'>
         <div className='title-bar'>
+          <div className={triangleClasses}></div>
           <h4 onClick={this.onClick}>{ this.props.bundle.name }</h4>
           <button className='btn' onClick={this.addLink}>+</button>
           <button className='btn' onClick={this.delete}>x</button>
         </div>
-        <ul className='links' ref='links'>
+        <ul className={linksClasses} ref='links'>
           {
-            this.props.bundle.links.map(function(link) {
-              return <li>{ link }</li>
+            this.state.links.map(function(link) {
+              return <BundleLink link={link} />
             })
           }
         </ul>
@@ -180,11 +186,26 @@ var BundleItem = React.createClass({
   }
 })
 
-ChromeStorage.all(function(error, data) {
-  if (error)
-    console.error(error)
-  else {
-    React.render(<BundleList bundles={data} />, document.querySelector('.content'))
-    React.render(<Navbar />, document.querySelector('.navbar'))
+var BundleLink = React.createClass({
+  getInitialProps: function() {
+    return { link: {} }
+  },
+  openLink: function(e) {
+    e.preventDefault()
+    chrome.tabs.create({ url: this.props.link.url })
+  },
+  render: function() {
+    var link = this.props.link
+    return (
+      <li title={link.title}>
+        <a href='#' onClick={this.openLink}>{ link.title }</a>
+      </li>
+    )
   }
 })
+
+ChromeStorage.all().then(function(data) {
+  console.log('leggo')
+  React.render(<BundleList bundles={data} />, document.querySelector('.content'))
+  React.render(<Navbar />, document.querySelector('.navbar'))
+}).catch(function(error) { console.error(error) })

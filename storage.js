@@ -1,59 +1,85 @@
 var storage = chrome.storage.sync
 var runtime = chrome.runtime
 
-ChromeStorage = {
+ChromeStorage = {}
+Object.defineProperties(ChromeStorage, {
+  _VERSION: {
+    value: '0.0.1'
+  },
   /**
    * Save something
    *
    * @param key String key name
    * @param val Any object to save with key
-   * [@callback {function([error])}]
    */
-  set: function(key, val, fn) {
-    (toSave = {})[key] = val
-    storage.set(toSave, function() {
-      if (fn !== undefined)
-        fn.call(ChromeStorage, runtime.lastError)
-    })
+  set: {
+    value: function(key, val) {
+      (toSave = {})[key] = val
+      return new Promise(function(resolve, reject) {
+        storage.set(toSave, function() {
+          if (runtime.lastError)
+            return reject(runtime.lastError)
+          resolve(val)
+        })
+      })
+    }
   },
 
   /**
    * Retrieve data
    *
    * @param key String of key or Array of keys to retrieve
-   * @callback {function(error, results)}
-   *   If given one key, results will be just the value
-   *   If given an array of keys, results will be an object with key/value pairs
+   *   If given one key, it resolves to just the value
+   *   If given an array of keys, it resolves to an object with key/value pairs
    */
-  get: function(key, fn) {
-    storage.get(key, function(results) {
-      if (key.trim !== undefined)
-        results = results[key]
-      fn.call(ChromeStorage, runtime.lastError, results)
-    })
+  get: {
+    value: function(key) {
+      return new Promise(function(resolve, reject) {
+        storage.get(key, function(results) {
+          if (key.trim !== undefined)
+            results = results[key]
+          if (runtime.lastError)
+            return reject(runtime.lastError)
+          resolve(results)
+        })
+      })
+    }
   },
 
   /**
    * Retrieve total collection
    *
-   * @callback {function(error, results)} results is an object w/ key/value pairs
+   * resolves to an object with key/value pairs
    */
-  all: function(fn) {
-    storage.get(null, function(items) {
-      fn.call(ChromeStorage, runtime.lastError, items)
-    })
+  all: {
+    value: function() {
+      return new Promise(function(resolve, reject) {
+        storage.get(null, function(items) {
+          if (runtime.lastError)
+            return reject(runtime.lastError)
+          resolve(items)
+        })
+      })
+    }
   },
 
   /**
    * Delete data at a key
    *
    * @param key String of key
-   * [@callback {function(error)}]
    */
-  remove: function(key, fn) {
-    storage.remove(key, function() {
-      if (fn !== undefined)
-        fn.call(ChromeStorage, runtime.lastError)
-    })
+  remove: {
+    value: function(key) {
+      if (key === undefined)
+        throw new Error("No keys given to remove")
+      return new Promise(function(resolve, reject) {
+        storage.remove(key, function() {
+          if (runtime.lastError)
+            return reject(runtime.lastError)
+          resolve()
+        })
+      })
+    }
   }
-}
+})
+Object.preventExtensions(ChromeStorage)
