@@ -171,8 +171,8 @@ var BundleItem = React.createClass({displayName: "BundleItem",
         React.createElement("div", {className: "title-bar"}, 
           React.createElement("div", {className: triangleClasses}), 
           React.createElement("h4", {onClick: this.onClick},  this.props.bundle.name), 
-          React.createElement("button", {className: "btn", onClick: this.addLink}, "+"), 
-          React.createElement("button", {className: "btn", onClick: this.delete}, "x")
+          React.createElement("img", {className: "icon", onClick: this.addLink, src: "/assets/plus.svg"}), 
+          React.createElement("img", {className: "icon", onClick: this.delete, src: "/assets/cross.svg"})
         ), 
         React.createElement("ul", {className: linksClasses, ref: "links"}, 
           
@@ -205,7 +205,6 @@ var BundleLink = React.createClass({displayName: "BundleLink",
 })
 
 ChromeStorage.all().then(function(data) {
-  console.log('leggo')
   React.render(React.createElement(BundleList, {bundles: data}), document.querySelector('.content'))
   React.render(React.createElement(Navbar, null), document.querySelector('.navbar'))
 }).catch(function(error) { console.error(error) })

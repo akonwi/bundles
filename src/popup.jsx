@@ -171,8 +171,8 @@ var BundleItem = React.createClass({
         <div className='title-bar'>
           <div className={triangleClasses}></div>
           <h4 onClick={this.onClick}>{ this.props.bundle.name }</h4>
-          <button className='btn' onClick={this.addLink}>+</button>
-          <button className='btn' onClick={this.delete}>x</button>
+          <img className='icon' onClick={this.addLink} src="/assets/plus.svg"></img>
+          <img className='icon' onClick={this.delete} src="/assets/cross.svg"></img>
         </div>
         <ul className={linksClasses} ref='links'>
           {
@@ -205,7 +205,6 @@ var BundleLink = React.createClass({
 })
 
 ChromeStorage.all().then(function(data) {
-  console.log('leggo')
   React.render(<BundleList bundles={data} />, document.querySelector('.content'))
   React.render(<Navbar />, document.querySelector('.navbar'))
 }).catch(function(error) { console.error(error) })
