@@ -19,6 +19,32 @@ var Core = {
   }
 }
 
+var BundleStore = {
+  subscribers: [],
+  data: null,
+  init: function() {
+    ChromeStorage.all().then(function(data) { BundleStore.data = data })
+    ChromeStorage.onChange(function(changes) {
+      ChromeStorage.all().then(function(data) {
+        BundleStore.data = data
+        BundleStore.subscribers.forEach(function(s) {
+          s.setState({ bundles: data })
+        })
+      })
+    })
+  },
+  subscribe: function(subscriber) {
+    this.subscribers.push(subscriber)
+  }
+}
+
+var SubscribesToBundleStore = {
+  subscribe: function() {
+    BundleStore.subscribe(this)
+    return {}
+  }
+}
+
 var Navbar = React.createClass({
   render: function() {
     return (
@@ -87,10 +113,12 @@ var NewInput = React.createClass({
 })
 
 var BundleList = React.createClass({
+  mixins: [SubscribesToBundleStore],
   getInitialState: function() {
     return { bundles: this.props.bundles }
   },
   componentWillMount: function() {
+    this.subscribe()
     var comp = this
     Core.on('add-bundle', function(name) {
       ChromeStorage.set(name, [])
@@ -205,6 +233,7 @@ var BundleLink = React.createClass({
 })
 
 ChromeStorage.all().then(function(data) {
+  BundleStore.init()
   React.render(<BundleList bundles={data} />, document.querySelector('.content'))
   React.render(<Navbar />, document.querySelector('.navbar'))
 }).catch(function(error) { console.error(error) })

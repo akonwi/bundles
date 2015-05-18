@@ -6,6 +6,16 @@ Object.defineProperties(ChromeStorage, {
   _VERSION: {
     value: '0.0.1'
   },
+  onChange: {
+    value: function(listener) {
+      chrome.storage.onChanged.addListener(listener)
+    }
+  },
+  unsubscribe: {
+    value: function(listener) {
+      chrome.storage.onChanged.removeListener(listener)
+    }
+  },
   /**
    * Save something
    *
