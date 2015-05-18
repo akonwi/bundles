@@ -33,15 +33,24 @@ var BundleStore = {
       })
     })
   },
-  subscribe: function(subscriber) {
+  addSubscriber: function(subscriber) {
     this.subscribers.push(subscriber)
+  },
+  addBundle: function(name) {
+    ChromeStorage.set(name, [])
+    .catch(function(err) { console.error(err) })
+  },
+  addLinkToBundle: function(name, link) {
+    ChromeStorage.get(name)
+    .then(function(links) {
+      links.push(link)
+      return ChromeStorage.set(name, links)
+    })
+    .catch(function(err) { console.error(err) })
   }
-}
-
-var SubscribesToBundleStore = {
-  subscribe: function() {
-    BundleStore.subscribe(this)
-    return {}
+  removeBundle: function(name) {
+    ChromeStorage.remove(name)
+    .catch(function(err) { console.error(err) })
   }
 }
 
@@ -113,23 +122,14 @@ var NewInput = React.createClass({
 })
 
 var BundleList = React.createClass({
-  mixins: [SubscribesToBundleStore],
   getInitialState: function() {
     return { bundles: this.props.bundles }
   },
   componentWillMount: function() {
-    this.subscribe()
+    BundleStore.addSubscriber(this)
     var comp = this
     Core.on('add-bundle', function(name) {
-      ChromeStorage.set(name, [])
-      .then(function() { return ChromeStorage.all() })
-      .then(function(bundles) { comp.setState({ bundles: bundles }) })
-      .catch(function(err) { console.error(err) })
-    })
-    Core.on('delete-bundle', function() {
-      ChromeStorage.all()
-      .then(function(bundles) { comp.setState({ bundles: bundles }) })
-      .catch(function(err) { console.error('Could not retrieve all items', err) })
+      BundleStore.addBundle(name)
     })
   },
   render: function() {
@@ -158,32 +158,14 @@ var BundleItem = React.createClass({
   addLink: function(e) {
     e.preventDefault()
     var name = this.props.bundle.name
-    var comp = this
     chrome.tabs.getSelected(null, function(tab) {
-      ChromeStorage.get(name)
-      .then(function(links) {
-        links.push({ title: tab.title, url: tab.url })
-        return ChromeStorage.set(name, links)
-      })
-      .then(function(links) {
-        comp.setState({ links: links })
-      })
-      .catch(function(err) {
-        console.error("Could not save new bundle", err)
-      })
+      BundleStore.addLinkToBundle(name, { title: tab.title, url: tab.url })
     })
   },
   delete: function (e) {
     e.preventDefault()
     var comp = this
-    ChromeStorage.remove(this.props.bundle.name)
-    .then(function() {
-      Core.trigger('delete-bundle')
-    })
-    .catch(function(err) {
-      console.error(err)
-      console.error("Couldn't delete %s from storage", comp.props.bundle.name)
-    })
+    BundleStore.removeBundle(this.props.bundle.name)
   },
   render: function() {
     var linksClasses = cx({
