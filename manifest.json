@@ -6,7 +6,9 @@
   "version": "0.0.1",
 
   "browser_action": {
-    "default_icon": {},
+    "default_icon": {
+      "19": "assets/bundles.png"
+    },
     "default_popup": "popup.html",
     "default_title": "Bundle up"
   },
