@@ -1,21 +1,36 @@
-var storage = chrome.storage.sync
-var runtime = chrome.runtime
+'use strict';
 
-ChromeStorage = {}
+function _defineProperty(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); }
+
+var storage = chrome.storage.sync;
+var _chrome = chrome;
+var runtime = _chrome.runtime;
+
+var ChromeStorage = {};
 Object.defineProperties(ChromeStorage, {
   _VERSION: {
-    value: '0.0.1'
+    value: '0.0.2'
   },
+
+  /**
+   * @param callback to run when data changes
+   *   function(changes) {}
+   */
   onChange: {
-    value: function(listener) {
-      chrome.storage.onChanged.addListener(listener)
+    value: function value(listener) {
+      chrome.storage.onChanged.addListener(listener);
     }
   },
+
+  /**
+   * @param callback to remove from data changes
+   */
   unsubscribe: {
-    value: function(listener) {
-      chrome.storage.onChanged.removeListener(listener)
+    value: function value(listener) {
+      chrome.storage.onChanged.removeListener(listener);
     }
   },
+
   /**
    * Save something
    *
@@ -23,15 +38,14 @@ Object.defineProperties(ChromeStorage, {
    * @param val Any object to save with key
    */
   set: {
-    value: function(key, val) {
-      (toSave = {})[key] = val
-      return new Promise(function(resolve, reject) {
-        storage.set(toSave, function() {
-          if (runtime.lastError)
-            return reject(runtime.lastError)
-          resolve(val)
-        })
-      })
+    value: function value(key, val) {
+      var toSave = _defineProperty({}, key, val);
+      return new Promise(function (resolve, reject) {
+        storage.set(toSave, function () {
+          if (runtime.lastError) return reject(runtime.lastError);
+          resolve(val);
+        });
+      });
     }
   },
 
@@ -43,16 +57,14 @@ Object.defineProperties(ChromeStorage, {
    *   If given an array of keys, it resolves to an object with key/value pairs
    */
   get: {
-    value: function(key) {
-      return new Promise(function(resolve, reject) {
-        storage.get(key, function(results) {
-          if (key.trim !== undefined)
-            results = results[key]
-          if (runtime.lastError)
-            return reject(runtime.lastError)
-          resolve(results)
-        })
-      })
+    value: function value(key) {
+      return new Promise(function (resolve, reject) {
+        storage.get(key, function (results) {
+          if (key.trim !== undefined) results = results[key];
+          if (runtime.lastError) return reject(runtime.lastError);
+          resolve(results);
+        });
+      });
     }
   },
 
@@ -62,14 +74,13 @@ Object.defineProperties(ChromeStorage, {
    * resolves to an object with key/value pairs
    */
   all: {
-    value: function() {
-      return new Promise(function(resolve, reject) {
-        storage.get(null, function(items) {
-          if (runtime.lastError)
-            return reject(runtime.lastError)
-          resolve(items)
-        })
-      })
+    value: function value() {
+      return new Promise(function (resolve, reject) {
+        storage.get(null, function (items) {
+          if (runtime.lastError) return reject(runtime.lastError);
+          resolve(items);
+        });
+      });
     }
   },
 
@@ -79,17 +90,16 @@ Object.defineProperties(ChromeStorage, {
    * @param key String of key
    */
   remove: {
-    value: function(key) {
-      if (key === undefined)
-        throw new Error("No keys given to remove")
-      return new Promise(function(resolve, reject) {
-        storage.remove(key, function() {
-          if (runtime.lastError)
-            return reject(runtime.lastError)
-          resolve()
-        })
-      })
+    value: function value(key) {
+      if (key === undefined) throw new Error('No keys given to remove');
+      return new Promise(function (resolve, reject) {
+        storage.remove(key, function () {
+          if (runtime.lastError) return reject(runtime.lastError);
+          resolve();
+        });
+      });
     }
   }
-})
-Object.preventExtensions(ChromeStorage)
+});
+Object.preventExtensions(ChromeStorage);
+//# sourceMappingURL=chrome-storage.js.map
