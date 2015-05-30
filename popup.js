@@ -71,7 +71,7 @@
           React.createElement(
             'div',
             { className: 'nav-block big' },
-            React.createElement(NewInput, { hidden: 'true' }),
+            React.createElement(HiddenInput, null),
             React.createElement(
               'h2',
               { className: 'logo' },
@@ -104,14 +104,14 @@
     };
   };
 
-  var NewInput = React.createClass({
-    displayName: 'NewInput',
+  var HiddenInput = React.createClass({
+    displayName: 'HiddenInput',
 
     getInitialState: function getInitialState() {
-      return { hidden: this.props.hidden };
+      return { hidden: true };
     },
-    onkeypress: function onkeypress(e) {
-      if (e.keyIdentifier === 'Enter') {
+    onKeyUp: function onKeyUp(e) {
+      if (e.keyCode === 13) {
         var _name = e.target.value;
         if (_name.trim().length > 0) {
           Core.trigger('add-bundle', _name);
@@ -123,7 +123,6 @@
     componentDidMount: function componentDidMount() {
       var _this = this;
 
-      this.getDOMNode().onkeypress = this.onkeypress;
       Core.on('show-new-bundle-input', function () {
         document.querySelector('.logo').classList.add('hidden');
         _this.setState({ hidden: false });
@@ -139,9 +138,9 @@
     render: function render() {
       var classes = cx({
         'new-bundle-input': true,
-        hidden: this.state.hidden
+        'hidden': this.state.hidden
       });
-      return React.createElement('input', { className: classes, type: 'text', placeholder: 'Bundle name...' });
+      return React.createElement('input', { className: classes, onKeyUp: this.onKeyUp, type: 'text', placeholder: 'Bundle name...' });
     }
   });
 

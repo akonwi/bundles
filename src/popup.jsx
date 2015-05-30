@@ -61,7 +61,7 @@
           <div>
             <div className='nav-block small left'></div>
             <div className='nav-block big'>
-              <NewInput hidden='true' />
+              <HiddenInput />
               <h2 className='logo'>Bundles</h2>
             </div>
             <div className='nav-block small right'><AddBtn /></div>
@@ -83,12 +83,12 @@
     }
   }
 
-  let NewInput = React.createClass({
+  let HiddenInput = React.createClass({
     getInitialState() {
-      return { hidden: this.props.hidden }
+      return { hidden: true }
     },
-    onkeypress(e) {
-      if (e.keyIdentifier === 'Enter') {
+    onKeyUp(e) {
+      if (e.keyCode === 13) {
         let name = e.target.value
         if (name.trim().length > 0) {
           Core.trigger('add-bundle', name)
@@ -98,7 +98,6 @@
       }
     },
     componentDidMount() {
-      this.getDOMNode().onkeypress = this.onkeypress
       Core.on('show-new-bundle-input', () => {
         document.querySelector('.logo').classList.add('hidden')
         this.setState({ hidden: false })
@@ -115,9 +114,9 @@
     render() {
       let classes = cx({
         'new-bundle-input': true,
-        hidden: this.state.hidden
+        'hidden': this.state.hidden
       })
-      return <input className={classes} type='text' placeholder='Bundle name...' />
+      return <input className={classes} onKeyUp={this.onKeyUp} type='text' placeholder='Bundle name...' />
     }
   })
 
