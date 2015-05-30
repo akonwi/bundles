@@ -21,12 +21,9 @@
 
   var BundleStore = {
     subscribers: [],
-    data: null,
     init() {
-      ChromeStorage.all().then((data) => { BundleStore.data = data })
       ChromeStorage.onChange((changes) => {
         ChromeStorage.all().then((data) => {
-          BundleStore.data = data
           BundleStore.subscribers.forEach(s => {
             s.setState({ bundles: data })
           })
