@@ -27,8 +27,8 @@
       ChromeStorage.onChange((changes) => {
         ChromeStorage.all().then((data) => {
           BundleStore.data = data
-          BundleStore.subscribers.forEach(({setState}) => {
-            setState({ bundles: data })
+          BundleStore.subscribers.forEach(s => {
+            s.setState({ bundles: data })
           })
         })
       })
@@ -72,7 +72,6 @@
   }
 
   let AddBtn = function() {
-
     let onClick = (e) => {
       e.preventDefault()
       Core.trigger('show-new-bundle-input')
@@ -85,12 +84,12 @@
   }
 
   let NewInput = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
       return { hidden: this.props.hidden }
     },
-    onkeypress: function(e) {
+    onkeypress(e) {
       if (e.keyIdentifier === 'Enter') {
-        var name = e.target.value
+        let name = e.target.value
         if (name.trim().length > 0) {
           Core.trigger('add-bundle', name)
           Core.trigger('hide-new-bundle-input')
@@ -98,24 +97,23 @@
         }
       }
     },
-    componentDidMount: function() {
+    componentDidMount() {
       this.getDOMNode().onkeypress = this.onkeypress
-      var component = this
-      Core.on('show-new-bundle-input', function() {
+      Core.on('show-new-bundle-input', () => {
         document.querySelector('.logo').classList.add('hidden')
-        component.setState({ hidden: false })
+        this.setState({ hidden: false })
       })
-      Core.on('hide-new-bundle-input', function() {
+      Core.on('hide-new-bundle-input', () => {
         document.querySelector('.logo').classList.remove('hidden')
-        component.setState({ hidden: true })
+        this.setState({ hidden: true })
       })
     },
-    componentDidUpdate: function() {
+    componentDidUpdate() {
       if (!this.state.hidden)
       this.getDOMNode().focus()
     },
-    render: function() {
-      var classes = cx({
+    render() {
+      let classes = cx({
         'new-bundle-input': true,
         hidden: this.state.hidden
       })
@@ -123,23 +121,23 @@
     }
   })
 
-  var BundleList = React.createClass({
-    getInitialState: function() {
+  let BundleList = React.createClass({
+    getInitialState() {
       return { bundles: this.props.bundles }
     },
-    componentDidMount: function() {
+    componentDidMount() {
       BundleStore.addSubscriber(this)
-      Core.on('add-bundle', function(name) {
+      Core.on('add-bundle', (name) => {
         BundleStore.addBundle(name)
       })
     },
-    render: function() {
-      var bundles = this.state.bundles
+    render() {
+      let bundles = this.state.bundles
       return (
         <ul className='bundles'>
           {
-            Object.keys(bundles).map(function(name) {
-              var b = { name: name, links: bundles[name] }
+            Object.keys(bundles).map((name) => {
+              let b = { name, links: bundles[name] }
               return <BundleItem bundle={b} />
             })
           }
@@ -148,34 +146,34 @@
     }
   })
 
-  var BundleItem = React.createClass({
-    getInitialState: function () {
+  let BundleItem = React.createClass({
+    getInitialState() {
       return { links: this.props.bundle.links }
     },
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps(nextProps) {
       this.setState({ links: nextProps.bundle.links })
     },
-    onClick: function(e) {
+    onClick(e) {
       e.preventDefault()
       this.setState({ open: !this.state.open })
     },
-    addLink: function(e) {
+    addLink(e) {
       e.preventDefault()
-      var name = this.props.bundle.name
-      chrome.tabs.getSelected(null, function(tab) {
-        BundleStore.addLinkToBundle(name, { title: tab.title, url: tab.url })
+      let name = this.props.bundle.name
+      chrome.tabs.getSelected(null, ({title, url}) => {
+        BundleStore.addLinkToBundle(name, { title, url })
       })
     },
-    deleteBundle: function (e) {
+    deleteBundle(e) {
       e.preventDefault()
       BundleStore.removeBundle(this.props.bundle.name)
     },
-    render: function() {
-      var linksClasses = cx({
+    render() {
+      let linksClasses = cx({
         links: true,
         open: this.state.open
       })
-      var triangleClasses = cx({
+      let triangleClasses = cx({
         triangle: true,
         down: this.state.open
       })
@@ -189,7 +187,7 @@
           </div>
           <ul className={linksClasses} ref='links'>
             {
-              this.state.links.map(function(link) {
+              this.state.links.map((link) => {
                 return <BundleLink link={link} />
               })
             }
@@ -199,16 +197,16 @@
     }
   })
 
-  var BundleLink = React.createClass({
-    getInitialProps: function() {
+  let BundleLink = React.createClass({
+    getInitialProps() {
       return { link: {} }
     },
-    openLink: function(e) {
+    openLink(e) {
       e.preventDefault()
       chrome.tabs.create({ url: this.props.link.url })
     },
-    render: function() {
-      var link = this.props.link
+    render() {
+      let link = this.props.link
       return (
         <li title={link.title}>
           <a href='#' onClick={this.openLink}>{ link.title }</a>
@@ -217,9 +215,9 @@
     }
   })
 
-  ChromeStorage.all().then(function(data) {
+  ChromeStorage.all().then((data) => {
     BundleStore.init()
     React.render(<BundleList bundles={data} />, document.querySelector('.content'))
     React.render(<Navbar />, document.querySelector('.navbar'))
-  }).catch(function(error) { console.error(error) })
+  }).catch(error => { console.error(error) })
 })()

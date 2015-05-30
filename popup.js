@@ -32,10 +32,8 @@
       ChromeStorage.onChange(function (changes) {
         ChromeStorage.all().then(function (data) {
           BundleStore.data = data;
-          BundleStore.subscribers.forEach(function (_ref2) {
-            var setState = _ref2.setState;
-
-            setState({ bundles: data });
+          BundleStore.subscribers.forEach(function (s) {
+            s.setState({ bundles: data });
           });
         });
       });
@@ -91,7 +89,6 @@
   };
 
   var AddBtn = function AddBtn() {
-
     var onClick = function onClick(e) {
       e.preventDefault();
       Core.trigger('show-new-bundle-input');
@@ -115,24 +112,25 @@
     },
     onkeypress: function onkeypress(e) {
       if (e.keyIdentifier === 'Enter') {
-        var name = e.target.value;
-        if (name.trim().length > 0) {
-          Core.trigger('add-bundle', name);
+        var _name = e.target.value;
+        if (_name.trim().length > 0) {
+          Core.trigger('add-bundle', _name);
           Core.trigger('hide-new-bundle-input');
           e.target.remove();
         }
       }
     },
     componentDidMount: function componentDidMount() {
+      var _this = this;
+
       this.getDOMNode().onkeypress = this.onkeypress;
-      var component = this;
       Core.on('show-new-bundle-input', function () {
         document.querySelector('.logo').classList.add('hidden');
-        component.setState({ hidden: false });
+        _this.setState({ hidden: false });
       });
       Core.on('hide-new-bundle-input', function () {
         document.querySelector('.logo').classList.remove('hidden');
-        component.setState({ hidden: true });
+        _this.setState({ hidden: true });
       });
     },
     componentDidUpdate: function componentDidUpdate() {
@@ -188,8 +186,11 @@
     addLink: function addLink(e) {
       e.preventDefault();
       var name = this.props.bundle.name;
-      chrome.tabs.getSelected(null, function (tab) {
-        BundleStore.addLinkToBundle(name, { title: tab.title, url: tab.url });
+      chrome.tabs.getSelected(null, function (_ref2) {
+        var title = _ref2.title;
+        var url = _ref2.url;
+
+        BundleStore.addLinkToBundle(name, { title: title, url: url });
       });
     },
     deleteBundle: function deleteBundle(e) {
