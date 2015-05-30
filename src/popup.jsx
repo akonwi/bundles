@@ -19,7 +19,17 @@
     }
   }
 
-  var BundleStore = {
+  /**
+    * Not a class but factory function to create bundle objects.
+    * Bundles have a name property and links property
+    * @param name
+    * [@param links]
+    */
+  let Bundle = function({name, open=false, links=[]}) {
+    return { name, links, open}
+  }
+
+  let BundleStore = {
     subscribers: [],
     init() {
       ChromeStorage.onChange((changes) => {
@@ -34,7 +44,7 @@
       this.subscribers.push(subscriber)
     },
     addBundle(name) {
-      let b = { open: false, links: []}
+      let b = Bundle({name})
       ChromeStorage.set(name, b)
       .catch((err) => { console.error(err) })
     },
@@ -135,7 +145,7 @@
         <ul className='bundles'>
           {
             Object.keys(bundles).map((name) => {
-              return <BundleItem name={name} bundle={bundles[name]} />
+              return <BundleItem bundle={bundles[name]} />
             })
           }
         </ul>
@@ -150,22 +160,23 @@
     onClick(e) {
       e.preventDefault()
       const bundle = this.props.bundle
-      const b = {
+      const b = Bundle({
+        name: bundle.name,
         open: !bundle.open,
         links: bundle.links
-      }
-      BundleStore.updateBundle(this.props.name, b)
+      })
+      BundleStore.updateBundle(bundle.name, b)
     },
     addLink(e) {
       e.preventDefault()
       chrome.tabs.getSelected(null, ({title, url}) => {
-        BundleStore.addLinkToBundle(this.props.name, { title, url })
+        BundleStore.addLinkToBundle(this.props.bundle.name, { title, url })
         this.setState({shouldFlash: true})
       })
     },
     deleteBundle(e) {
       e.preventDefault()
-      BundleStore.removeBundle(this.props.name)
+      BundleStore.removeBundle(this.props.bundle.name)
     },
     render() {
       let linksClasses = cx({
@@ -181,7 +192,7 @@
         <li className='bundle'>
           <div className='title-bar'>
             <div className={triangleClasses}></div>
-            <h4 className={h4classes} onClick={this.onClick}>{ this.props.name }</h4>
+            <h4 className={h4classes} onClick={this.onClick}>{ this.props.bundle.name }</h4>
             <img className='icon' onClick={this.addLink} src="/assets/plus.svg"></img>
             <img className='icon' onClick={this.deleteBundle} src="/assets/cross.svg"></img>
           </div>

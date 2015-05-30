@@ -22,16 +22,27 @@
     }
   };
 
+  /**
+    * Not a class but factory function to create bundle objects.
+    * Bundles have a name property and links property
+    * @param name
+    * [@param links]
+    */
+  var Bundle = function Bundle(_ref2) {
+    var name = _ref2.name;
+    var _ref2$open = _ref2.open;
+    var open = _ref2$open === undefined ? false : _ref2$open;
+    var _ref2$links = _ref2.links;
+    var links = _ref2$links === undefined ? [] : _ref2$links;
+
+    return { name: name, links: links, open: open };
+  };
+
   var BundleStore = {
     subscribers: [],
-    data: null,
     init: function init() {
-      ChromeStorage.all().then(function (data) {
-        BundleStore.data = data;
-      });
       ChromeStorage.onChange(function (changes) {
         ChromeStorage.all().then(function (data) {
-          BundleStore.data = data;
           BundleStore.subscribers.forEach(function (s) {
             s.setState({ bundles: data });
           });
@@ -42,7 +53,7 @@
       this.subscribers.push(subscriber);
     },
     addBundle: function addBundle(name) {
-      var b = { open: false, links: [] };
+      var b = Bundle({ name: name });
       ChromeStorage.set(name, b)['catch'](function (err) {
         console.error(err);
       });
@@ -165,7 +176,7 @@
         'ul',
         { className: 'bundles' },
         Object.keys(bundles).map(function (name) {
-          return React.createElement(BundleItem, { name: name, bundle: bundles[name] });
+          return React.createElement(BundleItem, { bundle: bundles[name] });
         })
       );
     }
@@ -180,27 +191,28 @@
     onClick: function onClick(e) {
       e.preventDefault();
       var bundle = this.props.bundle;
-      var b = {
+      var b = Bundle({
+        name: bundle.name,
         open: !bundle.open,
         links: bundle.links
-      };
-      BundleStore.updateBundle(this.props.name, b);
+      });
+      BundleStore.updateBundle(bundle.name, b);
     },
     addLink: function addLink(e) {
       var _this2 = this;
 
       e.preventDefault();
-      chrome.tabs.getSelected(null, function (_ref2) {
-        var title = _ref2.title;
-        var url = _ref2.url;
+      chrome.tabs.getSelected(null, function (_ref3) {
+        var title = _ref3.title;
+        var url = _ref3.url;
 
-        BundleStore.addLinkToBundle(_this2.props.name, { title: title, url: url });
+        BundleStore.addLinkToBundle(_this2.props.bundle.name, { title: title, url: url });
         _this2.setState({ shouldFlash: true });
       });
     },
     deleteBundle: function deleteBundle(e) {
       e.preventDefault();
-      BundleStore.removeBundle(this.props.name);
+      BundleStore.removeBundle(this.props.bundle.name);
     },
     render: function render() {
       var linksClasses = cx({
@@ -222,7 +234,7 @@
           React.createElement(
             'h4',
             { className: h4classes, onClick: this.onClick },
-            this.props.name
+            this.props.bundle.name
           ),
           React.createElement('img', { className: 'icon', onClick: this.addLink, src: '/assets/plus.svg' }),
           React.createElement('img', { className: 'icon', onClick: this.deleteBundle, src: '/assets/cross.svg' })
