@@ -21,11 +21,12 @@
 
   /**
     * Not a class but factory function to create bundle objects.
-    * Bundles have a name property and links property
-    * @param name
-    * [@param links]
+    * Bundles consist of 'name', 'open', and 'links' attributes.
+    * @param attributes {Object}
     */
-  let Bundle = function({name, open=false, links=[]}) {
+  let Bundle = ({name, open=false, links=[]}) => {
+    if (name === undefined)
+      throw new Error("Cannot create a bundle without a name.")
     return { name, links, open}
   }
 

@@ -24,9 +24,8 @@
 
   /**
     * Not a class but factory function to create bundle objects.
-    * Bundles have a name property and links property
-    * @param name
-    * [@param links]
+    * Bundles consist of 'name', 'open', and 'links' attributes.
+    * @param attributes {Object}
     */
   var Bundle = function Bundle(_ref2) {
     var name = _ref2.name;
@@ -35,6 +34,7 @@
     var _ref2$links = _ref2.links;
     var links = _ref2$links === undefined ? [] : _ref2$links;
 
+    if (name === undefined) throw new Error('Cannot create a bundle without a name.');
     return { name: name, links: links, open: open };
   };
 
