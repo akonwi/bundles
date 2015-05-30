@@ -174,6 +174,9 @@
   var BundleItem = React.createClass({
     displayName: 'BundleItem',
 
+    getInitialState: function getInitialState() {
+      return { shouldFlash: false };
+    },
     onClick: function onClick(e) {
       e.preventDefault();
       var bundle = this.props.bundle;
@@ -192,6 +195,7 @@
         var url = _ref2.url;
 
         BundleStore.addLinkToBundle(_this2.props.name, { title: title, url: url });
+        _this2.setState({ shouldFlash: true });
       });
     },
     deleteBundle: function deleteBundle(e) {
@@ -207,6 +211,7 @@
         triangle: true,
         down: this.props.bundle.open
       });
+      var h4classes = this.state.shouldFlash ? 'flash' : '';
       return React.createElement(
         'li',
         { className: 'bundle' },
@@ -216,7 +221,7 @@
           React.createElement('div', { className: triangleClasses }),
           React.createElement(
             'h4',
-            { onClick: this.onClick },
+            { className: h4classes, onClick: this.onClick },
             this.props.name
           ),
           React.createElement('img', { className: 'icon', onClick: this.addLink, src: '/assets/plus.svg' }),

@@ -147,6 +147,9 @@
   })
 
   let BundleItem = React.createClass({
+    getInitialState() {
+      return { shouldFlash: false }
+    },
     onClick(e) {
       e.preventDefault()
       const bundle = this.props.bundle
@@ -160,6 +163,7 @@
       e.preventDefault()
       chrome.tabs.getSelected(null, ({title, url}) => {
         BundleStore.addLinkToBundle(this.props.name, { title, url })
+        this.setState({shouldFlash: true})
       })
     },
     deleteBundle(e) {
@@ -175,11 +179,12 @@
         triangle: true,
         down: this.props.bundle.open
       })
+      let h4classes = this.state.shouldFlash ? 'flash' : ''
       return (
         <li className='bundle'>
           <div className='title-bar'>
             <div className={triangleClasses}></div>
-            <h4 onClick={this.onClick}>{ this.props.name }</h4>
+            <h4 className={h4classes} onClick={this.onClick}>{ this.props.name }</h4>
             <img className='icon' onClick={this.addLink} src="/assets/plus.svg"></img>
             <img className='icon' onClick={this.deleteBundle} src="/assets/cross.svg"></img>
           </div>
