@@ -42,15 +42,21 @@
       this.subscribers.push(subscriber);
     },
     addBundle: function addBundle(name) {
-      ChromeStorage.set(name, [])['catch'](function (err) {
+      var b = { open: false, links: [] };
+      ChromeStorage.set(name, b)['catch'](function (err) {
         console.error(err);
       });
     },
     addLinkToBundle: function addLinkToBundle(name, link) {
-      ChromeStorage.get(name).then(function (links) {
-        links.push(link);
-        return ChromeStorage.set(name, links);
+      ChromeStorage.get(name).then(function (bundle) {
+        bundle.links.push(link);
+        return ChromeStorage.set(name, bundle);
       })['catch'](function (err) {
+        console.error(err);
+      });
+    },
+    updateBundle: function updateBundle(name, bundle) {
+      ChromeStorage.set(name, bundle)['catch'](function (err) {
         console.error(err);
       });
     },
@@ -114,7 +120,7 @@
       if (e.keyCode === 13) {
         var _name = e.target.value;
         if (_name.trim().length > 0) {
-          Core.trigger('add-bundle', _name);
+          BundleStore.addBundle(_name);
           Core.trigger('hide-new-bundle-input');
           e.target.remove();
         }
@@ -152,9 +158,6 @@
     },
     componentDidMount: function componentDidMount() {
       BundleStore.addSubscriber(this);
-      Core.on('add-bundle', function (name) {
-        BundleStore.addBundle(name);
-      });
     },
     render: function render() {
       var bundles = this.state.bundles;
@@ -162,8 +165,7 @@
         'ul',
         { className: 'bundles' },
         Object.keys(bundles).map(function (name) {
-          var b = { name: name, links: bundles[name] };
-          return React.createElement(BundleItem, { bundle: b });
+          return React.createElement(BundleItem, { name: name, bundle: bundles[name] });
         })
       );
     }
@@ -172,38 +174,38 @@
   var BundleItem = React.createClass({
     displayName: 'BundleItem',
 
-    getInitialState: function getInitialState() {
-      return { links: this.props.bundle.links };
-    },
-    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-      this.setState({ links: nextProps.bundle.links });
-    },
     onClick: function onClick(e) {
       e.preventDefault();
-      this.setState({ open: !this.state.open });
+      var bundle = this.props.bundle;
+      var b = {
+        open: !bundle.open,
+        links: bundle.links
+      };
+      BundleStore.updateBundle(this.props.name, b);
     },
     addLink: function addLink(e) {
+      var _this2 = this;
+
       e.preventDefault();
-      var name = this.props.bundle.name;
       chrome.tabs.getSelected(null, function (_ref2) {
         var title = _ref2.title;
         var url = _ref2.url;
 
-        BundleStore.addLinkToBundle(name, { title: title, url: url });
+        BundleStore.addLinkToBundle(_this2.props.name, { title: title, url: url });
       });
     },
     deleteBundle: function deleteBundle(e) {
       e.preventDefault();
-      BundleStore.removeBundle(this.props.bundle.name);
+      BundleStore.removeBundle(this.props.name);
     },
     render: function render() {
       var linksClasses = cx({
         links: true,
-        open: this.state.open
+        open: this.props.bundle.open
       });
       var triangleClasses = cx({
         triangle: true,
-        down: this.state.open
+        down: this.props.bundle.open
       });
       return React.createElement(
         'li',
@@ -215,7 +217,7 @@
           React.createElement(
             'h4',
             { onClick: this.onClick },
-            this.props.bundle.name
+            this.props.name
           ),
           React.createElement('img', { className: 'icon', onClick: this.addLink, src: '/assets/plus.svg' }),
           React.createElement('img', { className: 'icon', onClick: this.deleteBundle, src: '/assets/cross.svg' })
@@ -223,7 +225,7 @@
         React.createElement(
           'ul',
           { className: linksClasses, ref: 'links' },
-          this.state.links.map(function (link) {
+          this.props.bundle.links.map(function (link) {
             return React.createElement(BundleLink, { link: link });
           })
         )

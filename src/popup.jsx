@@ -37,16 +37,21 @@
       this.subscribers.push(subscriber)
     },
     addBundle(name) {
-      ChromeStorage.set(name, [])
+      let b = { open: false, links: []}
+      ChromeStorage.set(name, b)
       .catch((err) => { console.error(err) })
     },
     addLinkToBundle(name, link) {
       ChromeStorage.get(name)
-      .then((links) => {
-        links.push(link)
-        return ChromeStorage.set(name, links)
+      .then(bundle => {
+        bundle.links.push(link)
+        return ChromeStorage.set(name, bundle)
       })
       .catch((err) => { console.error(err) })
+    },
+    updateBundle(name, bundle) {
+      ChromeStorage.set(name, bundle)
+      .catch(err => { console.error(err) })
     },
     removeBundle(name) {
       ChromeStorage.remove(name)
@@ -91,7 +96,7 @@
       if (e.keyCode === 13) {
         let name = e.target.value
         if (name.trim().length > 0) {
-          Core.trigger('add-bundle', name)
+          BundleStore.addBundle(name)
           Core.trigger('hide-new-bundle-input')
           e.target.remove()
         }
@@ -126,9 +131,6 @@
     },
     componentDidMount() {
       BundleStore.addSubscriber(this)
-      Core.on('add-bundle', (name) => {
-        BundleStore.addBundle(name)
-      })
     },
     render() {
       let bundles = this.state.bundles
@@ -136,8 +138,7 @@
         <ul className='bundles'>
           {
             Object.keys(bundles).map((name) => {
-              let b = { name, links: bundles[name] }
-              return <BundleItem bundle={b} />
+              return <BundleItem name={name} bundle={bundles[name]} />
             })
           }
         </ul>
@@ -146,47 +147,45 @@
   })
 
   let BundleItem = React.createClass({
-    getInitialState() {
-      return { links: this.props.bundle.links }
-    },
-    componentWillReceiveProps(nextProps) {
-      this.setState({ links: nextProps.bundle.links })
-    },
     onClick(e) {
       e.preventDefault()
-      this.setState({ open: !this.state.open })
+      const bundle = this.props.bundle
+      const b = {
+        open: !bundle.open,
+        links: bundle.links
+      }
+      BundleStore.updateBundle(this.props.name, b)
     },
     addLink(e) {
       e.preventDefault()
-      let name = this.props.bundle.name
       chrome.tabs.getSelected(null, ({title, url}) => {
-        BundleStore.addLinkToBundle(name, { title, url })
+        BundleStore.addLinkToBundle(this.props.name, { title, url })
       })
     },
     deleteBundle(e) {
       e.preventDefault()
-      BundleStore.removeBundle(this.props.bundle.name)
+      BundleStore.removeBundle(this.props.name)
     },
     render() {
       let linksClasses = cx({
         links: true,
-        open: this.state.open
+        open: this.props.bundle.open
       })
       let triangleClasses = cx({
         triangle: true,
-        down: this.state.open
+        down: this.props.bundle.open
       })
       return (
         <li className='bundle'>
           <div className='title-bar'>
             <div className={triangleClasses}></div>
-            <h4 onClick={this.onClick}>{ this.props.bundle.name }</h4>
+            <h4 onClick={this.onClick}>{ this.props.name }</h4>
             <img className='icon' onClick={this.addLink} src="/assets/plus.svg"></img>
             <img className='icon' onClick={this.deleteBundle} src="/assets/cross.svg"></img>
           </div>
           <ul className={linksClasses} ref='links'>
             {
-              this.state.links.map((link) => {
+              this.props.bundle.links.map((link) => {
                 return <BundleLink link={link} />
               })
             }
