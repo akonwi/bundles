@@ -49,8 +49,13 @@
         });
       });
     },
-    addSubscriber: function addSubscriber(subscriber) {
-      this.subscribers.push(subscriber);
+    Subscriber: function Subscriber() {
+      var self = this;
+      return {
+        componentDidMount: function componentDidMount() {
+          self.subscribers.push(this);
+        }
+      };
     },
     addBundle: function addBundle(name) {
       var b = Bundle({ name: name });
@@ -164,11 +169,9 @@
   var BundleList = React.createClass({
     displayName: 'BundleList',
 
+    mixins: [BundleStore.Subscriber()],
     getInitialState: function getInitialState() {
       return { bundles: this.props.bundles };
-    },
-    componentDidMount: function componentDidMount() {
-      BundleStore.addSubscriber(this);
     },
     render: function render() {
       var bundles = this.state.bundles;

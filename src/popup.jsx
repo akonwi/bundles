@@ -41,8 +41,13 @@
         })
       })
     },
-    addSubscriber(subscriber) {
-      this.subscribers.push(subscriber)
+    Subscriber() {
+      let self = this
+      return {
+        componentDidMount() {
+          self.subscribers.push(this)
+        }
+      }
     },
     addBundle(name) {
       let b = Bundle({name})
@@ -134,11 +139,9 @@
   })
 
   let BundleList = React.createClass({
+    mixins: [BundleStore.Subscriber()],
     getInitialState() {
       return { bundles: this.props.bundles }
-    },
-    componentDidMount() {
-      BundleStore.addSubscriber(this)
     },
     render() {
       let bundles = this.state.bundles
