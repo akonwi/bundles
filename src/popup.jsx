@@ -41,6 +41,7 @@
         })
       })
     },
+    // Returns mixin for component use
     Subscriber() {
       let self = this
       return {
