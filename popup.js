@@ -49,6 +49,7 @@
         });
       });
     },
+    // Returns mixin for component use
     Subscriber: function Subscriber() {
       var self = this;
       return {
@@ -93,76 +94,86 @@
           React.createElement(
             'div',
             { className: 'nav-block big' },
-            React.createElement(HiddenInput, null),
-            React.createElement(
-              'h2',
-              { className: 'logo' },
-              'Bundles'
-            )
+            React.createElement(LogoInput, null)
           ),
           React.createElement(
             'div',
             { className: 'nav-block small right' },
-            React.createElement(AddBtn, null)
+            React.createElement(CreateBundleBtn, null)
           )
         );
       }
     };
   };
 
-  var AddBtn = function AddBtn() {
-    var onClick = function onClick(e) {
-      e.preventDefault();
-      Core.trigger('show-new-bundle-input');
-    };
-    return {
-      render: function render() {
-        return React.createElement(
-          'a',
-          { className: 'nav-btn', href: '#', onClick: onClick },
-          'New'
-        );
-      }
-    };
-  };
-
-  var HiddenInput = React.createClass({
-    displayName: 'HiddenInput',
+  var CreateBundleBtn = React.createClass({
+    displayName: 'CreateBundleBtn',
 
     getInitialState: function getInitialState() {
-      return { hidden: true };
+      return { showCancel: false };
     },
+    onClick: function onClick(e) {
+      e.preventDefault();
+      if (!this.state.showCancel) {
+        Core.trigger('show-new-bundle-input');
+        this.setState({ showCancel: true });
+      } else {
+        Core.trigger('hide-new-bundle-input');
+        this.setState({ showCancel: false });
+      }
+    },
+    render: function render() {
+      var text = this.state.showCancel ? 'Cancel' : 'New';
+      return React.createElement(
+        'a',
+        { className: 'nav-btn', href: '#', onClick: this.onClick },
+        text
+      );
+    }
+  });
+
+  var LogoInput = React.createClass({
+    displayName: 'LogoInput',
+
+    getInitialState: function getInitialState() {
+      return { showInput: false };
+    },
+    componentDidMount: function componentDidMount() {
+      var _this = this;
+
+      Core.on('show-new-bundle-input', function () {
+        _this.setState({ showInput: true });
+      });
+      Core.on('hide-new-bundle-input', function () {
+        _this.setState({ showInput: false });
+      });
+    },
+    render: function render() {
+      if (this.state.showInput) return React.createElement(NewBundleInput, null);else return React.createElement(
+        'h2',
+        { className: 'logo' },
+        'Bundles'
+      );
+    }
+  });
+
+  var NewBundleInput = React.createClass({
+    displayName: 'NewBundleInput',
+
     onKeyUp: function onKeyUp(e) {
       if (e.keyCode === 13) {
         var _name = e.target.value;
         if (_name.trim().length > 0) {
           BundleStore.addBundle(_name);
           Core.trigger('hide-new-bundle-input');
-          e.target.remove();
         }
       }
     },
     componentDidMount: function componentDidMount() {
-      var _this = this;
-
-      Core.on('show-new-bundle-input', function () {
-        document.querySelector('.logo').classList.add('hidden');
-        _this.setState({ hidden: false });
-      });
-      Core.on('hide-new-bundle-input', function () {
-        document.querySelector('.logo').classList.remove('hidden');
-        _this.setState({ hidden: true });
-      });
-    },
-    componentDidUpdate: function componentDidUpdate() {
-      if (!this.state.hidden) this.getDOMNode().focus();
+      this.getDOMNode().focus();
     },
     render: function render() {
-      var classes = cx({
-        'new-bundle-input': true,
-        'hidden': this.state.hidden
-      });
-      return React.createElement('input', { className: classes, onKeyUp: this.onKeyUp, type: 'text', placeholder: 'Bundle name...' });
+      return React.createElement('input', { className: 'new-bundle-input', onKeyUp: this.onKeyUp, type: 'text', placeholder: 'Bundle name...' });
     }
   });
 

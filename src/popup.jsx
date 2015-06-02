@@ -80,62 +80,71 @@
           <div>
             <div className='nav-block small left'></div>
             <div className='nav-block big'>
-              <HiddenInput />
-              <h2 className='logo'>Bundles</h2>
+              <LogoInput />
             </div>
-            <div className='nav-block small right'><AddBtn /></div>
+            <div className='nav-block small right'><CreateBundleBtn /></div>
           </div>
         )
       }
     }
   }
 
-  let AddBtn = function() {
-    let onClick = (e) => {
-      e.preventDefault()
-      Core.trigger('show-new-bundle-input')
-    }
-    return {
-      render() {
-        return <a className='nav-btn' href='#' onClick={onClick}>New</a>
-      }
-    }
-  }
-
-  let HiddenInput = React.createClass({
+  let CreateBundleBtn = React.createClass({
     getInitialState() {
-      return { hidden: true }
+      return { showCancel: false }
     },
+    onClick(e) {
+      e.preventDefault()
+      if (!this.state.showCancel) {
+        Core.trigger('show-new-bundle-input')
+        this.setState({ showCancel: true })
+      }
+      else {
+        Core.trigger('hide-new-bundle-input')
+        this.setState({ showCancel: false })
+      }
+    },
+    render() {
+      let text = this.state.showCancel ? 'Cancel' : 'New'
+      return <a className='nav-btn' href='#' onClick={this.onClick}>{text}</a>
+    }
+  })
+
+  let LogoInput = React.createClass({
+    getInitialState() {
+      return { showInput: false }
+    },
+    componentDidMount() {
+      Core.on('show-new-bundle-input', () => {
+        this.setState({ showInput: true })
+      })
+      Core.on('hide-new-bundle-input', () => {
+        this.setState({ showInput: false })
+      })
+    },
+    render() {
+      if (this.state.showInput)
+        return <NewBundleInput />
+      else
+        return <h2 className='logo'>Bundles</h2>
+    }
+  })
+
+  let NewBundleInput = React.createClass({
     onKeyUp(e) {
       if (e.keyCode === 13) {
         let name = e.target.value
         if (name.trim().length > 0) {
           BundleStore.addBundle(name)
           Core.trigger('hide-new-bundle-input')
-          e.target.remove()
         }
       }
     },
     componentDidMount() {
-      Core.on('show-new-bundle-input', () => {
-        document.querySelector('.logo').classList.add('hidden')
-        this.setState({ hidden: false })
-      })
-      Core.on('hide-new-bundle-input', () => {
-        document.querySelector('.logo').classList.remove('hidden')
-        this.setState({ hidden: true })
-      })
-    },
-    componentDidUpdate() {
-      if (!this.state.hidden)
       this.getDOMNode().focus()
     },
     render() {
-      let classes = cx({
-        'new-bundle-input': true,
-        'hidden': this.state.hidden
-      })
-      return <input className={classes} onKeyUp={this.onKeyUp} type='text' placeholder='Bundle name...' />
+      return <input className='new-bundle-input' onKeyUp={this.onKeyUp} type='text' placeholder='Bundle name...' />
     }
   })
 
