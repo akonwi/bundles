@@ -30,12 +30,14 @@
     return { name, links, open}
   }
 
-  let BundleStore = {
+  const BundleStore = {
     subscribers: [],
-    init() {
+    init(data) {
+      this.data = data
       ChromeStorage.onChange((changes) => {
         ChromeStorage.all().then((data) => {
-          BundleStore.subscribers.forEach(s => {
+          this.data = data
+          this.subscribers.forEach(s => {
             s.setState({ bundles: data })
           })
         })
@@ -43,10 +45,13 @@
     },
     // Returns mixin for component use
     Subscriber() {
-      let self = this
+      let store = this
       return {
+        getInitialState() {
+          return { bundles: store.data }
+        },
         componentDidMount() {
-          self.subscribers.push(this)
+          store.subscribers.push(this)
         }
       }
     },
@@ -150,9 +155,6 @@
 
   let BundleList = React.createClass({
     mixins: [BundleStore.Subscriber()],
-    getInitialState() {
-      return { bundles: this.props.bundles }
-    },
     render() {
       let bundles = this.state.bundles
       return (
@@ -241,8 +243,8 @@
   })
 
   ChromeStorage.all().then((data) => {
-    BundleStore.init()
-    React.render(<BundleList bundles={data} />, document.querySelector('.content'))
+    BundleStore.init(data)
+    React.render(<BundleList />, document.querySelector('.content'))
     React.render(<Navbar />, document.querySelector('.navbar'))
-  }).catch(error => { console.error(error) })
+  }).catch(error => { console.error("Couldn't start the app due to: " + error) })
 })()

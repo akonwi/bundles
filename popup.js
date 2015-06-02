@@ -40,10 +40,14 @@
 
   var BundleStore = {
     subscribers: [],
-    init: function init() {
+    init: function init(data) {
+      var _this = this;
+
+      this.data = data;
       ChromeStorage.onChange(function (changes) {
         ChromeStorage.all().then(function (data) {
-          BundleStore.subscribers.forEach(function (s) {
+          _this.data = data;
+          _this.subscribers.forEach(function (s) {
             s.setState({ bundles: data });
           });
         });
@@ -51,10 +55,13 @@
     },
     // Returns mixin for component use
     Subscriber: function Subscriber() {
-      var self = this;
+      var store = this;
       return {
+        getInitialState: function getInitialState() {
+          return { bundles: store.data };
+        },
         componentDidMount: function componentDidMount() {
-          self.subscribers.push(this);
+          store.subscribers.push(this);
         }
       };
     },
@@ -139,13 +146,13 @@
       return { showInput: false };
     },
     componentDidMount: function componentDidMount() {
-      var _this = this;
+      var _this2 = this;
 
       Core.on('show-new-bundle-input', function () {
-        _this.setState({ showInput: true });
+        _this2.setState({ showInput: true });
       });
       Core.on('hide-new-bundle-input', function () {
-        _this.setState({ showInput: false });
+        _this2.setState({ showInput: false });
       });
     },
     render: function render() {
@@ -181,9 +188,6 @@
     displayName: 'BundleList',
 
     mixins: [BundleStore.Subscriber()],
-    getInitialState: function getInitialState() {
-      return { bundles: this.props.bundles };
-    },
     render: function render() {
       var bundles = this.state.bundles;
       return React.createElement(
@@ -213,15 +217,15 @@
       BundleStore.updateBundle(bundle.name, b);
     },
     addLink: function addLink(e) {
-      var _this2 = this;
+      var _this3 = this;
 
       e.preventDefault();
       chrome.tabs.getSelected(null, function (_ref3) {
         var title = _ref3.title;
         var url = _ref3.url;
 
-        BundleStore.addLinkToBundle(_this2.props.bundle.name, { title: title, url: url });
-        _this2.setState({ shouldFlash: true });
+        BundleStore.addLinkToBundle(_this3.props.bundle.name, { title: title, url: url });
+        _this3.setState({ shouldFlash: true });
       });
     },
     deleteBundle: function deleteBundle(e) {
@@ -289,11 +293,11 @@
   });
 
   ChromeStorage.all().then(function (data) {
-    BundleStore.init();
-    React.render(React.createElement(BundleList, { bundles: data }), document.querySelector('.content'));
+    BundleStore.init(data);
+    React.render(React.createElement(BundleList, null), document.querySelector('.content'));
     React.render(React.createElement(Navbar, null), document.querySelector('.navbar'));
   })['catch'](function (error) {
-    console.error(error);
+    console.error('Couldn\'t start the app due to: ' + error);
   });
 })();
 //# sourceMappingURL=popup.js.map
