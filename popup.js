@@ -216,13 +216,20 @@
       });
       BundleStore.updateBundle(bundle.name, b);
     },
+    openLinks: function openLinks(e) {
+      this.props.bundle.links.forEach(function (_ref3) {
+        var url = _ref3.url;
+
+        chrome.tabs.create({ url: url });
+      });
+    },
     addLink: function addLink(e) {
       var _this3 = this;
 
       e.preventDefault();
-      chrome.tabs.getSelected(null, function (_ref3) {
-        var title = _ref3.title;
-        var url = _ref3.url;
+      chrome.tabs.getSelected(null, function (_ref4) {
+        var title = _ref4.title;
+        var url = _ref4.url;
 
         BundleStore.addLinkToBundle(_this3.props.bundle.name, { title: title, url: url });
         _this3.setState({ shouldFlash: true });
@@ -254,8 +261,33 @@
             { className: h4classes, onClick: this.onClick },
             this.props.bundle.name
           ),
-          React.createElement('img', { className: 'icon', onClick: this.addLink, src: '/assets/plus.svg' }),
-          React.createElement('img', { className: 'icon', onClick: this.deleteBundle, src: '/assets/cross.svg' })
+          React.createElement(
+            'a',
+            { href: '#', className: 'btn', title: 'Open all' },
+            React.createElement(
+              'i',
+              { className: 'material-icons', onClick: this.openLinks },
+              'launch'
+            )
+          ),
+          React.createElement(
+            'a',
+            { href: '#', className: 'btn', title: 'Add current page' },
+            React.createElement(
+              'i',
+              { className: 'material-icons', onClick: this.addLink },
+              'add'
+            )
+          ),
+          React.createElement(
+            'a',
+            { href: '#', className: 'btn', title: 'Delete' },
+            React.createElement(
+              'i',
+              { className: 'material-icons', onClick: this.deleteBundle },
+              'delete'
+            )
+          )
         ),
         React.createElement(
           'ul',

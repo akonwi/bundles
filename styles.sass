@@ -1,6 +1,29 @@
 /* Colors */
 $green: #8CD19D
 
+@font-face
+  font-family: 'Material Icons'
+  font-style: normal
+  font-weight: 400
+  src: url("chrome-extension://__MSG_@@extension_id__/assets/fonts/MaterialIcons-Regular.woff") format("woff")
+.material-icons
+  font-family: 'Material Icons'
+  font-weight: normal
+  font-style: normal
+  font-size: 1rem
+  display: inline-block
+  width: 1em
+  height: 1em
+  line-height: 1
+  text-transform: none
+  letter-spacing: normal
+  word-wrap: normal
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility
+
 /* Base */
 *,
 *:after,
@@ -81,12 +104,16 @@ a
 .bundle
   border-bottom: .1rem solid grey
   padding: .4rem
-  .title-bar *
-    display: inline-block
-    margin-right: .5rem
-    line-height: normal
-  .title-bar h4:hover
-    cursor: pointer
+  .title-bar
+    *
+      vertical-align: middle
+      display: inline-block
+    a
+      margin: 0 .2rem
+    h4
+      margin: 0 .2rem
+      &:hover
+        cursor: pointer
 
 .triangle
   content: ""

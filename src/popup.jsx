@@ -183,6 +183,11 @@
       })
       BundleStore.updateBundle(bundle.name, b)
     },
+    openLinks(e) {
+      this.props.bundle.links.forEach(({url}) => {
+        chrome.tabs.create({ url: url })
+      })
+    },
     addLink(e) {
       e.preventDefault()
       chrome.tabs.getSelected(null, ({title, url}) => {
@@ -209,8 +214,15 @@
           <div className='title-bar'>
             <div className={triangleClasses}></div>
             <h4 className={h4classes} onClick={this.onClick}>{ this.props.bundle.name }</h4>
-            <img className='icon' onClick={this.addLink} src="/assets/plus.svg"></img>
-            <img className='icon' onClick={this.deleteBundle} src="/assets/cross.svg"></img>
+            <a href='#' className='btn' title='Open all'>
+              <i className='material-icons' onClick={this.openLinks}>launch</i>
+            </a>
+            <a href='#' className='btn' title='Add current page'>
+              <i className='material-icons' onClick={this.addLink}>add</i>
+            </a>
+            <a href='#' className='btn' title='Delete'>
+              <i className='material-icons' onClick={this.deleteBundle}>delete</i>
+            </a>
           </div>
           <ul className={linksClasses} ref='links'>
             {
