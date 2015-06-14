@@ -214,15 +214,17 @@
           <div className='title-bar'>
             <div className={triangleClasses}></div>
             <h4 className={h4classes} onClick={this.onClick}>{ this.props.bundle.name }</h4>
-            <a href='#' className='btn' title='Open all'>
-              <i className='material-icons' onClick={this.openLinks}>launch</i>
-            </a>
-            <a href='#' className='btn' title='Add current page'>
-              <i className='material-icons' onClick={this.addLink}>add</i>
-            </a>
-            <a href='#' className='btn' title='Delete'>
-              <i className='material-icons' onClick={this.deleteBundle}>delete</i>
-            </a>
+            <div className='controls'>
+              <a href='#' className='btn' title='Open all'>
+                <i className='material-icons' onClick={this.openLinks}>launch</i>
+              </a>
+              <a href='#' className='btn' title='Add current page'>
+                <i className='material-icons' onClick={this.addLink}>add</i>
+              </a>
+              <a href='#' className='btn' title='Delete'>
+                <i className='material-icons' onClick={this.deleteBundle}>delete</i>
+              </a>
+            </div>
           </div>
           <ul className={linksClasses} ref='links'>
             {

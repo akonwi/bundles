@@ -262,30 +262,34 @@
             this.props.bundle.name
           ),
           React.createElement(
-            'a',
-            { href: '#', className: 'btn', title: 'Open all' },
+            'div',
+            { className: 'controls' },
             React.createElement(
-              'i',
-              { className: 'material-icons', onClick: this.openLinks },
-              'launch'
-            )
-          ),
-          React.createElement(
-            'a',
-            { href: '#', className: 'btn', title: 'Add current page' },
+              'a',
+              { href: '#', className: 'btn', title: 'Open all' },
+              React.createElement(
+                'i',
+                { className: 'material-icons', onClick: this.openLinks },
+                'launch'
+              )
+            ),
             React.createElement(
-              'i',
-              { className: 'material-icons', onClick: this.addLink },
-              'add'
-            )
-          ),
-          React.createElement(
-            'a',
-            { href: '#', className: 'btn', title: 'Delete' },
+              'a',
+              { href: '#', className: 'btn', title: 'Add current page' },
+              React.createElement(
+                'i',
+                { className: 'material-icons', onClick: this.addLink },
+                'add'
+              )
+            ),
             React.createElement(
-              'i',
-              { className: 'material-icons', onClick: this.deleteBundle },
-              'delete'
+              'a',
+              { href: '#', className: 'btn', title: 'Delete' },
+              React.createElement(
+                'i',
+                { className: 'material-icons', onClick: this.deleteBundle },
+                'delete'
+              )
             )
           )
         ),
