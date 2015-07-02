@@ -24,7 +24,7 @@
     * Bundles consist of 'name', 'open', and 'links' attributes.
     * @param attributes {Object}
     */
-  let Bundle = ({name, open=false, links=[]}) => {
+  const Bundle = ({name, open=false, links=[]}) => {
     if (name === undefined)
       throw new Error("Cannot create a bundle without a name.")
     return { name, links, open}
