@@ -1,3 +1,5 @@
+import * as Bundle from './bundle'
+
 (() => {
   const cx = React.addons.classSet
   let Core = {
@@ -17,17 +19,6 @@
           fn.call(ctx, data)
         })
     }
-  }
-
-  /**
-    * Not a class but factory function to create bundle objects.
-    * Bundles consist of 'name', 'open', and 'links' attributes.
-    * @param attributes {Object}
-    */
-  const Bundle = ({name, open=false, links=[]}) => {
-    if (name === undefined)
-      throw new Error("Cannot create a bundle without a name.")
-    return { name, links, open}
   }
 
   const BundleStore = {
@@ -56,7 +47,7 @@
       }
     },
     addBundle(name) {
-      let b = Bundle({name})
+      let b = Bundle.create({name})
       ChromeStorage.set(name, b)
       .catch((err) => { console.error(err) })
     },
@@ -97,6 +88,9 @@
   let CreateBundleBtn = React.createClass({
     getInitialState() {
       return { showCancel: false }
+    },
+    componentDidMount: function() {
+      Core.on('hide-new-bundle-input', () => this.setState({ showCancel: false }))
     },
     onClick(e) {
       e.preventDefault()
@@ -176,7 +170,7 @@
     onClick(e) {
       e.preventDefault()
       const bundle = this.props.bundle
-      const b = Bundle({
+      const b = Bundle.create({
         name: bundle.name,
         open: !bundle.open,
         links: bundle.links

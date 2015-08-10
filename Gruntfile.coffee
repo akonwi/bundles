@@ -7,21 +7,24 @@ module.exports = (grunt) ->
           update: true
         files:
           'styles.css': 'styles.sass'
-    babel:
+    browserify:
       options:
-        sourceMap: true
+        transform: ['babelify']
       dist:
         files:
-          'popup.js': 'src/popup.jsx'
+          'dist/app.js': ['src/popup.jsx', 'src/bundle.js']
     watch:
       styles:
         files: 'styles.sass'
         tasks: 'sass'
       jsx:
         files: 'src/popup.jsx'
-        tasks: 'babel'
+        tasks: 'browserify'
+      js:
+        files: 'src/*.js'
+        tasks: 'browserify'
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
-  grunt.loadNpmTasks 'grunt-babel'
+  grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.registerTask 'default', ['sass', 'babel', 'watch']
+  grunt.registerTask 'default', ['sass', 'browserify', 'watch']

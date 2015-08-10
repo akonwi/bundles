@@ -1,5 +1,5 @@
 node_modules
 .sass-cache
 .module-cache/
-popup.js
+./*.js
 *.map

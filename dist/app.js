@@ -1,11 +1,54 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.create = create;
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+var Bundle = {
+  name: undefined,
+  links: [],
+  open: false
+};
+
+function assign(target) {
+  for (var _len = arguments.length, sources = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    sources[_key - 1] = arguments[_key];
+  }
+
+  var obj = {};
+  sources = [target].concat(_toConsumableArray(sources));
+  sources.forEach(function (source) {
+    Object.keys(source).forEach(function (key) {
+      return obj[key] = source[key];
+    });
+  });
+  return obj;
+}
+
+function create(attrs) {
+  if (attrs.name === undefined) throw new Error("Cannot create a bundle without a name.");
+  return assign(Bundle, attrs);
+}
+
+},{}],2:[function(require,module,exports){
 'use strict';
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+var _bundle = require('./bundle');
+
+var Bundle = _interopRequireWildcard(_bundle);
 
 (function () {
   var cx = React.addons.classSet;
   var Core = {
     actions: {},
     on: function on(event, fn) {
-      var ctx = arguments[2] === undefined ? this : arguments[2];
+      var ctx = arguments.length <= 2 || arguments[2] === undefined ? this : arguments[2];
 
       var todos = this.actions[event];
       var todo = { fn: fn, ctx: ctx };
@@ -20,22 +63,6 @@
         fn.call(ctx, data);
       });
     }
-  };
-
-  /**
-    * Not a class but factory function to create bundle objects.
-    * Bundles consist of 'name', 'open', and 'links' attributes.
-    * @param attributes {Object}
-    */
-  var Bundle = function Bundle(_ref2) {
-    var name = _ref2.name;
-    var _ref2$open = _ref2.open;
-    var open = _ref2$open === undefined ? false : _ref2$open;
-    var _ref2$links = _ref2.links;
-    var links = _ref2$links === undefined ? [] : _ref2$links;
-
-    if (name === undefined) throw new Error('Cannot create a bundle without a name.');
-    return { name: name, links: links, open: open };
   };
 
   var BundleStore = {
@@ -66,7 +93,7 @@
       };
     },
     addBundle: function addBundle(name) {
-      var b = Bundle({ name: name });
+      var b = Bundle.create({ name: name });
       ChromeStorage.set(name, b)['catch'](function (err) {
         console.error(err);
       });
@@ -119,6 +146,13 @@
     getInitialState: function getInitialState() {
       return { showCancel: false };
     },
+    componentDidMount: function componentDidMount() {
+      var _this2 = this;
+
+      Core.on('hide-new-bundle-input', function () {
+        return _this2.setState({ showCancel: false });
+      });
+    },
     onClick: function onClick(e) {
       e.preventDefault();
       if (!this.state.showCancel) {
@@ -146,13 +180,13 @@
       return { showInput: false };
     },
     componentDidMount: function componentDidMount() {
-      var _this2 = this;
+      var _this3 = this;
 
       Core.on('show-new-bundle-input', function () {
-        _this2.setState({ showInput: true });
+        _this3.setState({ showInput: true });
       });
       Core.on('hide-new-bundle-input', function () {
-        _this2.setState({ showInput: false });
+        _this3.setState({ showInput: false });
       });
     },
     render: function render() {
@@ -209,7 +243,7 @@
     onClick: function onClick(e) {
       e.preventDefault();
       var bundle = this.props.bundle;
-      var b = Bundle({
+      var b = Bundle.create({
         name: bundle.name,
         open: !bundle.open,
         links: bundle.links
@@ -217,22 +251,22 @@
       BundleStore.updateBundle(bundle.name, b);
     },
     openLinks: function openLinks(e) {
-      this.props.bundle.links.forEach(function (_ref3) {
-        var url = _ref3.url;
+      this.props.bundle.links.forEach(function (_ref2) {
+        var url = _ref2.url;
 
         chrome.tabs.create({ url: url });
       });
     },
     addLink: function addLink(e) {
-      var _this3 = this;
+      var _this4 = this;
 
       e.preventDefault();
-      chrome.tabs.getSelected(null, function (_ref4) {
-        var title = _ref4.title;
-        var url = _ref4.url;
+      chrome.tabs.getSelected(null, function (_ref3) {
+        var title = _ref3.title;
+        var url = _ref3.url;
 
-        BundleStore.addLinkToBundle(_this3.props.bundle.name, { title: title, url: url });
-        _this3.setState({ shouldFlash: true });
+        BundleStore.addLinkToBundle(_this4.props.bundle.name, { title: title, url: url });
+        _this4.setState({ shouldFlash: true });
       });
     },
     deleteBundle: function deleteBundle(e) {
@@ -333,7 +367,8 @@
     React.render(React.createElement(BundleList, null), document.querySelector('.content'));
     React.render(React.createElement(Navbar, null), document.querySelector('.navbar'));
   })['catch'](function (error) {
-    console.error('Couldn\'t start the app due to: ' + error);
+    console.error("Couldn't start the app due to: " + error);
   });
 })();
-//# sourceMappingURL=popup.js.map
+
+},{"./bundle":1}]},{},[2,1]);
