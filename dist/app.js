@@ -4,8 +4,6 @@
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-exports.init = init;
-exports.Subscriber = Subscriber;
 exports.addBundle = addBundle;
 exports.addLinkToBundle = addLinkToBundle;
 exports.updateBundle = updateBundle;
@@ -16,34 +14,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var _bundle = require('./bundle');
 
 var Bundle = _interopRequireWildcard(_bundle);
-
-var subscribers = [];
-var bundles = undefined;
-
-function init(data) {
-  bundles = data;
-  ChromeStorage.onChange(function (changes) {
-    ChromeStorage.all().then(function (data) {
-      bundles = data;
-      subscribers.forEach(function (s) {
-        s.setState({ bundles: bundles });
-      });
-    });
-  });
-}
-
-// Returns mixin for component use
-
-function Subscriber() {
-  return {
-    getInitialState: function getInitialState() {
-      return { bundles: bundles };
-    },
-    componentDidMount: function componentDidMount() {
-      subscribers.push(this);
-    }
-  };
-}
 
 function addBundle(name) {
   var b = Bundle.create({ name: name });
@@ -247,7 +217,18 @@ var BundleStore = _interopRequireWildcard(_bundleStore);
   var BundleList = React.createClass({
     displayName: 'BundleList',
 
-    mixins: [BundleStore.Subscriber()],
+    getInitialState: function getInitialState() {
+      return { bundles: this.props.bundles };
+    },
+    componentDidMount: function componentDidMount() {
+      var _this3 = this;
+
+      ChromeStorage.onChange(function (changes) {
+        ChromeStorage.all().then(function (bundles) {
+          return _this3.setState({ bundles: bundles });
+        });
+      });
+    },
     render: function render() {
       var bundles = this.state.bundles;
       return React.createElement(
@@ -284,15 +265,15 @@ var BundleStore = _interopRequireWildcard(_bundleStore);
       });
     },
     addLink: function addLink(e) {
-      var _this3 = this;
+      var _this4 = this;
 
       e.preventDefault();
       chrome.tabs.getSelected(null, function (_ref3) {
         var title = _ref3.title;
         var url = _ref3.url;
 
-        BundleStore.addLinkToBundle(_this3.props.bundle.name, { title: title, url: url });
-        _this3.setState({ shouldFlash: true });
+        BundleStore.addLinkToBundle(_this4.props.bundle.name, { title: title, url: url });
+        _this4.setState({ shouldFlash: true });
       });
     },
     deleteBundle: function deleteBundle(e) {
@@ -389,8 +370,7 @@ var BundleStore = _interopRequireWildcard(_bundleStore);
   });
 
   ChromeStorage.all().then(function (data) {
-    BundleStore.init(data);
-    React.render(React.createElement(BundleList, null), document.querySelector('.content'));
+    React.render(React.createElement(BundleList, { bundles: data }), document.querySelector('.content'));
     React.render(React.createElement(Navbar, null), document.querySelector('.navbar'));
   })['catch'](function (error) {
     console.error("Couldn't start the app due to: " + error);

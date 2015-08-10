@@ -101,7 +101,14 @@ import * as BundleStore from './bundle-store'
   })
 
   let BundleList = React.createClass({
-    mixins: [BundleStore.Subscriber()],
+    getInitialState() {
+      return { bundles: this.props.bundles }
+    },
+    componentDidMount() {
+      ChromeStorage.onChange(changes => {
+        ChromeStorage.all().then(bundles => this.setState({ bundles }))
+      })
+    },
     render() {
       let bundles = this.state.bundles
       return (
@@ -204,8 +211,7 @@ import * as BundleStore from './bundle-store'
   })
 
   ChromeStorage.all().then((data) => {
-    BundleStore.init(data)
-    React.render(<BundleList />, document.querySelector('.content'))
+    React.render(<BundleList bundles={data}/>, document.querySelector('.content'))
     React.render(<Navbar />, document.querySelector('.navbar'))
   }).catch(error => { console.error("Couldn't start the app due to: " + error) })
 })()
