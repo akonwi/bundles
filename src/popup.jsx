@@ -129,8 +129,8 @@ import * as BundleStore from './bundle-store'
     },
     onClick(e) {
       e.preventDefault()
-      const bundle = this.props.bundle
-      const b = Bundle.create({
+      let bundle = this.props.bundle
+      let b = Bundle.create({
         name: bundle.name,
         open: !bundle.open,
         links: bundle.links
@@ -139,7 +139,7 @@ import * as BundleStore from './bundle-store'
     },
     openLinks(e) {
       this.props.bundle.links.forEach(({url}) => {
-        chrome.tabs.create({ url: url })
+        chrome.tabs.create({ url })
       })
     },
     addLink(e) {
