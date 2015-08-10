@@ -1,4 +1,5 @@
 import * as Bundle from './bundle'
+import * as BundleStore from './bundle-store'
 
 (() => {
   const cx = React.addons.classSet
@@ -18,54 +19,6 @@ import * as Bundle from './bundle'
         todos.forEach(({fn, ctx}) => {
           fn.call(ctx, data)
         })
-    }
-  }
-
-  const BundleStore = {
-    subscribers: [],
-    init(data) {
-      this.data = data
-      ChromeStorage.onChange((changes) => {
-        ChromeStorage.all().then((data) => {
-          this.data = data
-          this.subscribers.forEach(s => {
-            s.setState({ bundles: data })
-          })
-        })
-      })
-    },
-    // Returns mixin for component use
-    Subscriber() {
-      let store = this
-      return {
-        getInitialState() {
-          return { bundles: store.data }
-        },
-        componentDidMount() {
-          store.subscribers.push(this)
-        }
-      }
-    },
-    addBundle(name) {
-      let b = Bundle.create({name})
-      ChromeStorage.set(name, b)
-      .catch((err) => { console.error(err) })
-    },
-    addLinkToBundle(name, link) {
-      ChromeStorage.get(name)
-      .then(bundle => {
-        bundle.links.push(link)
-        return ChromeStorage.set(name, bundle)
-      })
-      .catch((err) => { console.error(err) })
-    },
-    updateBundle(name, bundle) {
-      ChromeStorage.set(name, bundle)
-      .catch(err => { console.error(err) })
-    },
-    removeBundle(name) {
-      ChromeStorage.remove(name)
-      .catch((err) => { console.error(err) })
     }
   }
 

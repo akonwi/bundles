@@ -1,4 +1,79 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+exports.init = init;
+exports.Subscriber = Subscriber;
+exports.addBundle = addBundle;
+exports.addLinkToBundle = addLinkToBundle;
+exports.updateBundle = updateBundle;
+exports.removeBundle = removeBundle;
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+var _bundle = require('./bundle');
+
+var Bundle = _interopRequireWildcard(_bundle);
+
+var subscribers = [];
+var bundles = undefined;
+
+function init(data) {
+  bundles = data;
+  ChromeStorage.onChange(function (changes) {
+    ChromeStorage.all().then(function (data) {
+      bundles = data;
+      subscribers.forEach(function (s) {
+        s.setState({ bundles: bundles });
+      });
+    });
+  });
+}
+
+// Returns mixin for component use
+
+function Subscriber() {
+  return {
+    getInitialState: function getInitialState() {
+      return { bundles: bundles };
+    },
+    componentDidMount: function componentDidMount() {
+      subscribers.push(this);
+    }
+  };
+}
+
+function addBundle(name) {
+  var b = Bundle.create({ name: name });
+  ChromeStorage.set(name, b)['catch'](function (err) {
+    console.error(err);
+  });
+}
+
+function addLinkToBundle(name, link) {
+  ChromeStorage.get(name).then(function (bundle) {
+    bundle.links.push(link);
+    return ChromeStorage.set(name, bundle);
+  })['catch'](function (err) {
+    console.error(err);
+  });
+}
+
+function updateBundle(name, bundle) {
+  ChromeStorage.set(name, bundle)['catch'](function (err) {
+    console.error(err);
+  });
+}
+
+function removeBundle(name) {
+  ChromeStorage.remove(name)['catch'](function (err) {
+    console.error(err);
+  });
+}
+
+},{"./bundle":2}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -34,7 +109,7 @@ function create(attrs) {
   return assign(Bundle, attrs);
 }
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
@@ -42,6 +117,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var _bundle = require('./bundle');
 
 var Bundle = _interopRequireWildcard(_bundle);
+
+var _bundleStore = require('./bundle-store');
+
+var BundleStore = _interopRequireWildcard(_bundleStore);
 
 (function () {
   var cx = React.addons.classSet;
@@ -61,59 +140,6 @@ var Bundle = _interopRequireWildcard(_bundle);
         var ctx = _ref.ctx;
 
         fn.call(ctx, data);
-      });
-    }
-  };
-
-  var BundleStore = {
-    subscribers: [],
-    init: function init(data) {
-      var _this = this;
-
-      this.data = data;
-      ChromeStorage.onChange(function (changes) {
-        ChromeStorage.all().then(function (data) {
-          _this.data = data;
-          _this.subscribers.forEach(function (s) {
-            s.setState({ bundles: data });
-          });
-        });
-      });
-    },
-    // Returns mixin for component use
-    Subscriber: function Subscriber() {
-      var store = this;
-      return {
-        getInitialState: function getInitialState() {
-          return { bundles: store.data };
-        },
-        componentDidMount: function componentDidMount() {
-          store.subscribers.push(this);
-        }
-      };
-    },
-    addBundle: function addBundle(name) {
-      var b = Bundle.create({ name: name });
-      ChromeStorage.set(name, b)['catch'](function (err) {
-        console.error(err);
-      });
-    },
-    addLinkToBundle: function addLinkToBundle(name, link) {
-      ChromeStorage.get(name).then(function (bundle) {
-        bundle.links.push(link);
-        return ChromeStorage.set(name, bundle);
-      })['catch'](function (err) {
-        console.error(err);
-      });
-    },
-    updateBundle: function updateBundle(name, bundle) {
-      ChromeStorage.set(name, bundle)['catch'](function (err) {
-        console.error(err);
-      });
-    },
-    removeBundle: function removeBundle(name) {
-      ChromeStorage.remove(name)['catch'](function (err) {
-        console.error(err);
       });
     }
   };
@@ -147,10 +173,10 @@ var Bundle = _interopRequireWildcard(_bundle);
       return { showCancel: false };
     },
     componentDidMount: function componentDidMount() {
-      var _this2 = this;
+      var _this = this;
 
       Core.on('hide-new-bundle-input', function () {
-        return _this2.setState({ showCancel: false });
+        return _this.setState({ showCancel: false });
       });
     },
     onClick: function onClick(e) {
@@ -180,13 +206,13 @@ var Bundle = _interopRequireWildcard(_bundle);
       return { showInput: false };
     },
     componentDidMount: function componentDidMount() {
-      var _this3 = this;
+      var _this2 = this;
 
       Core.on('show-new-bundle-input', function () {
-        _this3.setState({ showInput: true });
+        _this2.setState({ showInput: true });
       });
       Core.on('hide-new-bundle-input', function () {
-        _this3.setState({ showInput: false });
+        _this2.setState({ showInput: false });
       });
     },
     render: function render() {
@@ -258,15 +284,15 @@ var Bundle = _interopRequireWildcard(_bundle);
       });
     },
     addLink: function addLink(e) {
-      var _this4 = this;
+      var _this3 = this;
 
       e.preventDefault();
       chrome.tabs.getSelected(null, function (_ref3) {
         var title = _ref3.title;
         var url = _ref3.url;
 
-        BundleStore.addLinkToBundle(_this4.props.bundle.name, { title: title, url: url });
-        _this4.setState({ shouldFlash: true });
+        BundleStore.addLinkToBundle(_this3.props.bundle.name, { title: title, url: url });
+        _this3.setState({ shouldFlash: true });
       });
     },
     deleteBundle: function deleteBundle(e) {
@@ -371,4 +397,4 @@ var Bundle = _interopRequireWildcard(_bundle);
   });
 })();
 
-},{"./bundle":1}]},{},[2,1]);
+},{"./bundle":2,"./bundle-store":1}]},{},[3,2]);
