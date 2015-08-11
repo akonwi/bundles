@@ -9,15 +9,10 @@ exports.addLinkToBundle = addLinkToBundle;
 exports.updateBundle = updateBundle;
 exports.removeBundle = removeBundle;
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
 var _bundle = require('./bundle');
 
-var Bundle = _interopRequireWildcard(_bundle);
-
 function addBundle(name) {
-  var b = Bundle.create({ name: name });
-  ChromeStorage.set(name, b)['catch'](function (err) {
+  ChromeStorage.set(name, (0, _bundle.create)({ name: name }))['catch'](function (err) {
     console.error(err);
   });
 }
@@ -25,7 +20,7 @@ function addBundle(name) {
 function addLinkToBundle(name, link) {
   ChromeStorage.get(name).then(function (bundle) {
     bundle.links.push(link);
-    return ChromeStorage.set(name, bundle);
+    ChromeStorage.set(name, bundle);
   })['catch'](function (err) {
     console.error(err);
   });
