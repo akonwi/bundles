@@ -1,5 +1,116 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var storage = chrome.storage.sync;
+var runtime = chrome.runtime;
+
+var ChromeStorage = {};
+Object.defineProperties(ChromeStorage, {
+  _VERSION: {
+    value: '0.0.2'
+  },
+
+  /**
+   * @param callback to run when data changes
+   *   function(changes) {}
+   */
+  onChange: {
+    value: function value(listener) {
+      chrome.storage.onChanged.addListener(listener);
+    }
+  },
+
+  /**
+   * @param callback to remove from data changes
+   */
+  unsubscribe: {
+    value: function value(listener) {
+      chrome.storage.onChanged.removeListener(listener);
+    }
+  },
+
+  /**
+   * Save something
+   *
+   * @param key String key name
+   * @param val Any object to save with key
+   */
+  set: {
+    value: function value(key, val) {
+      var toSave = _defineProperty({}, key, val);
+      return new Promise(function (resolve, reject) {
+        storage.set(toSave, function () {
+          if (runtime.lastError) return reject(runtime.lastError);
+          resolve(val);
+        });
+      });
+    }
+  },
+
+  /**
+   * Retrieve data
+   *
+   * @param key String of key or Array of keys to retrieve
+   *   If given one key, it resolves to just the value
+   *   If given an array of keys, it resolves to an object with key/value pairs
+   */
+  get: {
+    value: function value(key) {
+      return new Promise(function (resolve, reject) {
+        storage.get(key, function (results) {
+          if (key.trim !== undefined) results = results[key];
+          if (runtime.lastError) return reject(runtime.lastError);
+          resolve(results);
+        });
+      });
+    }
+  },
+
+  /**
+   * Retrieve total collection
+   *
+   * resolves to an object with key/value pairs
+   */
+  all: {
+    value: function value() {
+      return new Promise(function (resolve, reject) {
+        storage.get(null, function (items) {
+          if (runtime.lastError) return reject(runtime.lastError);
+          resolve(items);
+        });
+      });
+    }
+  },
+
+  /**
+   * Delete data at a key
+   *
+   * @param key String of key
+   */
+  remove: {
+    value: function value(key) {
+      if (key === undefined) throw new Error("No keys given to remove");
+      return new Promise(function (resolve, reject) {
+        storage.remove(key, function () {
+          if (runtime.lastError) return reject(runtime.lastError);
+          resolve();
+        });
+      });
+    }
+  }
+});
+Object.preventExtensions(ChromeStorage);
+
+exports['default'] = ChromeStorage;
+module.exports = exports['default'];
+
+},{}],2:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
@@ -9,36 +120,42 @@ exports.addLinkToBundle = addLinkToBundle;
 exports.updateBundle = updateBundle;
 exports.removeBundle = removeBundle;
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _libChromeStorage = require('../lib/chrome-storage');
+
+var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
+
 var _bundle = require('./bundle');
 
 function addBundle(name) {
-  ChromeStorage.set(name, (0, _bundle.create)({ name: name }))['catch'](function (err) {
+  _libChromeStorage2['default'].set(name, (0, _bundle.create)({ name: name }))['catch'](function (err) {
     console.error(err);
   });
 }
 
 function addLinkToBundle(name, link) {
-  ChromeStorage.get(name).then(function (bundle) {
+  _libChromeStorage2['default'].get(name).then(function (bundle) {
     bundle.links.push(link);
-    ChromeStorage.set(name, bundle);
+    _libChromeStorage2['default'].set(name, bundle);
   })['catch'](function (err) {
     console.error(err);
   });
 }
 
 function updateBundle(name, bundle) {
-  ChromeStorage.set(name, bundle)['catch'](function (err) {
+  _libChromeStorage2['default'].set(name, bundle)['catch'](function (err) {
     console.error(err);
   });
 }
 
 function removeBundle(name) {
-  ChromeStorage.remove(name)['catch'](function (err) {
+  _libChromeStorage2['default'].remove(name)['catch'](function (err) {
     console.error(err);
   });
 }
 
-},{"./bundle":2}],2:[function(require,module,exports){
+},{"../lib/chrome-storage":1,"./bundle":3}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -74,10 +191,16 @@ function create(attrs) {
   return assign(Bundle, attrs);
 }
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _libChromeStorage = require('../lib/chrome-storage');
+
+var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
 
 var _bundle = require('./bundle');
 
@@ -218,8 +341,8 @@ var BundleStore = _interopRequireWildcard(_bundleStore);
     componentDidMount: function componentDidMount() {
       var _this3 = this;
 
-      ChromeStorage.onChange(function (changes) {
-        ChromeStorage.all().then(function (bundles) {
+      _libChromeStorage2['default'].onChange(function (changes) {
+        _libChromeStorage2['default'].all().then(function (bundles) {
           return _this3.setState({ bundles: bundles });
         });
       });
@@ -364,7 +487,7 @@ var BundleStore = _interopRequireWildcard(_bundleStore);
     }
   });
 
-  ChromeStorage.all().then(function (data) {
+  _libChromeStorage2['default'].all().then(function (data) {
     React.render(React.createElement(BundleList, { bundles: data }), document.querySelector('.content'));
     React.render(React.createElement(Navbar, null), document.querySelector('.navbar'));
   })['catch'](function (error) {
@@ -372,4 +495,4 @@ var BundleStore = _interopRequireWildcard(_bundleStore);
   });
 })();
 
-},{"./bundle":2,"./bundle-store":1}]},{},[3,2]);
+},{"../lib/chrome-storage":1,"./bundle":3,"./bundle-store":2}]},{},[1,4,3,2]);

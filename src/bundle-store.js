@@ -1,3 +1,4 @@
+import ChromeStorage from '../lib/chrome-storage'
 import {create} from './bundle'
 
 export function addBundle(name) {

@@ -12,7 +12,8 @@ module.exports = (grunt) ->
         transform: ['babelify']
       dist:
         files:
-          'dist/app.js': ['src/popup.jsx', 'src/bundle.js', 'src/bundle-store']
+          'dist/app.js': ['lib/chrome-storage.js', 'src/popup.jsx', 'src/bundle.js', 'src/bundle-store.js']
+          'dist/specs.js': ['spec/*.js']
     watch:
       styles:
         files: 'styles.sass'
@@ -21,7 +22,7 @@ module.exports = (grunt) ->
         files: 'src/popup.jsx'
         tasks: 'browserify'
       js:
-        files: 'src/*.js'
+        files: ['src/*.js']
         tasks: 'browserify'
 
   grunt.loadNpmTasks 'grunt-contrib-sass'

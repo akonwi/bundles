@@ -1,3 +1,4 @@
+import ChromeStorage from '../lib/chrome-storage'
 import * as Bundle from './bundle'
 import * as BundleStore from './bundle-store'
 
