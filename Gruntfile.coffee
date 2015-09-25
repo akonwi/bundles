@@ -22,7 +22,7 @@ module.exports = (grunt) ->
         files: 'src/popup.jsx'
         tasks: 'browserify'
       js:
-        files: ['src/*.js']
+        files: ['src/**/**.js']
         tasks: 'browserify'
 
   grunt.loadNpmTasks 'grunt-contrib-sass'

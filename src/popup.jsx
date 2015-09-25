@@ -1,6 +1,7 @@
 import ChromeStorage from '../lib/chrome-storage'
 import * as Bundle from './bundle'
 import * as BundleStore from './bundle-store'
+import CreateBundleBtn from './components/create-bundle-btn.jsx'
 
 (() => {
   const cx = React.addons.classSet
@@ -26,42 +27,19 @@ import * as BundleStore from './bundle-store'
   let Navbar = function() {
     return {
       render() {
+        let CreateBtn = CreateBundleBtn(Core)
         return (
           <div>
             <div className='nav-block small left'></div>
             <div className='nav-block big'>
               <LogoInput />
             </div>
-            <div className='nav-block small right'><CreateBundleBtn /></div>
+            <div className='nav-block small right'><CreateBtn /></div>
           </div>
         )
       }
     }
   }
-
-  let CreateBundleBtn = React.createClass({
-    getInitialState() {
-      return { showCancel: false }
-    },
-    componentDidMount: function() {
-      Core.on('hide-new-bundle-input', () => this.setState({ showCancel: false }))
-    },
-    onClick(e) {
-      e.preventDefault()
-      if (!this.state.showCancel) {
-        Core.trigger('show-new-bundle-input')
-        this.setState({ showCancel: true })
-      }
-      else {
-        Core.trigger('hide-new-bundle-input')
-        this.setState({ showCancel: false })
-      }
-    },
-    render() {
-      let text = this.state.showCancel ? 'Cancel' : 'New'
-      return <a className='nav-btn' href='#' onClick={this.onClick}>{text}</a>
-    }
-  })
 
   let LogoInput = React.createClass({
     getInitialState() {
