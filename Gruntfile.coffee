@@ -19,7 +19,7 @@ module.exports = (grunt) ->
         files: 'styles.sass'
         tasks: 'sass'
       jsx:
-        files: 'src/popup.jsx'
+        files: 'src/**/**.jsx'
         tasks: 'browserify'
       js:
         files: ['src/**/**.js']

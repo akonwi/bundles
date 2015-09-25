@@ -1,7 +1,8 @@
 import ChromeStorage from '../lib/chrome-storage'
 import * as Bundle from './bundle'
 import * as BundleStore from './bundle-store'
-import CreateBundleBtn from './components/create-bundle-btn.jsx'
+import CreateBundleBtnFactory from './components/create-bundle-btn.jsx'
+import LogoInputFactory from './components/logo-input.jsx'
 
 (() => {
   const cx = React.addons.classSet
@@ -27,57 +28,20 @@ import CreateBundleBtn from './components/create-bundle-btn.jsx'
   let Navbar = function() {
     return {
       render() {
-        let CreateBtn = CreateBundleBtn(Core)
+        let CreateBundleBtn = CreateBundleBtnFactory(Core)
+        let LogoInput = LogoInputFactory(Core)
         return (
           <div>
             <div className='nav-block small left'></div>
             <div className='nav-block big'>
               <LogoInput />
             </div>
-            <div className='nav-block small right'><CreateBtn /></div>
+            <div className='nav-block small right'><CreateBundleBtn /></div>
           </div>
         )
       }
     }
   }
-
-  let LogoInput = React.createClass({
-    getInitialState() {
-      return { showInput: false }
-    },
-    componentDidMount() {
-      Core.on('show-new-bundle-input', () => {
-        this.setState({ showInput: true })
-      })
-      Core.on('hide-new-bundle-input', () => {
-        this.setState({ showInput: false })
-      })
-    },
-    render() {
-      if (this.state.showInput)
-        return <NewBundleInput />
-      else
-        return <h2 className='logo'>Bundles</h2>
-    }
-  })
-
-  let NewBundleInput = React.createClass({
-    onKeyUp(e) {
-      if (e.keyCode === 13) {
-        let name = e.target.value
-        if (name.trim().length > 0) {
-          BundleStore.addBundle(name)
-          Core.trigger('hide-new-bundle-input')
-        }
-      }
-    },
-    componentDidMount() {
-      this.getDOMNode().focus()
-    },
-    render() {
-      return <input className='new-bundle-input' onKeyUp={this.onKeyUp} type='text' placeholder='Bundle name...' />
-    }
-  })
 
   let BundleList = React.createClass({
     getInitialState() {
