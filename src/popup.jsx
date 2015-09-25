@@ -1,8 +1,7 @@
 import ChromeStorage from '../lib/chrome-storage'
 import * as Bundle from './bundle'
 import * as BundleStore from './bundle-store'
-import CreateBundleBtnFactory from './components/create-bundle-btn.jsx'
-import LogoInputFactory from './components/logo-input.jsx'
+import NavbarFactory from './components/navbar.jsx'
 
 (() => {
   const cx = React.addons.classSet
@@ -22,24 +21,6 @@ import LogoInputFactory from './components/logo-input.jsx'
         todos.forEach(({fn, ctx}) => {
           fn.call(ctx, data)
         })
-    }
-  }
-
-  let Navbar = function() {
-    return {
-      render() {
-        let CreateBundleBtn = CreateBundleBtnFactory(Core)
-        let LogoInput = LogoInputFactory(Core)
-        return (
-          <div>
-            <div className='nav-block small left'></div>
-            <div className='nav-block big'>
-              <LogoInput />
-            </div>
-            <div className='nav-block small right'><CreateBundleBtn /></div>
-          </div>
-        )
-      }
     }
   }
 
@@ -154,6 +135,7 @@ import LogoInputFactory from './components/logo-input.jsx'
   })
 
   ChromeStorage.all().then((data) => {
+    let Navbar = NavbarFactory(Core)
     React.render(<BundleList bundles={data}/>, document.querySelector('.content'))
     React.render(<Navbar />, document.querySelector('.navbar'))
   }).catch(error => { console.error("Couldn't start the app due to: " + error) })
