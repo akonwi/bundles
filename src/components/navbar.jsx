@@ -2,7 +2,7 @@ import CreateBundleBtnFactory from './create-bundle-btn.jsx'
 import LogoInputFactory from './logo-input.jsx'
 
 export default function(Core) {
-  return function() {
+  return React.createElement(function() {
     return {
       render() {
         let CreateBundleBtn = CreateBundleBtnFactory(Core)
@@ -18,5 +18,5 @@ export default function(Core) {
         )
       }
     }
-  }
+  })
 }

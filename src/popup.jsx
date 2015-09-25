@@ -1,7 +1,7 @@
 import ChromeStorage from '../lib/chrome-storage'
 import * as Bundle from './bundle'
 import * as BundleStore from './bundle-store'
-import NavbarFactory from './components/navbar.jsx'
+import Navbar from './components/navbar.jsx'
 import BundleLink from './components/bundle-link.jsx'
 
 (() => {
@@ -120,8 +120,7 @@ import BundleLink from './components/bundle-link.jsx'
   })
 
   ChromeStorage.all().then((data) => {
-    let Navbar = NavbarFactory(Core)
     React.render(<BundleList bundles={data}/>, document.querySelector('.content'))
-    React.render(<Navbar />, document.querySelector('.navbar'))
+    React.render(Navbar(Core), document.querySelector('.navbar'))
   }).catch(error => { console.error("Couldn't start the app due to: " + error) })
 })()
