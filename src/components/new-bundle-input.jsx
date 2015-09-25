@@ -1,4 +1,4 @@
-import BundleStore from '../bundle-store'
+import * as BundleStore from '../bundle-store'
 
 export default function(Core) {
   return React.createClass({
