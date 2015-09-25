@@ -2,9 +2,12 @@ import ChromeStorage from '../lib/chrome-storage'
 import * as Bundle from './bundle'
 import * as BundleStore from './bundle-store'
 import NavbarFactory from './components/navbar.jsx'
+import BundleLink from './components/bundle-link.jsx'
 
 (() => {
   const cx = React.addons.classSet
+  const createElement = React.createElement
+
   let Core = {
     actions: {},
     on(event, fn, ctx=this) {
@@ -107,28 +110,10 @@ import NavbarFactory from './components/navbar.jsx'
           <ul className={linksClasses} ref='links'>
             {
               this.props.bundle.links.map((link) => {
-                return <BundleLink link={link} />
+                return BundleLink(link)
               })
             }
           </ul>
-        </li>
-      )
-    }
-  })
-
-  let BundleLink = React.createClass({
-    getInitialProps() {
-      return { link: {} }
-    },
-    openLink(e) {
-      e.preventDefault()
-      chrome.tabs.create({ url: this.props.link.url })
-    },
-    render() {
-      let link = this.props.link
-      return (
-        <li title={link.title}>
-          <a href='#' onClick={this.openLink}>{ link.title }</a>
         </li>
       )
     }
