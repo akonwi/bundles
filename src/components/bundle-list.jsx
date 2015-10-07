@@ -1,5 +1,5 @@
 import ChromeStorage from '../../lib/chrome-storage'
-import BundleItem from './bundle-item.jsx'
+import bundleItem from './bundle-item.jsx'
 
 export default React.createClass({
   getInitialState() {
@@ -16,7 +16,8 @@ export default React.createClass({
       <ul className='bundles'>
         {
           Object.keys(bundles).map((name) => {
-            return <BundleItem bundle={bundles[name]} />
+            let BundleItem = bundleItem(bundles[name])
+            return <BundleItem/>
           })
         }
       </ul>
