@@ -5,9 +5,6 @@ import * as BundleStore from '../bundle-store'
 const cx = React.addons.classSet
 
 export default React.createClass({
-  getInitialState() {
-    return { shouldFlash: false }
-  },
   onClick(e) {
     e.preventDefault()
     let bundle = this.props.bundle
@@ -27,7 +24,6 @@ export default React.createClass({
     e.preventDefault()
     chrome.tabs.getSelected(null, ({title, url}) => {
       BundleStore.addLinkToBundle(this.props.bundle.name, { title, url })
-      this.setState({shouldFlash: true})
     })
   },
   deleteBundle(e) {
@@ -43,12 +39,11 @@ export default React.createClass({
       triangle: true,
       down: this.props.bundle.open
     })
-    let h4classes = this.state.shouldFlash ? 'flash' : ''
     return (
       <li className='bundle'>
         <div className='title-bar'>
           <div className={triangleClasses}></div>
-          <h4 className={h4classes} onClick={this.onClick}>{ this.props.bundle.name }</h4>
+          <h4 onClick={this.onClick}>{ this.props.bundle.name }</h4>
           <div className='controls'>
             <a href='#' className='btn' title='Open all'>
               <i className='material-icons' onClick={this.openLinks}>launch</i>
