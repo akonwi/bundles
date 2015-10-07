@@ -22,9 +22,10 @@ import BundleList from './components/bundle-list.jsx'
     }
   }
 
+  let Navbar = navbar(Core)
+  React.render(<Navbar/>, document.querySelector('.navbar'))
+  
   ChromeStorage.all().then((data) => {
-    let Navbar = navbar(Core)
     React.render(<BundleList bundles={data}/>, document.querySelector('.content'))
-    React.render(<Navbar/>, document.querySelector('.navbar'))
   }).catch(error => { console.error("Couldn't start the app due to: " + error) })
 })()
