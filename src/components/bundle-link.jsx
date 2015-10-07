@@ -4,7 +4,7 @@ export default function({url, title}) {
     chrome.tabs.create({url})
   }
 
-  return React.createElement(function() {
+  return function() {
     return {
       render() {
         return (
@@ -14,5 +14,5 @@ export default function({url, title}) {
         )
       }
     }
-  })
+  }
 }

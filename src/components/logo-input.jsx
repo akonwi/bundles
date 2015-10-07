@@ -1,4 +1,4 @@
-import NewBundleInput from './new-bundle-input.jsx'
+import newBundleInput from './new-bundle-input.jsx'
 
 export default function(Core) {
   return React.createClass({
@@ -14,8 +14,9 @@ export default function(Core) {
       })
     },
     render() {
+      let NewBundleInput = newBundleInput(Core)
       if (this.state.showInput)
-        return NewBundleInput(Core)
+        return <NewBundleInput/>
       else
         return <h2 className='logo'>Bundles</h2>
     }

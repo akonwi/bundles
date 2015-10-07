@@ -1,12 +1,12 @@
-import CreateBundleBtnFactory from './create-bundle-btn.jsx'
-import LogoInputFactory from './logo-input.jsx'
+import createBundleBtn from './create-bundle-btn.jsx'
+import logoInput from './logo-input.jsx'
 
 export default function(Core) {
-  return React.createElement(function() {
+  return function() {
     return {
       render() {
-        let CreateBundleBtn = CreateBundleBtnFactory(Core)
-        let LogoInput = LogoInputFactory(Core)
+        let CreateBundleBtn = createBundleBtn(Core)
+        let LogoInput = logoInput(Core)
         return (
           <div>
             <div className='nav-block small left'></div>
@@ -18,5 +18,5 @@ export default function(Core) {
         )
       }
     }
-  })
+  }
 }

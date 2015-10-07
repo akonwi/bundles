@@ -11,11 +11,11 @@ export default function(Core) {
     }
   }
 
-  return React.createElement(() => {
+  return () => {
     return {
       render() {
         return <input className='new-bundle-input' autoFocus onKeyUp={onKeyUp} type='text' placeholder='Bundle name...' />
       }
     }
-  })
+  }
 }
