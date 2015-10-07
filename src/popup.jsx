@@ -3,8 +3,6 @@ import navbar from './components/navbar.jsx'
 import BundleList from './components/bundle-list.jsx'
 
 (() => {
-  const cx = React.addons.classSet
-
   let Core = {
     actions: {},
     on(event, fn, ctx=this) {
