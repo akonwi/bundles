@@ -4,7 +4,7 @@ export default function({url, title}) {
     chrome.tabs.create({url})
   }
 
-  return function() {
+  return () => {
     return {
       render() {
         return (

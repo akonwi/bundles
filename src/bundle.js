@@ -4,7 +4,7 @@ const Bundle = {
   open: false
 }
 
-function assign(target, ...sources) {
+function extend(target, ...sources) {
   let obj = {}
   sources = [target, ...sources]
   sources.forEach(source => {
@@ -16,5 +16,5 @@ function assign(target, ...sources) {
 export function create(attrs) {
   if (attrs.name === undefined)
     throw new Error("Cannot create a bundle without a name.")
-  return assign(Bundle, attrs)
+  return extend(Bundle, attrs)
 }

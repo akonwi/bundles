@@ -15,7 +15,7 @@ export default React.createClass({
     return (
       <ul className='bundles'>
         {
-          Object.keys(bundles).map((name) => {
+          Object.keys(bundles).map(name => {
             let BundleItem = bundleItem(bundles[name])
             return <BundleItem/>
           })
