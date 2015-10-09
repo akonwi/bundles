@@ -1,21 +1,32 @@
+import ChromeStorage from '../../lib/chrome-storage'
 import createBundleBtn from './create-bundle-btn.jsx'
 import logoInput from './logo-input.jsx'
 
-export default function(Core) {
+export default () => {
   return React.createClass({
     getInitialState() {
-      return { cancelling: false }
+      return { creating: false }
+    },
+    componentDidMount() {
+      ChromeStorage.onChange(changes => {
+        Object.keys(changes).some(key => {
+          if (!!changes[key].newValue) {
+            this.setState({ creating: false })
+            return true
+          }
+        })
+      })
     },
     toggleCreateBundleBtn(e) {
       e.preventDefault()
       if (!this.state.cancelling)
-        this.setState({ cancelling: true })
+        this.setState({ creating: true })
       else
-        this.setState({ cancelling: false })
+        this.setState({ creating: false })
     },
     render() {
-      let CreateBundleBtn = createBundleBtn(this.state.cancelling, this.toggleCreateBundleBtn)
-      let LogoInput = logoInput(Core)
+      let CreateBundleBtn = createBundleBtn(this.state.creating, this.toggleCreateBundleBtn)
+      let LogoInput = logoInput(this.state.creating)
       return (
         <div>
           <div className='nav-block small left'></div>
