@@ -495,7 +495,7 @@ exports['default'] = function () {
     },
     toggleCreateBundleBtn: function toggleCreateBundleBtn(e) {
       e.preventDefault();
-      if (!this.state.cancelling) this.setState({ creating: true });else this.setState({ creating: false });
+      if (!this.state.creating) this.setState({ creating: true });else this.setState({ creating: false });
     },
     render: function render() {
       var CreateBundleBtn = (0, _createBundleBtnJsx2['default'])(this.state.creating, this.toggleCreateBundleBtn);

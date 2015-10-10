@@ -19,7 +19,7 @@ export default () => {
     },
     toggleCreateBundleBtn(e) {
       e.preventDefault()
-      if (!this.state.cancelling)
+      if (!this.state.creating)
         this.setState({ creating: true })
       else
         this.setState({ creating: false })
