@@ -2,8 +2,6 @@ import bundleLink from './bundle-link.jsx'
 import * as Bundle from '../bundle'
 import * as BundleStore from '../bundle-store'
 
-const cx = React.addons.classSet
-
 export default ({name, open, links}) => {
   let toggle = (e) => {
     e.preventDefault()
@@ -30,11 +28,11 @@ export default ({name, open, links}) => {
   return () => {
     return {
       render() {
-        let linksClasses = cx({
+        let linksClasses = classNames({
           links: true,
           open
         })
-        let triangleClasses = cx({
+        let triangleClasses = classNames({
           triangle: true,
           down: open
         })
