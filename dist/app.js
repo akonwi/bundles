@@ -214,8 +214,6 @@ var _bundleStore = require('../bundle-store');
 
 var BundleStore = _interopRequireWildcard(_bundleStore);
 
-var cx = React.addons.classSet;
-
 exports['default'] = function (_ref) {
   var name = _ref.name;
   var open = _ref.open;
@@ -252,11 +250,11 @@ exports['default'] = function (_ref) {
   return function () {
     return {
       render: function render() {
-        var linksClasses = cx({
+        var linksClasses = classNames({
           links: true,
           open: open
         });
-        var triangleClasses = cx({
+        var triangleClasses = classNames({
           triangle: true,
           down: open
         });
@@ -476,47 +474,30 @@ var _logoInputJsx = require('./logo-input.jsx');
 
 var _logoInputJsx2 = _interopRequireDefault(_logoInputJsx);
 
-exports['default'] = function () {
-  return React.createClass({
-    getInitialState: function getInitialState() {
-      return { creating: false };
-    },
-    componentDidMount: function componentDidMount() {
-      var _this = this;
-
-      _libChromeStorage2['default'].onChange(function (changes) {
-        Object.keys(changes).some(function (key) {
-          if (!!changes[key].newValue) {
-            _this.setState({ creating: false });
-            return true;
-          }
-        });
-      });
-    },
-    toggleCreateBundleBtn: function toggleCreateBundleBtn(e) {
-      e.preventDefault();
-      if (!this.state.creating) this.setState({ creating: true });else this.setState({ creating: false });
-    },
-    render: function render() {
-      var CreateBundleBtn = (0, _createBundleBtnJsx2['default'])(this.state.creating, this.toggleCreateBundleBtn);
-      var LogoInput = (0, _logoInputJsx2['default'])(this.state.creating);
-      return React.createElement(
-        'div',
-        null,
-        React.createElement('div', { className: 'nav-block small left' }),
-        React.createElement(
+exports['default'] = function (isCreating, toggle) {
+  return function () {
+    return {
+      render: function render() {
+        var CreateBundleBtn = (0, _createBundleBtnJsx2['default'])(isCreating, toggle);
+        var LogoInput = (0, _logoInputJsx2['default'])(isCreating);
+        return React.createElement(
           'div',
-          { className: 'nav-block big' },
-          React.createElement(LogoInput, null)
-        ),
-        React.createElement(
-          'div',
-          { className: 'nav-block small right' },
-          React.createElement(CreateBundleBtn, null)
-        )
-      );
-    }
-  });
+          null,
+          React.createElement('div', { className: 'nav-block small left' }),
+          React.createElement(
+            'div',
+            { className: 'nav-block big' },
+            React.createElement(LogoInput, null)
+          ),
+          React.createElement(
+            'div',
+            { className: 'nav-block small right' },
+            React.createElement(CreateBundleBtn, null)
+          )
+        );
+      }
+    };
+  };
 };
 
 module.exports = exports['default'];
@@ -574,11 +555,32 @@ var _componentsBundleListJsx = require('./components/bundle-list.jsx');
 var _componentsBundleListJsx2 = _interopRequireDefault(_componentsBundleListJsx);
 
 (function () {
-  var Navbar = (0, _componentsNavbarJsx2['default'])();
-  React.render(React.createElement(Navbar, null), document.querySelector('.navbar'));
+  var isCreating = false;
+
+  var renderNavbar = function renderNavbar() {
+    var Navbar = (0, _componentsNavbarJsx2['default'])(isCreating, toggleCreating);
+    ReactDOM.render(React.createElement(Navbar, null), document.querySelector('.navbar'));
+  };
+
+  var toggleCreating = function toggleCreating() {
+    isCreating = !isCreating;
+    renderNavbar();
+  };
+
+  renderNavbar();
+
+  _libChromeStorage2['default'].onChange(function (changes) {
+    Object.keys(changes).some(function (key) {
+      if (!!changes[key].newValue) {
+        toggleCreating();
+        renderNavbar();
+        return true;
+      }
+    });
+  });
 
   _libChromeStorage2['default'].all().then(function (data) {
-    React.render(React.createElement(_componentsBundleListJsx2['default'], { bundles: data }), document.querySelector('.content'));
+    ReactDOM.render(React.createElement(_componentsBundleListJsx2['default'], { bundles: data }), document.querySelector('.content'));
   })['catch'](function (error) {
     console.error("Couldn't start the app due to: " + error);
   });
