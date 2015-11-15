@@ -1,6 +1,6 @@
 import ChromeStorage from '../lib/chrome-storage'
 import navbar from './components/navbar.jsx'
-import BundleList from './components/bundle-list.jsx'
+import bundleList from './components/bundle-list.jsx'
 
 (() => {
   let isCreating = false
@@ -8,6 +8,13 @@ import BundleList from './components/bundle-list.jsx'
   const renderNavbar = () => {
     const Navbar = navbar(isCreating, toggleCreating)
     ReactDOM.render(<Navbar/>, document.querySelector('.navbar'))
+  }
+
+  const renderBundlelist = () => {
+    return ChromeStorage.all().then(bundles => {
+      const BundleList = bundleList(bundles)
+      ReactDOM.render(<BundleList/>, document.querySelector('.content'))
+    })
   }
 
   const toggleCreating = () => {
@@ -18,8 +25,10 @@ import BundleList from './components/bundle-list.jsx'
   renderNavbar()
 
   ChromeStorage.onChange(changes => {
+    renderBundlelist()
     Object.keys(changes).some(key => {
-      if (!!changes[key].newValue) {
+      let {newValue, oldValue} =  changes[key]
+      if (!oldValue) {
         toggleCreating()
         renderNavbar()
         return true
@@ -27,7 +36,5 @@ import BundleList from './components/bundle-list.jsx'
     })
   })
 
-  ChromeStorage.all().then((data) => {
-    ReactDOM.render(<BundleList bundles={data}/>, document.querySelector('.content'))
-  }).catch(error => { console.error("Couldn't start the app due to: " + error) })
+  renderBundlelist().catch(error => { console.error("Couldn't render BundleList: " + error) })
 })()

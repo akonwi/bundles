@@ -370,33 +370,23 @@ var _bundleItemJsx = require('./bundle-item.jsx');
 
 var _bundleItemJsx2 = _interopRequireDefault(_bundleItemJsx);
 
-exports['default'] = React.createClass({
-  displayName: 'bundle-list',
+exports['default'] = function (bundles) {
+  return function () {
+    return {
+      render: function render() {
+        return React.createElement(
+          'ul',
+          { className: 'bundles' },
+          Object.keys(bundles).map(function (name) {
+            var BundleItem = (0, _bundleItemJsx2['default'])(bundles[name]);
+            return React.createElement(BundleItem, null);
+          })
+        );
+      }
+    };
+  };
+};
 
-  getInitialState: function getInitialState() {
-    return { bundles: this.props.bundles };
-  },
-  componentDidMount: function componentDidMount() {
-    var _this = this;
-
-    _libChromeStorage2['default'].onChange(function (changes) {
-      _libChromeStorage2['default'].all().then(function (bundles) {
-        return _this.setState({ bundles: bundles });
-      });
-    });
-  },
-  render: function render() {
-    var bundles = this.state.bundles;
-    return React.createElement(
-      'ul',
-      { className: 'bundles' },
-      Object.keys(bundles).map(function (name) {
-        var BundleItem = (0, _bundleItemJsx2['default'])(bundles[name]);
-        return React.createElement(BundleItem, null);
-      })
-    );
-  }
-});
 module.exports = exports['default'];
 
 },{"../../lib/chrome-storage":1,"./bundle-item.jsx":4}],7:[function(require,module,exports){
@@ -562,6 +552,13 @@ var _componentsBundleListJsx2 = _interopRequireDefault(_componentsBundleListJsx)
     ReactDOM.render(React.createElement(Navbar, null), document.querySelector('.navbar'));
   };
 
+  var renderBundlelist = function renderBundlelist() {
+    return _libChromeStorage2['default'].all().then(function (bundles) {
+      var BundleList = (0, _componentsBundleListJsx2['default'])(bundles);
+      ReactDOM.render(React.createElement(BundleList, null), document.querySelector('.content'));
+    });
+  };
+
   var toggleCreating = function toggleCreating() {
     isCreating = !isCreating;
     renderNavbar();
@@ -570,8 +567,13 @@ var _componentsBundleListJsx2 = _interopRequireDefault(_componentsBundleListJsx)
   renderNavbar();
 
   _libChromeStorage2['default'].onChange(function (changes) {
+    renderBundlelist();
     Object.keys(changes).some(function (key) {
-      if (!!changes[key].newValue) {
+      var _changes$key = changes[key];
+      var newValue = _changes$key.newValue;
+      var oldValue = _changes$key.oldValue;
+
+      if (!oldValue) {
         toggleCreating();
         renderNavbar();
         return true;
@@ -579,10 +581,8 @@ var _componentsBundleListJsx2 = _interopRequireDefault(_componentsBundleListJsx)
     });
   });
 
-  _libChromeStorage2['default'].all().then(function (data) {
-    ReactDOM.render(React.createElement(_componentsBundleListJsx2['default'], { bundles: data }), document.querySelector('.content'));
-  })['catch'](function (error) {
-    console.error("Couldn't start the app due to: " + error);
+  renderBundlelist()['catch'](function (error) {
+    console.error("Couldn't render BundleList: " + error);
   });
 })();
 
