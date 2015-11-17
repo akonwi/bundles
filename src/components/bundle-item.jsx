@@ -5,18 +5,18 @@ import * as BundleStore from '../bundle-store'
 export default ({name, open, links}) => {
   let toggle = (e) => {
     e.preventDefault()
-    let b = Bundle.create({name, links, open: !open})
-    BundleStore.updateBundle(name, b)
+    let bundle = Bundle.create({name, links, open: !open})
+    BundleStore.updateBundle(name, bundle)
   }
 
   let openLinks = (e) => {
-    links.forEach(({url}) => { chrome.tabs.create({ url }) })
+    links.forEach(({url}) => { chrome.tabs.create({url}) })
   }
 
   let addLink = (e) => {
     e.preventDefault()
     chrome.tabs.getSelected(null, ({title, url}) => {
-      BundleStore.addLinkToBundle(name, { title, url })
+      BundleStore.addLinkToBundle(name, {title, url})
     })
   }
 
@@ -55,7 +55,7 @@ export default ({name, open, links}) => {
             </div>
             <ul className={linksClasses} ref='links'>
               {
-                links.map((link) => {
+                links.map(link => {
                   let BundleLink = bundleLink(link)
                   return <BundleLink/>
                 })
