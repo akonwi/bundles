@@ -1,9 +1,9 @@
 import * as BundleStore from '../bundle-store'
 
 export default () => {
-  let onKeyUp = ({keyCode, target}) => {
+  const onKeyUp = ({keyCode, target}) => {
     if (keyCode === 13) {
-      let name = target.value.trim()
+      const name = target.value.trim()
       if (name.length > 0)
         BundleStore.addBundle(name)
     }
