@@ -22,8 +22,6 @@ import bundleList from './components/bundle-list.jsx'
     renderNavbar()
   }
 
-  renderNavbar()
-
   ChromeStorage.onChange(changes => {
     renderBundlelist()
     Object.keys(changes).some(key => {
@@ -36,5 +34,6 @@ import bundleList from './components/bundle-list.jsx'
     })
   })
 
+  renderNavbar()
   renderBundlelist().catch(error => { console.error("Couldn't render BundleList: " + error) })
 })()
