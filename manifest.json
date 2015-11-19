@@ -3,7 +3,7 @@
 
   "name": "Bundles",
   "description": "Put away tabs and reduce clutter",
-  "version": "0.0.3",
+  "version": "0.0.4",
 
   "browser_action": {
     "default_icon": {
