@@ -220,9 +220,8 @@ exports['default'] = function (_ref) {
   var links = _ref.links;
 
   var toggle = function toggle(e) {
-    e.preventDefault();
-    var b = Bundle.create({ name: name, links: links, open: !open });
-    BundleStore.updateBundle(name, b);
+    var bundle = Bundle.create({ name: name, links: links, open: !open });
+    BundleStore.updateBundle(name, bundle);
   };
 
   var openLinks = function openLinks(e) {
@@ -233,7 +232,6 @@ exports['default'] = function (_ref) {
   };
 
   var addLink = function addLink(e) {
-    e.preventDefault();
     chrome.tabs.getSelected(null, function (_ref3) {
       var title = _ref3.title;
       var url = _ref3.url;
@@ -243,76 +241,81 @@ exports['default'] = function (_ref) {
   };
 
   var deleteBundle = function deleteBundle(e) {
-    e.preventDefault();
     BundleStore.removeBundle(name);
   };
 
-  return function () {
-    return {
-      render: function render() {
-        var linksClasses = classNames({
-          links: true,
-          open: open
-        });
-        var triangleClasses = classNames({
-          triangle: true,
-          down: open
-        });
-        return React.createElement(
-          'li',
-          { className: 'bundle' },
+  var linksClasses = classNames({
+    links: true,
+    open: open
+  });
+
+  var triangleClasses = classNames({
+    triangle: true,
+    down: open
+  });
+
+  var bundleLinks = links.map(function (link) {
+    var BundleLink = (0, _bundleLinkJsx2['default'])(link);
+    return React.createElement(BundleLink, null);
+  });
+
+  var view = {
+    render: function render() {
+      return React.createElement(
+        'li',
+        { className: 'bundle' },
+        React.createElement(
+          'div',
+          { className: 'title-bar' },
+          React.createElement('div', { className: triangleClasses }),
           React.createElement(
-            'div',
-            { className: 'title-bar' },
-            React.createElement('div', { className: triangleClasses }),
-            React.createElement(
-              'h4',
-              { onClick: toggle },
-              name
-            ),
-            React.createElement(
-              'div',
-              { className: 'controls' },
-              React.createElement(
-                'a',
-                { href: '#', className: 'btn', title: 'Open all' },
-                React.createElement(
-                  'i',
-                  { className: 'material-icons', onClick: openLinks },
-                  'launch'
-                )
-              ),
-              React.createElement(
-                'a',
-                { href: '#', className: 'btn', title: 'Add current page' },
-                React.createElement(
-                  'i',
-                  { className: 'material-icons', onClick: addLink },
-                  'add'
-                )
-              ),
-              React.createElement(
-                'a',
-                { href: '#', className: 'btn', title: 'Delete' },
-                React.createElement(
-                  'i',
-                  { className: 'material-icons', onClick: deleteBundle },
-                  'delete'
-                )
-              )
-            )
+            'h4',
+            { onClick: toggle },
+            name
           ),
           React.createElement(
-            'ul',
-            { className: linksClasses, ref: 'links' },
-            links.map(function (link) {
-              var BundleLink = (0, _bundleLinkJsx2['default'])(link);
-              return React.createElement(BundleLink, null);
-            })
+            'div',
+            { className: 'controls' },
+            React.createElement(
+              'a',
+              { href: '#', className: 'btn', title: 'Open all' },
+              React.createElement(
+                'i',
+                { className: 'material-icons', onClick: openLinks },
+                'launch'
+              )
+            ),
+            React.createElement(
+              'a',
+              { href: '#', className: 'btn', title: 'Add current page' },
+              React.createElement(
+                'i',
+                { className: 'material-icons', onClick: addLink },
+                'add'
+              )
+            ),
+            React.createElement(
+              'a',
+              { href: '#', className: 'btn', title: 'Delete' },
+              React.createElement(
+                'i',
+                { className: 'material-icons', onClick: deleteBundle },
+                'delete'
+              )
+            )
           )
-        );
-      }
-    };
+        ),
+        React.createElement(
+          'ul',
+          { className: linksClasses, ref: 'links' },
+          bundleLinks
+        )
+      );
+    }
+  };
+
+  return function () {
+    return view;
   };
 };
 
@@ -330,24 +333,25 @@ exports['default'] = function (_ref) {
   var title = _ref.title;
 
   var openLink = function openLink(e) {
-    e.preventDefault();
     chrome.tabs.create({ url: url });
   };
 
+  var view = {
+    render: function render() {
+      return React.createElement(
+        'li',
+        { title: title },
+        React.createElement(
+          'a',
+          { href: '#', onClick: openLink },
+          title
+        )
+      );
+    }
+  };
+
   return function () {
-    return {
-      render: function render() {
-        return React.createElement(
-          'li',
-          { title: title },
-          React.createElement(
-            'a',
-            { href: '#', onClick: openLink },
-            title
-          )
-        );
-      }
-    };
+    return view;
   };
 };
 
@@ -371,19 +375,24 @@ var _bundleItemJsx = require('./bundle-item.jsx');
 var _bundleItemJsx2 = _interopRequireDefault(_bundleItemJsx);
 
 exports['default'] = function (bundles) {
+
+  var bundleItems = Object.keys(bundles).map(function (name) {
+    var BundleItem = (0, _bundleItemJsx2['default'])(bundles[name]);
+    return React.createElement(BundleItem, null);
+  });
+
+  var view = {
+    render: function render() {
+      return React.createElement(
+        'ul',
+        { className: 'bundles' },
+        bundleItems
+      );
+    }
+  };
+
   return function () {
-    return {
-      render: function render() {
-        return React.createElement(
-          'ul',
-          { className: 'bundles' },
-          Object.keys(bundles).map(function (name) {
-            var BundleItem = (0, _bundleItemJsx2['default'])(bundles[name]);
-            return React.createElement(BundleItem, null);
-          })
-        );
-      }
-    };
+    return view;
   };
 };
 
@@ -397,17 +406,20 @@ Object.defineProperty(exports, '__esModule', {
 });
 
 exports['default'] = function (creating, onClick) {
+  var text = creating ? 'Cancel' : 'New';
+
+  var view = {
+    render: function render() {
+      return React.createElement(
+        'a',
+        { className: 'nav-btn', href: '#', onClick: onClick },
+        text
+      );
+    }
+  };
+
   return function () {
-    return {
-      render: function render() {
-        var text = creating ? 'Cancel' : 'New';
-        return React.createElement(
-          'a',
-          { className: 'nav-btn', href: '#', onClick: onClick },
-          text
-        );
-      }
-    };
+    return view;
   };
 };
 
@@ -426,18 +438,25 @@ var _newBundleInputJsx = require('./new-bundle-input.jsx');
 
 var _newBundleInputJsx2 = _interopRequireDefault(_newBundleInputJsx);
 
-exports['default'] = function (creating) {
+exports['default'] = function (isCreating) {
+  var child = undefined;
+  if (isCreating) {
+    var NewBundleInput = (0, _newBundleInputJsx2['default'])();
+    child = React.createElement(NewBundleInput, null);
+  } else child = React.createElement(
+    'h2',
+    { className: 'logo' },
+    'Bundles'
+  );
+
+  var view = {
+    render: function render() {
+      return child;
+    }
+  };
+
   return function () {
-    return {
-      render: function render() {
-        var NewBundleInput = (0, _newBundleInputJsx2['default'])();
-        if (creating) return React.createElement(NewBundleInput, null);else return React.createElement(
-          'h2',
-          { className: 'logo' },
-          'Bundles'
-        );
-      }
-    };
+    return view;
   };
 };
 
@@ -465,28 +484,29 @@ var _logoInputJsx = require('./logo-input.jsx');
 var _logoInputJsx2 = _interopRequireDefault(_logoInputJsx);
 
 exports['default'] = function (isCreating, toggle) {
-  return function () {
-    return {
-      render: function render() {
-        var CreateBundleBtn = (0, _createBundleBtnJsx2['default'])(isCreating, toggle);
-        var LogoInput = (0, _logoInputJsx2['default'])(isCreating);
-        return React.createElement(
+  var view = {
+    render: function render() {
+      var CreateBundleBtn = (0, _createBundleBtnJsx2['default'])(isCreating, toggle);
+      var LogoInput = (0, _logoInputJsx2['default'])(isCreating);
+      return React.createElement(
+        'div',
+        null,
+        React.createElement('div', { className: 'nav-block small left' }),
+        React.createElement(
           'div',
-          null,
-          React.createElement('div', { className: 'nav-block small left' }),
-          React.createElement(
-            'div',
-            { className: 'nav-block big' },
-            React.createElement(LogoInput, null)
-          ),
-          React.createElement(
-            'div',
-            { className: 'nav-block small right' },
-            React.createElement(CreateBundleBtn, null)
-          )
-        );
-      }
-    };
+          { className: 'nav-block big' },
+          React.createElement(LogoInput, null)
+        ),
+        React.createElement(
+          'div',
+          { className: 'nav-block small right' },
+          React.createElement(CreateBundleBtn, null)
+        )
+      );
+    }
+  };
+  return function () {
+    return view;
   };
 };
 
@@ -516,12 +536,14 @@ exports['default'] = function () {
     }
   };
 
+  var view = {
+    render: function render() {
+      return React.createElement('input', { className: 'new-bundle-input', autoFocus: true, onKeyUp: onKeyUp, type: 'text', placeholder: 'Bundle name...' });
+    }
+  };
+
   return function () {
-    return {
-      render: function render() {
-        return React.createElement('input', { className: 'new-bundle-input', autoFocus: true, onKeyUp: onKeyUp, type: 'text', placeholder: 'Bundle name...' });
-      }
-    };
+    return view;
   };
 };
 
@@ -564,8 +586,6 @@ var _componentsBundleListJsx2 = _interopRequireDefault(_componentsBundleListJsx)
     renderNavbar();
   };
 
-  renderNavbar();
-
   _libChromeStorage2['default'].onChange(function (changes) {
     renderBundlelist();
     Object.keys(changes).some(function (key) {
@@ -581,6 +601,7 @@ var _componentsBundleListJsx2 = _interopRequireDefault(_componentsBundleListJsx)
     });
   });
 
+  renderNavbar();
   renderBundlelist()['catch'](function (error) {
     console.error("Couldn't render BundleList: " + error);
   });

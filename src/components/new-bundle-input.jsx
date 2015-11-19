@@ -9,11 +9,11 @@ export default () => {
     }
   }
 
-  return () => {
-    return {
-      render() {
-        return <input className='new-bundle-input' autoFocus onKeyUp={onKeyUp} type='text' placeholder='Bundle name...' />
-      }
+  const view = {
+    render() {
+      return <input className='new-bundle-input' autoFocus onKeyUp={onKeyUp} type='text' placeholder='Bundle name...' />
     }
   }
+
+  return () => { return view }
 }

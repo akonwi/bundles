@@ -1,18 +1,17 @@
 export default function({url, title}) {
-  let openLink = (e) => {
-    e.preventDefault()
+  const openLink = (e) => {
     chrome.tabs.create({url})
   }
 
-  return () => {
-    return {
-      render() {
-        return (
-          <li title={title}>
-            <a href='#' onClick={openLink}>{ title }</a>
-          </li>
-        )
-      }
+  const view = {
+    render() {
+      return (
+        <li title={title}>
+          <a href='#' onClick={openLink}>{ title }</a>
+        </li>
+      )
     }
   }
+
+  return () => { return view }
 }
