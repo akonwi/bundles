@@ -1,19 +1,17 @@
 import ChromeStorage from '../lib/chrome-storage'
-import navbar from './components/navbar.jsx'
-import bundleList from './components/bundle-list.jsx'
+import Navbar from './components/navbar.jsx'
+import BundleList from './components/bundle-list.jsx'
 
 (() => {
   let isCreating = false
 
   const renderNavbar = () => {
-    const Navbar = navbar(isCreating, toggleCreating)
-    ReactDOM.render(<Navbar/>, document.querySelector('.navbar'))
+    ReactDOM.render(<Navbar isCreating={isCreating} toggleCreating={toggleCreating}/>, document.querySelector('.navbar'))
   }
 
   const renderBundlelist = () => {
     return ChromeStorage.all().then(bundles => {
-      const BundleList = bundleList(bundles)
-      ReactDOM.render(<BundleList/>, document.querySelector('.content'))
+      ReactDOM.render(<BundleList bundles={bundles}/>, document.querySelector('.content'))
     })
   }
 

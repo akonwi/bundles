@@ -3,15 +3,9 @@ export default function({url, title}) {
     chrome.tabs.create({url})
   }
 
-  const view = {
-    render() {
-      return (
-        <li title={title}>
-          <a href='#' onClick={openLink}>{ title }</a>
-        </li>
-      )
-    }
-  }
-
-  return () => { return view }
+  return (
+    <li title={title}>
+      <a href='#' onClick={openLink}>{ title }</a>
+    </li>
+  )
 }

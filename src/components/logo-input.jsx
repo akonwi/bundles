@@ -1,17 +1,9 @@
-import newBundleInput from './new-bundle-input.jsx'
+import NewBundleInput from './new-bundle-input.jsx'
 
-export default (isCreating) => {
-  let child
+export default ({isCreating}) => {
   if (isCreating) {
-    let NewBundleInput = newBundleInput()
-    child = <NewBundleInput/>
+    return <NewBundleInput/>
   }
   else
-    child = <h2 className='logo'>Bundles</h2>
-
-  const view = {
-    render() { return child }
-  }
-
-  return () => { return view }
+    return <h2 className='logo'>Bundles</h2>
 }

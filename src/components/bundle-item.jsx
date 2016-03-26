@@ -1,4 +1,4 @@
-import bundleLink from './bundle-link.jsx'
+import BundleLink from './bundle-link.jsx'
 import * as Bundle from '../bundle'
 import * as BundleStore from '../bundle-store'
 
@@ -32,37 +32,30 @@ export default ({name, open, links}) => {
     down: open
   })
 
-  const bundleLinks = links.map(link => {
-    let BundleLink = bundleLink(link)
-    return <BundleLink/>
+  const bundleLinks = links.map(({url, title}) => {
+    return <BundleLink url={url} title={title}/>
   })
 
-  const view = {
-    render() {
-      return (
-        <li className='bundle'>
-          <div className='title-bar'>
-            <div className={triangleClasses}></div>
-            <h4 onClick={toggle}>{ name }</h4>
-            <div className='controls'>
-              <a href='#' className='btn' title='Open all'>
-                <i className='material-icons' onClick={openLinks}>launch</i>
-              </a>
-              <a href='#' className='btn' title='Add current page'>
-                <i className='material-icons' onClick={addLink}>add</i>
-              </a>
-              <a href='#' className='btn' title='Delete'>
-                <i className='material-icons' onClick={deleteBundle}>delete</i>
-              </a>
-            </div>
-          </div>
-          <ul className={linksClasses} ref='links'>
-            { bundleLinks }
-          </ul>
-        </li>
-      )
-    }
-  }
-
-  return () => { return view }
+  return (
+    <li className='bundle'>
+      <div className='title-bar'>
+        <div className={triangleClasses}></div>
+        <h4 onClick={toggle}>{ name }</h4>
+        <div className='controls'>
+          <a href='#' className='btn' title='Open all'>
+            <i className='material-icons' onClick={openLinks}>launch</i>
+          </a>
+          <a href='#' className='btn' title='Add current page'>
+            <i className='material-icons' onClick={addLink}>add</i>
+          </a>
+          <a href='#' className='btn' title='Delete'>
+            <i className='material-icons' onClick={deleteBundle}>delete</i>
+          </a>
+        </div>
+      </div>
+      <ul className={linksClasses}>
+        { bundleLinks }
+      </ul>
+    </li>
+  )
 }
