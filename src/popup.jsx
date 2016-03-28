@@ -5,7 +5,10 @@ import BundleList from './components/bundle-list.jsx'
 import * as Commands from './commands'
 
 (() => {
+  const idGenerator = (a) => a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,idGenerator)
+
   const Bundle = eventuality.defineAggregate({
+    idGenerator,
     name: 'Bundle',
     state: {
       links: [],
@@ -19,11 +22,16 @@ import * as Commands from './commands'
   const BundleRepository = eventuality.Repository('Bundle', Bundle, BundleEventStore)
 
   const BundleCommandHandlers = {
-    [Commands.CreateBundle.name]: ({name}) => BundleRepository.add({id: name, name})
+    [Commands.CreateBundle.name]: ({name}) => BundleRepository.add({name})
   }
 
   const BundleEventBus = eventuality.EventBus()
-  BundleEventBus.registerListener('BundleCreatedEvent', event => BundleStore.addBundle(event.state))
+
+  const BundleCreatedEventListener = event => BundleStore.addBundle(event.state)
+
+  BundleEventBus.registerListeners({
+    BundleCreatedEvent: [BundleCreatedEventListener]
+  })
 
   const BundleFlow = eventuality.Flow({
     eventBus: BundleEventBus,
