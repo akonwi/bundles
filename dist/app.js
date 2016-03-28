@@ -128,8 +128,11 @@ var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
 
 var _bundle = require('./bundle');
 
-function addBundle(name) {
-  _libChromeStorage2['default'].set(name, (0, _bundle.create)({ name: name }))['catch'](function (err) {
+function addBundle(_ref) {
+  var name = _ref.name;
+  var links = _ref.links;
+
+  _libChromeStorage2['default'].set(name, { name: name, links: links })['catch'](function (err) {
     console.error(err);
   });
 }
@@ -192,6 +195,20 @@ function create(attrs) {
 }
 
 },{}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+exports.CreateBundle = CreateBundle;
+
+function CreateBundle(_ref) {
+  var name = _ref.name;
+
+  return { name: 'CreateBundle', message: { name: name } };
+}
+
+},{}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -315,7 +332,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"../bundle":3,"../bundle-store":2,"./bundle-link.jsx":5}],5:[function(require,module,exports){
+},{"../bundle":3,"../bundle-store":2,"./bundle-link.jsx":6}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -343,7 +360,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -377,7 +394,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"../../lib/chrome-storage":1,"./bundle-item.jsx":4}],7:[function(require,module,exports){
+},{"../../lib/chrome-storage":1,"./bundle-item.jsx":5}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -398,34 +415,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{}],8:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _newBundleInputJsx = require('./new-bundle-input.jsx');
-
-var _newBundleInputJsx2 = _interopRequireDefault(_newBundleInputJsx);
-
-exports['default'] = function (_ref) {
-  var isCreating = _ref.isCreating;
-
-  if (isCreating) {
-    return React.createElement(_newBundleInputJsx2['default'], null);
-  } else return React.createElement(
-    'h2',
-    { className: 'logo' },
-    'Bundles'
-  );
-};
-
-module.exports = exports['default'];
-
-},{"./new-bundle-input.jsx":10}],9:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -442,14 +432,20 @@ var _createBundleBtnJsx = require('./create-bundle-btn.jsx');
 
 var _createBundleBtnJsx2 = _interopRequireDefault(_createBundleBtnJsx);
 
-var _logoInputJsx = require('./logo-input.jsx');
+var _newBundleInputJsx = require('./new-bundle-input.jsx');
 
-var _logoInputJsx2 = _interopRequireDefault(_logoInputJsx);
+var _newBundleInputJsx2 = _interopRequireDefault(_newBundleInputJsx);
 
 exports['default'] = function (_ref) {
+  var flow = _ref.flow;
   var isCreating = _ref.isCreating;
   var toggleCreating = _ref.toggleCreating;
 
+  var logoInput = isCreating ? React.createElement(_newBundleInputJsx2['default'], { flow: flow }) : React.createElement(
+    'h2',
+    { className: 'logo' },
+    'Bundles'
+  );
   return React.createElement(
     'div',
     null,
@@ -457,7 +453,7 @@ exports['default'] = function (_ref) {
     React.createElement(
       'div',
       { className: 'nav-block big' },
-      React.createElement(_logoInputJsx2['default'], { isCreating: isCreating })
+      logoInput
     ),
     React.createElement(
       'div',
@@ -469,27 +465,25 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"../../lib/chrome-storage":1,"./create-bundle-btn.jsx":7,"./logo-input.jsx":8}],10:[function(require,module,exports){
+},{"../../lib/chrome-storage":1,"./create-bundle-btn.jsx":8,"./new-bundle-input.jsx":10}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+var _commands = require('../commands');
 
-var _bundleStore = require('../bundle-store');
+exports['default'] = function (_ref) {
+  var flow = _ref.flow;
 
-var BundleStore = _interopRequireWildcard(_bundleStore);
-
-exports['default'] = function () {
-  var onKeyUp = function onKeyUp(_ref) {
-    var keyCode = _ref.keyCode;
-    var target = _ref.target;
+  var onKeyUp = function onKeyUp(_ref2) {
+    var keyCode = _ref2.keyCode;
+    var target = _ref2.target;
 
     if (keyCode === 13) {
       var _name = target.value.trim();
-      if (_name.length > 0) BundleStore.addBundle(_name);
+      if (_name.length > 0) flow.dispatch((0, _commands.CreateBundle)({ name: _name }));
     }
   };
 
@@ -498,14 +492,22 @@ exports['default'] = function () {
 
 module.exports = exports['default'];
 
-},{"../bundle-store":2}],11:[function(require,module,exports){
+},{"../commands":4}],11:[function(require,module,exports){
 'use strict';
 
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var _libChromeStorage = require('../lib/chrome-storage');
 
 var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
+
+var _bundleStore = require('./bundle-store');
+
+var BundleStore = _interopRequireWildcard(_bundleStore);
 
 var _componentsNavbarJsx = require('./components/navbar.jsx');
 
@@ -515,11 +517,44 @@ var _componentsBundleListJsx = require('./components/bundle-list.jsx');
 
 var _componentsBundleListJsx2 = _interopRequireDefault(_componentsBundleListJsx);
 
+var _commands = require('./commands');
+
+var Commands = _interopRequireWildcard(_commands);
+
 (function () {
+  var Bundle = eventuality.defineAggregate({
+    name: 'Bundle',
+    state: {
+      links: [],
+      name: null
+    },
+    methods: {}
+  });
+
+  var BundleEventStore = eventuality.EventStore();
+
+  var BundleRepository = eventuality.Repository('Bundle', Bundle, BundleEventStore);
+
+  var BundleCommandHandlers = _defineProperty({}, Commands.CreateBundle.name, function (_ref) {
+    var name = _ref.name;
+    return BundleRepository.add({ id: name, name: name });
+  });
+
+  var BundleEventBus = eventuality.EventBus();
+  BundleEventBus.registerListener('BundleCreatedEvent', function (event) {
+    return BundleStore.addBundle(event.state);
+  });
+
+  var BundleFlow = eventuality.Flow({
+    eventBus: BundleEventBus,
+    eventStore: BundleEventStore,
+    commandHandlers: BundleCommandHandlers
+  });
+
   var isCreating = false;
 
   var renderNavbar = function renderNavbar() {
-    ReactDOM.render(React.createElement(_componentsNavbarJsx2['default'], { isCreating: isCreating, toggleCreating: toggleCreating }), document.querySelector('.navbar'));
+    ReactDOM.render(React.createElement(_componentsNavbarJsx2['default'], { flow: BundleFlow, isCreating: isCreating, toggleCreating: toggleCreating }), document.querySelector('.navbar'));
   };
 
   var renderBundlelist = function renderBundlelist() {
@@ -554,4 +589,4 @@ var _componentsBundleListJsx2 = _interopRequireDefault(_componentsBundleListJsx)
   });
 })();
 
-},{"../lib/chrome-storage":1,"./components/bundle-list.jsx":6,"./components/navbar.jsx":9}]},{},[1,11,3,2]);
+},{"../lib/chrome-storage":1,"./bundle-store":2,"./commands":4,"./components/bundle-list.jsx":7,"./components/navbar.jsx":9}]},{},[1,4,11,3,2]);
