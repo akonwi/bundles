@@ -1,8 +1,21 @@
 import ChromeStorage from '../lib/chrome-storage'
 import {create} from './bundle'
 
+const BUNDLES  = 'bundles'
+
+export function get() {
+  return ChromeStorage.get(BUNDLES).then(bundles => bundles || {})
+}
+
 export function addBundle({name, links}) {
-  ChromeStorage.set(name, {name, links})
+  ChromeStorage.get(BUNDLES)
+  .then((bundles={}) => {
+    bundles[name] = {name, links}
+    return bundles
+  })
+  .then(bundles => {
+    ChromeStorage.set(BUNDLES, bundles)
+  })
   .catch(err => { console.error(err) })
 }
 

@@ -115,6 +115,7 @@ module.exports = exports['default'];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+exports.get = get;
 exports.addBundle = addBundle;
 exports.addLinkToBundle = addLinkToBundle;
 exports.updateBundle = updateBundle;
@@ -128,11 +129,26 @@ var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
 
 var _bundle = require('./bundle');
 
+var BUNDLES = 'bundles';
+
+function get() {
+  return _libChromeStorage2['default'].get(BUNDLES).then(function (bundles) {
+    return bundles || {};
+  });
+}
+
 function addBundle(_ref) {
   var name = _ref.name;
   var links = _ref.links;
 
-  _libChromeStorage2['default'].set(name, { name: name, links: links })['catch'](function (err) {
+  _libChromeStorage2['default'].get(BUNDLES).then(function () {
+    var bundles = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    bundles[name] = { name: name, links: links };
+    return bundles;
+  }).then(function (bundles) {
+    _libChromeStorage2['default'].set(BUNDLES, bundles);
+  })['catch'](function (err) {
     console.error(err);
   });
 }
@@ -424,10 +440,6 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _libChromeStorage = require('../../lib/chrome-storage');
-
-var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
-
 var _createBundleBtnJsx = require('./create-bundle-btn.jsx');
 
 var _createBundleBtnJsx2 = _interopRequireDefault(_createBundleBtnJsx);
@@ -465,7 +477,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"../../lib/chrome-storage":1,"./create-bundle-btn.jsx":8,"./new-bundle-input.jsx":10}],10:[function(require,module,exports){
+},{"./create-bundle-btn.jsx":8,"./new-bundle-input.jsx":10}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -522,7 +534,13 @@ var _commands = require('./commands');
 var Commands = _interopRequireWildcard(_commands);
 
 (function () {
+  // taken from: https://gist.github.com/jed/982883
+  var idGenerator = function idGenerator(a) {
+    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, idGenerator);
+  };
+
   var Bundle = eventuality.defineAggregate({
+    idGenerator: idGenerator,
     name: 'Bundle',
     state: {
       links: [],
@@ -537,12 +555,17 @@ var Commands = _interopRequireWildcard(_commands);
 
   var BundleCommandHandlers = _defineProperty({}, Commands.CreateBundle.name, function (_ref) {
     var name = _ref.name;
-    return BundleRepository.add({ id: name, name: name });
+    return BundleRepository.add({ name: name });
   });
 
   var BundleEventBus = eventuality.EventBus();
-  BundleEventBus.registerListener('BundleCreatedEvent', function (event) {
+
+  var BundleCreatedEventListener = function BundleCreatedEventListener(event) {
     return BundleStore.addBundle(event.state);
+  };
+
+  BundleEventBus.registerListeners({
+    BundleCreatedEvent: [BundleCreatedEventListener]
   });
 
   var BundleFlow = eventuality.Flow({
@@ -558,8 +581,10 @@ var Commands = _interopRequireWildcard(_commands);
   };
 
   var renderBundlelist = function renderBundlelist() {
-    return _libChromeStorage2['default'].all().then(function (bundles) {
+    return BundleStore.get().then(function (bundles) {
       ReactDOM.render(React.createElement(_componentsBundleListJsx2['default'], { bundles: bundles }), document.querySelector('.content'));
+    })['catch'](function (error) {
+      return console.error("Couldn't render BundleList: " + error);
     });
   };
 
@@ -569,24 +594,19 @@ var Commands = _interopRequireWildcard(_commands);
   };
 
   _libChromeStorage2['default'].onChange(function (changes) {
-    renderBundlelist();
     Object.keys(changes).some(function (key) {
-      var _changes$key = changes[key];
-      var newValue = _changes$key.newValue;
-      var oldValue = _changes$key.oldValue;
-
-      if (!oldValue) {
-        toggleCreating();
-        renderNavbar();
-        return true;
+      if (key === 'bundles') {
+        renderBundlelist();
+        if (isCreating) {
+          toggleCreating();
+          return true;
+        }
       }
     });
   });
 
   renderNavbar();
-  renderBundlelist()['catch'](function (error) {
-    console.error("Couldn't render BundleList: " + error);
-  });
+  renderBundlelist();
 })();
 
 },{"../lib/chrome-storage":1,"./bundle-store":2,"./commands":4,"./components/bundle-list.jsx":7,"./components/navbar.jsx":9}]},{},[1,4,11,3,2]);

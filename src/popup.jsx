@@ -5,6 +5,7 @@ import BundleList from './components/bundle-list.jsx'
 import * as Commands from './commands'
 
 (() => {
+  // taken from: https://gist.github.com/jed/982883
   const idGenerator = (a) => a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,idGenerator)
 
   const Bundle = eventuality.defineAggregate({
@@ -46,9 +47,10 @@ import * as Commands from './commands'
   }
 
   const renderBundlelist = () => {
-    return ChromeStorage.all().then(bundles => {
+    return BundleStore.get().then((bundles) => {
       ReactDOM.render(<BundleList bundles={bundles}/>, document.querySelector('.content'))
     })
+    .catch(error => console.error("Couldn't render BundleList: " + error) )
   }
 
   const toggleCreating = () => {
@@ -57,17 +59,17 @@ import * as Commands from './commands'
   }
 
   ChromeStorage.onChange(changes => {
-    renderBundlelist()
     Object.keys(changes).some(key => {
-      let {newValue, oldValue} =  changes[key]
-      if (!oldValue) {
-        toggleCreating()
-        renderNavbar()
-        return true
+      if (key === 'bundles') {
+        renderBundlelist()
+        if (isCreating) {
+          toggleCreating()
+          return true
+        }
       }
     })
   })
 
   renderNavbar()
-  renderBundlelist().catch(error => { console.error("Couldn't render BundleList: " + error) })
+  renderBundlelist()
 })()
