@@ -1,5 +1,6 @@
 import ChromeStorage from '../lib/chrome-storage'
 import * as BundleStore from './bundle-store'
+import * as BundleEventStore from './event-store'
 import Navbar from './components/navbar.jsx'
 import BundleList from './components/bundle-list.jsx'
 import * as Commands from './commands'
@@ -18,20 +19,30 @@ import * as Commands from './commands'
     methods: {}
   })
 
-  const BundleEventStore = eventuality.EventStore()
-
   const BundleRepository = eventuality.Repository('Bundle', Bundle, BundleEventStore)
 
   const BundleCommandHandlers = {
-    [Commands.CreateBundle.name]: ({name}) => BundleRepository.add({name})
+    [Commands.CreateBundle.name]: ({name}) => {
+      return BundleRepository.add({name})
+    },
+    [Commands.DeleteBundle.name]: ({id}) => {
+      return BundleRepository.delete(id)
+    }
   }
 
   const BundleEventBus = eventuality.EventBus()
 
-  const BundleCreatedEventListener = event => BundleStore.addBundle(event.state)
+  const BundleCreatedEventListener = event => {
+    BundleStore.add(Object.assign({}, event.state, {id: event.aggregateId}))
+  }
+
+  const BundleDeletedEventListener = event => {
+    BundleStore.remove(event.aggregateId)
+  }
 
   BundleEventBus.registerListeners({
-    BundleCreatedEvent: [BundleCreatedEventListener]
+    BundleCreatedEvent: [BundleCreatedEventListener],
+    BundleDeletedEvent: [BundleDeletedEventListener]
   })
 
   const BundleFlow = eventuality.Flow({
@@ -48,7 +59,7 @@ import * as Commands from './commands'
 
   const renderBundlelist = () => {
     return BundleStore.get().then((bundles) => {
-      ReactDOM.render(<BundleList bundles={bundles}/>, document.querySelector('.content'))
+      ReactDOM.render(<BundleList bundles={bundles} dispatch={BundleFlow.dispatch}/>, document.querySelector('.content'))
     })
     .catch(error => console.error("Couldn't render BundleList: " + error) )
   }
@@ -58,7 +69,8 @@ import * as Commands from './commands'
     renderNavbar()
   }
 
-  ChromeStorage.onChange(changes => {
+  const storage = ChromeStorage('sync')
+  storage.onChange(changes => {
     Object.keys(changes).some(key => {
       if (key === 'bundles') {
         renderBundlelist()

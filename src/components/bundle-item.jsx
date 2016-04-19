@@ -1,8 +1,9 @@
 import BundleLink from './bundle-link.jsx'
 import * as Bundle from '../bundle'
 import * as BundleStore from '../bundle-store'
+import {DeleteBundle} from '../commands'
 
-export default ({name, open, links}) => {
+export default ({id, name, open, links, dispatch}) => {
   const toggle = (e) => {
     let bundle = Bundle.create({name, links, open: !open})
     BundleStore.updateBundle(name, bundle)
@@ -18,9 +19,7 @@ export default ({name, open, links}) => {
     })
   }
 
-  const deleteBundle = (e) => {
-    BundleStore.removeBundle(name)
-  }
+  const deleteBundle = (e) => dispatch(DeleteBundle({id}))
 
   const linksClasses = classNames({
     links: true,

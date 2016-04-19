@@ -1,11 +1,10 @@
-import ChromeStorage from '../../lib/chrome-storage'
 import BundleItem from './bundle-item.jsx'
 
-export default ({bundles}) => {
+export default ({bundles, dispatch}) => {
 
-  const bundleItems = Object.keys(bundles).map(name => {
-    let item = bundles[name]
-    return <BundleItem name={item.name} open={item.open} links={item.links}/>
+  const bundleItems = Object.keys(bundles).map(id => {
+    let item = bundles[id]
+    return <BundleItem dispatch={dispatch} id={id} name={item.name} open={item.open} links={item.links}/>
   })
 
   return (

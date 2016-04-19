@@ -1,39 +1,46 @@
 import ChromeStorage from '../lib/chrome-storage'
 import {create} from './bundle'
 
+const storage = ChromeStorage('sync')
 const BUNDLES  = 'bundles'
 
 export function get() {
-  return ChromeStorage.get(BUNDLES).then(bundles => bundles || {})
+  return storage.get(BUNDLES).then(bundles =>bundles || {})
 }
 
-export function addBundle({name, links}) {
-  ChromeStorage.get(BUNDLES)
+export function save(bundles) {
+  return storage.set(BUNDLES, bundles)
+}
+
+export function add({id, name, links}) {
+  storage.get(BUNDLES)
   .then((bundles={}) => {
-    bundles[name] = {name, links}
+    bundles[id] = {id, name, links}
     return bundles
   })
-  .then(bundles => {
-    ChromeStorage.set(BUNDLES, bundles)
-  })
+  .then(save)
   .catch(err => { console.error(err) })
 }
 
 export function addLinkToBundle(name, link) {
-  ChromeStorage.get(name)
+  storage.get(name)
   .then(bundle => {
     bundle.links.push(link)
-    ChromeStorage.set(name, bundle)
+    storage.set(name, bundle)
   })
   .catch(err => { console.error(err) })
 }
 
 export function updateBundle(name, bundle) {
-  ChromeStorage.set(name, bundle)
+  storage.set(name, bundle)
   .catch(err => { console.error(err) })
 }
 
-export function removeBundle(name) {
-  ChromeStorage.remove(name)
+export function remove(id) {
+  get().then(bundles => {
+    delete bundles[id]
+    return bundles
+  })
+  .then(save)
   .catch(err => { console.error(err) })
 }

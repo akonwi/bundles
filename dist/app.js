@@ -1,113 +1,128 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
+
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
+  } else {
+    obj[key] = value;
+  }return obj;
+}
 
-var storage = chrome.storage.sync;
-var runtime = chrome.runtime;
+var version = { value: '0.0.4' };
 
-var ChromeStorage = {};
-Object.defineProperties(ChromeStorage, {
-  _VERSION: {
-    value: '0.0.2'
-  },
+exports['default'] = function () {
+  var type = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+  var _chrome = chrome;
+  var runtime = _chrome.runtime;
 
-  /**
-   * @param callback to run when data changes
-   *   function(changes) {}
-   */
-  onChange: {
-    value: function value(listener) {
-      chrome.storage.onChanged.addListener(listener);
-    }
-  },
+  var storage = null;
 
-  /**
-   * @param callback to remove from data changes
-   */
-  unsubscribe: {
-    value: function value(listener) {
-      chrome.storage.onChanged.removeListener(listener);
-    }
-  },
+  if (type === null) throw new Error("Please specify which type of storage to use. (local or sync)");
+  if (type === "local") storage = chrome.storage.local;else if (type === "sync") storage = chrome.storage.sync;
 
-  /**
-   * Save something
-   *
-   * @param key String key name
-   * @param val Any object to save with key
-   */
-  set: {
-    value: function value(key, val) {
-      var toSave = _defineProperty({}, key, val);
-      return new Promise(function (resolve, reject) {
-        storage.set(toSave, function () {
-          if (runtime.lastError) return reject(runtime.lastError);
-          resolve(val);
+  var ChromeStorage = {};
+  Object.defineProperties(ChromeStorage, {
+    _VERSION: version,
+
+    /**
+    * @param callback to run when data changes
+    *   function(changes) {}
+    */
+    onChange: {
+      value: function value(listener) {
+        chrome.storage.onChanged.addListener(listener);
+      }
+    },
+
+    /**
+    * @param callback to remove from data changes
+    */
+    unsubscribe: {
+      value: function value(listener) {
+        chrome.storage.onChanged.removeListener(listener);
+      }
+    },
+
+    /**
+    * Save something
+    *
+    * @param key String key name
+    * @param val Any object to save with key
+    */
+    set: {
+      value: function value(key, val) {
+        var toSave = _defineProperty({}, key, val);
+        return new Promise(function (resolve, reject) {
+          storage.set(toSave, function () {
+            if (runtime.lastError) return reject(runtime.lastError);
+            resolve(val);
+          });
         });
-      });
-    }
-  },
+      }
+    },
 
-  /**
-   * Retrieve data
-   *
-   * @param key String of key or Array of keys to retrieve
-   *   If given one key, it resolves to just the value
-   *   If given an array of keys, it resolves to an object with key/value pairs
-   */
-  get: {
-    value: function value(key) {
-      return new Promise(function (resolve, reject) {
-        storage.get(key, function (results) {
-          if (key.trim !== undefined) results = results[key];
-          if (runtime.lastError) return reject(runtime.lastError);
-          resolve(results);
+    /**
+    * Retrieve data
+    *
+    * @param key String of key or Array of keys to retrieve
+    *   If given one key, it resolves to just the value
+    *   If given an array of keys, it resolves to an object with key/value pairs
+    */
+    get: {
+      value: function value(key) {
+        return new Promise(function (resolve, reject) {
+          storage.get(key, function (results) {
+            if (key.trim !== undefined) results = results[key];
+            if (runtime.lastError) return reject(runtime.lastError);
+            resolve(results);
+          });
         });
-      });
-    }
-  },
+      }
+    },
 
-  /**
-   * Retrieve total collection
-   *
-   * resolves to an object with key/value pairs
-   */
-  all: {
-    value: function value() {
-      return new Promise(function (resolve, reject) {
-        storage.get(null, function (items) {
-          if (runtime.lastError) return reject(runtime.lastError);
-          resolve(items);
+    /**
+    * Retrieve total collection
+    *
+    * resolves to an object with key/value pairs
+    */
+    all: {
+      value: function value() {
+        return new Promise(function (resolve, reject) {
+          storage.get(null, function (items) {
+            if (runtime.lastError) return reject(runtime.lastError);
+            resolve(items);
+          });
         });
-      });
-    }
-  },
+      }
+    },
 
-  /**
-   * Delete data at a key
-   *
-   * @param key String of key
-   */
-  remove: {
-    value: function value(key) {
-      if (key === undefined) throw new Error("No keys given to remove");
-      return new Promise(function (resolve, reject) {
-        storage.remove(key, function () {
-          if (runtime.lastError) return reject(runtime.lastError);
-          resolve();
+    /**
+    * Delete data at a key
+    *
+    * @param key String of key
+    */
+    remove: {
+      value: function value(key) {
+        if (key === undefined) throw new Error("No keys given to remove");
+        return new Promise(function (resolve, reject) {
+          storage.remove(key, function () {
+            if (runtime.lastError) return reject(runtime.lastError);
+            resolve();
+          });
         });
-      });
+      }
     }
-  }
-});
-Object.preventExtensions(ChromeStorage);
+  });
+  return Object.preventExtensions(ChromeStorage);
+};
 
-exports['default'] = ChromeStorage;
 module.exports = exports['default'];
+
 
 },{}],2:[function(require,module,exports){
 'use strict';
@@ -116,10 +131,11 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports.get = get;
-exports.addBundle = addBundle;
+exports.save = save;
+exports.add = add;
 exports.addLinkToBundle = addLinkToBundle;
 exports.updateBundle = updateBundle;
-exports.removeBundle = removeBundle;
+exports.remove = remove;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -129,47 +145,54 @@ var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
 
 var _bundle = require('./bundle');
 
+var storage = (0, _libChromeStorage2['default'])('sync');
 var BUNDLES = 'bundles';
 
 function get() {
-  return _libChromeStorage2['default'].get(BUNDLES).then(function (bundles) {
+  return storage.get(BUNDLES).then(function (bundles) {
     return bundles || {};
   });
 }
 
-function addBundle(_ref) {
+function save(bundles) {
+  return storage.set(BUNDLES, bundles);
+}
+
+function add(_ref) {
+  var id = _ref.id;
   var name = _ref.name;
   var links = _ref.links;
 
-  _libChromeStorage2['default'].get(BUNDLES).then(function () {
+  storage.get(BUNDLES).then(function () {
     var bundles = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-    bundles[name] = { name: name, links: links };
+    bundles[id] = { id: id, name: name, links: links };
     return bundles;
-  }).then(function (bundles) {
-    _libChromeStorage2['default'].set(BUNDLES, bundles);
-  })['catch'](function (err) {
+  }).then(save)['catch'](function (err) {
     console.error(err);
   });
 }
 
 function addLinkToBundle(name, link) {
-  _libChromeStorage2['default'].get(name).then(function (bundle) {
+  storage.get(name).then(function (bundle) {
     bundle.links.push(link);
-    _libChromeStorage2['default'].set(name, bundle);
+    storage.set(name, bundle);
   })['catch'](function (err) {
     console.error(err);
   });
 }
 
 function updateBundle(name, bundle) {
-  _libChromeStorage2['default'].set(name, bundle)['catch'](function (err) {
+  storage.set(name, bundle)['catch'](function (err) {
     console.error(err);
   });
 }
 
-function removeBundle(name) {
-  _libChromeStorage2['default'].remove(name)['catch'](function (err) {
+function remove(id) {
+  get().then(function (bundles) {
+    delete bundles[id];
+    return bundles;
+  }).then(save)['catch'](function (err) {
     console.error(err);
   });
 }
@@ -217,11 +240,18 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports.CreateBundle = CreateBundle;
+exports.DeleteBundle = DeleteBundle;
 
 function CreateBundle(_ref) {
   var name = _ref.name;
 
   return { name: 'CreateBundle', message: { name: name } };
+}
+
+function DeleteBundle(_ref2) {
+  var id = _ref2.id;
+
+  return { name: 'DeleteBundle', message: { id: id } };
 }
 
 },{}],5:[function(require,module,exports){
@@ -247,10 +277,14 @@ var _bundleStore = require('../bundle-store');
 
 var BundleStore = _interopRequireWildcard(_bundleStore);
 
+var _commands = require('../commands');
+
 exports['default'] = function (_ref) {
+  var id = _ref.id;
   var name = _ref.name;
   var open = _ref.open;
   var links = _ref.links;
+  var dispatch = _ref.dispatch;
 
   var toggle = function toggle(e) {
     var bundle = Bundle.create({ name: name, links: links, open: !open });
@@ -274,7 +308,7 @@ exports['default'] = function (_ref) {
   };
 
   var deleteBundle = function deleteBundle(e) {
-    BundleStore.removeBundle(name);
+    return dispatch((0, _commands.DeleteBundle)({ id: id }));
   };
 
   var linksClasses = classNames({
@@ -348,7 +382,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"../bundle":3,"../bundle-store":2,"./bundle-link.jsx":6}],6:[function(require,module,exports){
+},{"../bundle":3,"../bundle-store":2,"../commands":4,"./bundle-link.jsx":6}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -385,20 +419,17 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _libChromeStorage = require('../../lib/chrome-storage');
-
-var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
-
 var _bundleItemJsx = require('./bundle-item.jsx');
 
 var _bundleItemJsx2 = _interopRequireDefault(_bundleItemJsx);
 
 exports['default'] = function (_ref) {
   var bundles = _ref.bundles;
+  var dispatch = _ref.dispatch;
 
-  var bundleItems = Object.keys(bundles).map(function (name) {
-    var item = bundles[name];
-    return React.createElement(_bundleItemJsx2['default'], { name: item.name, open: item.open, links: item.links });
+  var bundleItems = Object.keys(bundles).map(function (id) {
+    var item = bundles[id];
+    return React.createElement(_bundleItemJsx2['default'], { dispatch: dispatch, id: id, name: item.name, open: item.open, links: item.links });
   });
 
   return React.createElement(
@@ -410,7 +441,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"../../lib/chrome-storage":1,"./bundle-item.jsx":5}],8:[function(require,module,exports){
+},{"./bundle-item.jsx":5}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -507,6 +538,41 @@ module.exports = exports['default'];
 },{"../commands":4}],11:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+exports.add = add;
+exports.getEvents = getEvents;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _libChromeStorage = require('../lib/chrome-storage');
+
+var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
+
+var storage = (0, _libChromeStorage2['default'])('sync');
+var EVENTS = 'events';
+
+var save = function save(events) {
+  return storage.set(EVENTS, events);
+};
+
+function add(event) {
+  getEvents().then(function (events) {
+    events.push(event);
+    return events;
+  }).then(save);
+}
+
+function getEvents() {
+  return storage.get(EVENTS).then(function (events) {
+    return events || [];
+  });
+}
+
+},{"../lib/chrome-storage":1}],12:[function(require,module,exports){
+'use strict';
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -521,6 +587,10 @@ var _bundleStore = require('./bundle-store');
 
 var BundleStore = _interopRequireWildcard(_bundleStore);
 
+var _eventStore = require('./event-store');
+
+var BundleEventStore = _interopRequireWildcard(_eventStore);
+
 var _componentsNavbarJsx = require('./components/navbar.jsx');
 
 var _componentsNavbarJsx2 = _interopRequireDefault(_componentsNavbarJsx);
@@ -534,6 +604,8 @@ var _commands = require('./commands');
 var Commands = _interopRequireWildcard(_commands);
 
 (function () {
+  var _BundleCommandHandlers;
+
   // taken from: https://gist.github.com/jed/982883
   var idGenerator = function idGenerator(a) {
     return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, idGenerator);
@@ -549,23 +621,31 @@ var Commands = _interopRequireWildcard(_commands);
     methods: {}
   });
 
-  var BundleEventStore = eventuality.EventStore();
-
   var BundleRepository = eventuality.Repository('Bundle', Bundle, BundleEventStore);
 
-  var BundleCommandHandlers = _defineProperty({}, Commands.CreateBundle.name, function (_ref) {
+  var BundleCommandHandlers = (_BundleCommandHandlers = {}, _defineProperty(_BundleCommandHandlers, Commands.CreateBundle.name, function (_ref) {
     var name = _ref.name;
+
     return BundleRepository.add({ name: name });
-  });
+  }), _defineProperty(_BundleCommandHandlers, Commands.DeleteBundle.name, function (_ref2) {
+    var id = _ref2.id;
+
+    return BundleRepository['delete'](id);
+  }), _BundleCommandHandlers);
 
   var BundleEventBus = eventuality.EventBus();
 
   var BundleCreatedEventListener = function BundleCreatedEventListener(event) {
-    return BundleStore.addBundle(event.state);
+    BundleStore.add(Object.assign({}, event.state, { id: event.aggregateId }));
+  };
+
+  var BundleDeletedEventListener = function BundleDeletedEventListener(event) {
+    BundleStore.remove(event.aggregateId);
   };
 
   BundleEventBus.registerListeners({
-    BundleCreatedEvent: [BundleCreatedEventListener]
+    BundleCreatedEvent: [BundleCreatedEventListener],
+    BundleDeletedEvent: [BundleDeletedEventListener]
   });
 
   var BundleFlow = eventuality.Flow({
@@ -582,7 +662,7 @@ var Commands = _interopRequireWildcard(_commands);
 
   var renderBundlelist = function renderBundlelist() {
     return BundleStore.get().then(function (bundles) {
-      ReactDOM.render(React.createElement(_componentsBundleListJsx2['default'], { bundles: bundles }), document.querySelector('.content'));
+      ReactDOM.render(React.createElement(_componentsBundleListJsx2['default'], { bundles: bundles, dispatch: BundleFlow.dispatch }), document.querySelector('.content'));
     })['catch'](function (error) {
       return console.error("Couldn't render BundleList: " + error);
     });
@@ -593,7 +673,8 @@ var Commands = _interopRequireWildcard(_commands);
     renderNavbar();
   };
 
-  _libChromeStorage2['default'].onChange(function (changes) {
+  var storage = (0, _libChromeStorage2['default'])('sync');
+  storage.onChange(function (changes) {
     Object.keys(changes).some(function (key) {
       if (key === 'bundles') {
         renderBundlelist();
@@ -609,4 +690,4 @@ var Commands = _interopRequireWildcard(_commands);
   renderBundlelist();
 })();
 
-},{"../lib/chrome-storage":1,"./bundle-store":2,"./commands":4,"./components/bundle-list.jsx":7,"./components/navbar.jsx":9}]},{},[1,4,11,3,2]);
+},{"../lib/chrome-storage":1,"./bundle-store":2,"./commands":4,"./components/bundle-list.jsx":7,"./components/navbar.jsx":9,"./event-store":11}]},{},[1,4,12,3,2]);
