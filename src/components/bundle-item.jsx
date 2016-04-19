@@ -1,7 +1,7 @@
 import BundleLink from './bundle-link.jsx'
 import * as Bundle from '../bundle'
 import * as BundleStore from '../bundle-store'
-import {DeleteBundle} from '../commands'
+import {DeleteBundle, AddLink} from '../commands'
 
 export default ({id, name, open, links, dispatch}) => {
   const toggle = (e) => {
@@ -15,7 +15,7 @@ export default ({id, name, open, links, dispatch}) => {
 
   const addLink = (e) => {
     chrome.tabs.getSelected(null, ({title, url}) => {
-      BundleStore.addLinkToBundle(name, {title, url})
+      dispatch(AddLink({id, title, url}))
     })
   }
 

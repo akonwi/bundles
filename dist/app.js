@@ -173,10 +173,12 @@ function add(_ref) {
   });
 }
 
-function addLinkToBundle(name, link) {
-  storage.get(name).then(function (bundle) {
+function addLinkToBundle(id, link) {
+  get().then(function (bundles) {
+    var bundle = bundles[id];
     bundle.links.push(link);
-    storage.set(name, bundle);
+    debugger;
+    save(bundles);
   })['catch'](function (err) {
     console.error(err);
   });
@@ -241,6 +243,7 @@ Object.defineProperty(exports, '__esModule', {
 });
 exports.CreateBundle = CreateBundle;
 exports.DeleteBundle = DeleteBundle;
+exports.AddLink = AddLink;
 
 function CreateBundle(_ref) {
   var name = _ref.name;
@@ -252,6 +255,14 @@ function DeleteBundle(_ref2) {
   var id = _ref2.id;
 
   return { name: 'DeleteBundle', message: { id: id } };
+}
+
+function AddLink(_ref3) {
+  var id = _ref3.id;
+  var title = _ref3.title;
+  var url = _ref3.url;
+
+  return { name: 'AddLink', message: { id: id, title: title, url: url } };
 }
 
 },{}],5:[function(require,module,exports){
@@ -303,7 +314,8 @@ exports['default'] = function (_ref) {
       var title = _ref3.title;
       var url = _ref3.url;
 
-      BundleStore.addLinkToBundle(name, { title: title, url: url });
+      dispatch((0, _commands.AddLink)({ id: id, title: title, url: url }));
+      // BundleStore.addLinkToBundle(name, {title, url})
     });
   };
 
@@ -618,7 +630,12 @@ var Commands = _interopRequireWildcard(_commands);
       links: [],
       name: null
     },
-    methods: {}
+    methods: {
+      addLink: function addLink(link) {
+        this.state.links.push(link);
+        return eventuality.Event({ name: 'LinkAddedToBundleEvent', aggregateId: this.id, payload: link, state: this.state });
+      }
+    }
   });
 
   var BundleRepository = eventuality.Repository('Bundle', Bundle, BundleEventStore);
@@ -631,6 +648,14 @@ var Commands = _interopRequireWildcard(_commands);
     var id = _ref2.id;
 
     return BundleRepository['delete'](id);
+  }), _defineProperty(_BundleCommandHandlers, Commands.AddLink.name, function (_ref3) {
+    var id = _ref3.id;
+    var title = _ref3.title;
+    var url = _ref3.url;
+
+    return BundleRepository.load(id).then(function (bundle) {
+      return bundle.addLink({ title: title, url: url });
+    });
   }), _BundleCommandHandlers);
 
   var BundleEventBus = eventuality.EventBus();
@@ -643,9 +668,14 @@ var Commands = _interopRequireWildcard(_commands);
     BundleStore.remove(event.aggregateId);
   };
 
+  var LinkAddedToBundleEventListener = function LinkAddedToBundleEventListener(event) {
+    BundleStore.addLinkToBundle(event.aggregateId, event.payload);
+  };
+
   BundleEventBus.registerListeners({
     BundleCreatedEvent: [BundleCreatedEventListener],
-    BundleDeletedEvent: [BundleDeletedEventListener]
+    BundleDeletedEvent: [BundleDeletedEventListener],
+    LinkAddedToBundleEvent: [LinkAddedToBundleEventListener]
   });
 
   var BundleFlow = eventuality.Flow({

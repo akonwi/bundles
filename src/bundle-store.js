@@ -22,11 +22,13 @@ export function add({id, name, links}) {
   .catch(err => { console.error(err) })
 }
 
-export function addLinkToBundle(name, link) {
-  storage.get(name)
-  .then(bundle => {
+export function addLinkToBundle(id, link) {
+  get()
+  .then(bundles => {
+    let bundle = bundles[id]
     bundle.links.push(link)
-    storage.set(name, bundle)
+    debugger
+    save(bundles)
   })
   .catch(err => { console.error(err) })
 }

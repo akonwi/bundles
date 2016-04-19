@@ -16,7 +16,12 @@ import * as Commands from './commands'
       links: [],
       name: null
     },
-    methods: {}
+    methods: {
+      addLink(link) {
+        this.state.links.push(link)
+        return eventuality.Event({name: 'LinkAddedToBundleEvent', aggregateId: this.id, payload: link, state: this.state})
+      }
+    }
   })
 
   const BundleRepository = eventuality.Repository('Bundle', Bundle, BundleEventStore)
@@ -27,6 +32,9 @@ import * as Commands from './commands'
     },
     [Commands.DeleteBundle.name]: ({id}) => {
       return BundleRepository.delete(id)
+    },
+    [Commands.AddLink.name]: ({id, title, url}) => {
+      return BundleRepository.load(id).then(bundle => bundle.addLink({title, url}))
     }
   }
 
@@ -40,9 +48,14 @@ import * as Commands from './commands'
     BundleStore.remove(event.aggregateId)
   }
 
+  const LinkAddedToBundleEventListener = event => {
+    BundleStore.addLinkToBundle(event.aggregateId, event.payload)
+  }
+
   BundleEventBus.registerListeners({
     BundleCreatedEvent: [BundleCreatedEventListener],
-    BundleDeletedEvent: [BundleDeletedEventListener]
+    BundleDeletedEvent: [BundleDeletedEventListener],
+    LinkAddedToBundleEvent: [LinkAddedToBundleEventListener]
   })
 
   const BundleFlow = eventuality.Flow({
