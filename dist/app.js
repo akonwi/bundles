@@ -480,11 +480,11 @@ var _newBundleInputJsx = require('./new-bundle-input.jsx');
 var _newBundleInputJsx2 = _interopRequireDefault(_newBundleInputJsx);
 
 exports['default'] = function (_ref) {
-  var flow = _ref.flow;
+  var dispatch = _ref.dispatch;
   var isCreating = _ref.isCreating;
   var toggleCreating = _ref.toggleCreating;
 
-  var logoInput = isCreating ? React.createElement(_newBundleInputJsx2['default'], { flow: flow }) : React.createElement(
+  var logoInput = isCreating ? React.createElement(_newBundleInputJsx2['default'], { dispatch: dispatch }) : React.createElement(
     'h2',
     { className: 'logo' },
     'Bundles'
@@ -518,7 +518,7 @@ Object.defineProperty(exports, '__esModule', {
 var _commands = require('../commands');
 
 exports['default'] = function (_ref) {
-  var flow = _ref.flow;
+  var dispatch = _ref.dispatch;
 
   var onKeyUp = function onKeyUp(_ref2) {
     var keyCode = _ref2.keyCode;
@@ -526,7 +526,7 @@ exports['default'] = function (_ref) {
 
     if (keyCode === 13) {
       var _name = target.value.trim();
-      if (_name.length > 0) flow.dispatch((0, _commands.CreateBundle)({ name: _name }));
+      if (_name.length > 0) dispatch((0, _commands.CreateBundle)({ name: _name }));
     }
   };
 
@@ -657,7 +657,7 @@ var Commands = _interopRequireWildcard(_commands);
   var isCreating = false;
 
   var renderNavbar = function renderNavbar() {
-    ReactDOM.render(React.createElement(_componentsNavbarJsx2['default'], { flow: BundleFlow, isCreating: isCreating, toggleCreating: toggleCreating }), document.querySelector('.navbar'));
+    ReactDOM.render(React.createElement(_componentsNavbarJsx2['default'], { dispatch: BundleFlow.dispatch, isCreating: isCreating, toggleCreating: toggleCreating }), document.querySelector('.navbar'));
   };
 
   var renderBundlelist = function renderBundlelist() {

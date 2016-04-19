@@ -54,7 +54,7 @@ import * as Commands from './commands'
   let isCreating = false
 
   const renderNavbar = () => {
-    ReactDOM.render(<Navbar flow={BundleFlow} isCreating={isCreating} toggleCreating={toggleCreating}/>, document.querySelector('.navbar'))
+    ReactDOM.render(<Navbar dispatch={BundleFlow.dispatch} isCreating={isCreating} toggleCreating={toggleCreating}/>, document.querySelector('.navbar'))
   }
 
   const renderBundlelist = () => {

@@ -1,10 +1,10 @@
 import {CreateBundle} from '../commands'
 
-export default ({flow}) => {
+export default ({dispatch}) => {
   const onKeyUp = ({keyCode, target}) => {
     if (keyCode === 13) {
       const name = target.value.trim()
-      if (name.length > 0) flow.dispatch(CreateBundle({name}))
+      if (name.length > 0) dispatch(CreateBundle({name}))
     }
   }
 

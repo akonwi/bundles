@@ -1,8 +1,8 @@
 import CreateBundleBtn from './create-bundle-btn.jsx'
 import NewBundleInput from './new-bundle-input.jsx'
 
-export default ({flow, isCreating, toggleCreating}) => {
-  const logoInput = isCreating ? <NewBundleInput flow={flow}/> : <h2 className='logo'>Bundles</h2>
+export default ({dispatch, isCreating, toggleCreating}) => {
+  const logoInput = isCreating ? <NewBundleInput dispatch={dispatch}/> : <h2 className='logo'>Bundles</h2>
   return (
     <div>
       <div className='nav-block small left'></div>
