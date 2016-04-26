@@ -131,10 +131,8 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports.get = get;
-exports.save = save;
 exports.add = add;
 exports.addLinkToBundle = addLinkToBundle;
-exports.updateBundle = updateBundle;
 exports.remove = remove;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -143,19 +141,17 @@ var _libChromeStorage = require('../lib/chrome-storage');
 
 var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
 
-var _bundle = require('./bundle');
-
 var storage = (0, _libChromeStorage2['default'])('sync');
 var BUNDLES = 'bundles';
+
+var save = function save(bundles) {
+  return storage.set(BUNDLES, bundles);
+};
 
 function get() {
   return storage.get(BUNDLES).then(function (bundles) {
     return bundles || {};
   });
-}
-
-function save(bundles) {
-  return storage.set(BUNDLES, bundles);
 }
 
 function add(_ref) {
@@ -177,15 +173,8 @@ function addLinkToBundle(id, link) {
   get().then(function (bundles) {
     var bundle = bundles[id];
     bundle.links.push(link);
-    debugger;
     save(bundles);
   })['catch'](function (err) {
-    console.error(err);
-  });
-}
-
-function updateBundle(name, bundle) {
-  storage.set(name, bundle)['catch'](function (err) {
     console.error(err);
   });
 }
@@ -199,43 +188,7 @@ function remove(id) {
   });
 }
 
-},{"../lib/chrome-storage":1,"./bundle":3}],3:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.create = create;
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
-
-var Bundle = {
-  name: undefined,
-  links: [],
-  open: false
-};
-
-function extend(target) {
-  for (var _len = arguments.length, sources = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    sources[_key - 1] = arguments[_key];
-  }
-
-  var obj = {};
-  sources = [target].concat(_toConsumableArray(sources));
-  sources.forEach(function (source) {
-    Object.keys(source).forEach(function (key) {
-      return obj[key] = source[key];
-    });
-  });
-  return obj;
-}
-
-function create(attrs) {
-  if (attrs.name === undefined) throw new Error("Cannot create a bundle without a name.");
-  return extend(Bundle, attrs);
-}
-
-},{}],4:[function(require,module,exports){
+},{"../lib/chrome-storage":1}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -265,7 +218,7 @@ function AddLink(_ref3) {
   return { name: 'AddLink', message: { id: id, title: title, url: url } };
 }
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -280,121 +233,118 @@ var _bundleLinkJsx = require('./bundle-link.jsx');
 
 var _bundleLinkJsx2 = _interopRequireDefault(_bundleLinkJsx);
 
-var _bundle = require('../bundle');
-
-var Bundle = _interopRequireWildcard(_bundle);
-
 var _bundleStore = require('../bundle-store');
 
 var BundleStore = _interopRequireWildcard(_bundleStore);
 
 var _commands = require('../commands');
 
-exports['default'] = function (_ref) {
-  var id = _ref.id;
-  var name = _ref.name;
-  var open = _ref.open;
-  var links = _ref.links;
-  var dispatch = _ref.dispatch;
+exports['default'] = React.createClass({
+  displayName: 'bundle-item',
 
-  var toggle = function toggle(e) {
-    var bundle = Bundle.create({ name: name, links: links, open: !open });
-    BundleStore.updateBundle(name, bundle);
-  };
+  getInitialState: function getInitialState() {
+    return { open: false };
+  },
 
-  var openLinks = function openLinks(e) {
-    links.forEach(function (_ref2) {
-      var url = _ref2.url;
+  openLinks: function openLinks(e) {
+    this.props.links.forEach(function (_ref) {
+      var url = _ref.url;
       chrome.tabs.create({ url: url });
     });
-  };
+  },
 
-  var addLink = function addLink(e) {
-    chrome.tabs.getSelected(null, function (_ref3) {
-      var title = _ref3.title;
-      var url = _ref3.url;
+  addLink: function addLink(e) {
+    var _this = this;
 
-      dispatch((0, _commands.AddLink)({ id: id, title: title, url: url }));
-      // BundleStore.addLinkToBundle(name, {title, url})
+    chrome.tabs.getSelected(null, function (_ref2) {
+      var title = _ref2.title;
+      var url = _ref2.url;
+
+      _this.props.dispatch((0, _commands.AddLink)({ id: _this.props.id, title: title, url: url }));
     });
-  };
+  },
 
-  var deleteBundle = function deleteBundle(e) {
-    return dispatch((0, _commands.DeleteBundle)({ id: id }));
-  };
+  deleteBundle: function deleteBundle(e) {
+    this.props.dispatch((0, _commands.DeleteBundle)({ id: this.props.id }));
+  },
 
-  var linksClasses = classNames({
-    links: true,
-    open: open
-  });
+  toggle: function toggle(e) {
+    this.setState({ open: !this.state.open });
+  },
 
-  var triangleClasses = classNames({
-    triangle: true,
-    down: open
-  });
+  render: function render() {
+    var linksClasses = classNames({
+      links: true,
+      open: this.state.open
+    });
 
-  var bundleLinks = links.map(function (_ref4) {
-    var url = _ref4.url;
-    var title = _ref4.title;
+    var triangleClasses = classNames({
+      triangle: true,
+      down: this.state.open
+    });
 
-    return React.createElement(_bundleLinkJsx2['default'], { url: url, title: title });
-  });
+    var bundleLinks = this.props.links.map(function (_ref3) {
+      var url = _ref3.url;
+      var title = _ref3.title;
 
-  return React.createElement(
-    'li',
-    { className: 'bundle' },
-    React.createElement(
-      'div',
-      { className: 'title-bar' },
-      React.createElement('div', { className: triangleClasses }),
-      React.createElement(
-        'h4',
-        { onClick: toggle },
-        name
-      ),
+      return React.createElement(_bundleLinkJsx2['default'], { url: url, title: title });
+    });
+
+    return React.createElement(
+      'li',
+      { className: 'bundle' },
       React.createElement(
         'div',
-        { className: 'controls' },
+        { className: 'title-bar' },
+        React.createElement('div', { className: triangleClasses }),
         React.createElement(
-          'a',
-          { href: '#', className: 'btn', title: 'Open all' },
-          React.createElement(
-            'i',
-            { className: 'material-icons', onClick: openLinks },
-            'launch'
-          )
+          'h4',
+          { onClick: this.toggle },
+          this.props.name
         ),
         React.createElement(
-          'a',
-          { href: '#', className: 'btn', title: 'Add current page' },
+          'div',
+          { className: 'controls' },
           React.createElement(
-            'i',
-            { className: 'material-icons', onClick: addLink },
-            'add'
-          )
-        ),
-        React.createElement(
-          'a',
-          { href: '#', className: 'btn', title: 'Delete' },
+            'a',
+            { href: '#', className: 'btn', title: 'Open all' },
+            React.createElement(
+              'i',
+              { className: 'material-icons', onClick: this.openLinks },
+              'launch'
+            )
+          ),
           React.createElement(
-            'i',
-            { className: 'material-icons', onClick: deleteBundle },
-            'delete'
+            'a',
+            { href: '#', className: 'btn', title: 'Add current page' },
+            React.createElement(
+              'i',
+              { className: 'material-icons', onClick: this.addLink },
+              'add'
+            )
+          ),
+          React.createElement(
+            'a',
+            { href: '#', className: 'btn', title: 'Delete' },
+            React.createElement(
+              'i',
+              { className: 'material-icons', onClick: this.deleteBundle },
+              'delete'
+            )
           )
         )
+      ),
+      React.createElement(
+        'ul',
+        { className: linksClasses },
+        bundleLinks
       )
-    ),
-    React.createElement(
-      'ul',
-      { className: linksClasses },
-      bundleLinks
-    )
-  );
-};
-
+    );
+  }
+});
 module.exports = exports['default'];
 
-},{"../bundle":3,"../bundle-store":2,"../commands":4,"./bundle-link.jsx":6}],6:[function(require,module,exports){
+},{"../bundle-store":2,"../commands":3,"./bundle-link.jsx":5}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -422,7 +372,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -441,7 +391,7 @@ exports['default'] = function (_ref) {
 
   var bundleItems = Object.keys(bundles).map(function (id) {
     var item = bundles[id];
-    return React.createElement(_bundleItemJsx2['default'], { dispatch: dispatch, id: id, name: item.name, open: item.open, links: item.links });
+    return React.createElement(_bundleItemJsx2['default'], { dispatch: dispatch, id: id, name: item.name, links: item.links });
   });
 
   return React.createElement(
@@ -453,7 +403,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"./bundle-item.jsx":5}],8:[function(require,module,exports){
+},{"./bundle-item.jsx":4}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -474,7 +424,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -520,7 +470,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"./create-bundle-btn.jsx":8,"./new-bundle-input.jsx":10}],10:[function(require,module,exports){
+},{"./create-bundle-btn.jsx":7,"./new-bundle-input.jsx":9}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -547,7 +497,7 @@ exports['default'] = function (_ref) {
 
 module.exports = exports['default'];
 
-},{"../commands":4}],11:[function(require,module,exports){
+},{"../commands":3}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -582,7 +532,7 @@ function getEvents() {
   });
 }
 
-},{"../lib/chrome-storage":1}],12:[function(require,module,exports){
+},{"../lib/chrome-storage":1}],11:[function(require,module,exports){
 'use strict';
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
@@ -720,4 +670,4 @@ var Commands = _interopRequireWildcard(_commands);
   renderBundlelist();
 })();
 
-},{"../lib/chrome-storage":1,"./bundle-store":2,"./commands":4,"./components/bundle-list.jsx":7,"./components/navbar.jsx":9,"./event-store":11}]},{},[1,4,12,3,2]);
+},{"../lib/chrome-storage":1,"./bundle-store":2,"./commands":3,"./components/bundle-list.jsx":6,"./components/navbar.jsx":8,"./event-store":10}]},{},[11]);

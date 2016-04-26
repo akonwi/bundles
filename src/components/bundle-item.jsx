@@ -1,60 +1,64 @@
 import BundleLink from './bundle-link.jsx'
-import * as Bundle from '../bundle'
 import * as BundleStore from '../bundle-store'
 import {DeleteBundle, AddLink} from '../commands'
 
-export default ({id, name, open, links, dispatch}) => {
-  const toggle = (e) => {
-    let bundle = Bundle.create({name, links, open: !open})
-    BundleStore.updateBundle(name, bundle)
-  }
+export default React.createClass({
+  getInitialState() {
+    return { open: false }
+  },
 
-  const openLinks = (e) => {
-    links.forEach(({url}) => { chrome.tabs.create({url}) })
-  }
+  openLinks(e) {
+    this.props.links.forEach(({url}) => { chrome.tabs.create({url}) })
+  },
 
-  const addLink = (e) => {
+  addLink(e) {
     chrome.tabs.getSelected(null, ({title, url}) => {
-      dispatch(AddLink({id, title, url}))
+      this.props.dispatch(AddLink({id: this.props.id, title, url}))
     })
-  }
+  },
 
-  const deleteBundle = (e) => dispatch(DeleteBundle({id}))
+  deleteBundle(e) { this.props.dispatch(DeleteBundle({id: this.props.id})) },
 
-  const linksClasses = classNames({
-    links: true,
-    open
-  })
+  toggle(e) {
+    this.setState({open: !this.state.open})
+  },
 
-  const triangleClasses = classNames({
-    triangle: true,
-    down: open
-  })
+  render() {
+    const linksClasses = classNames({
+      links: true,
+      open: this.state.open
+    })
 
-  const bundleLinks = links.map(({url, title}) => {
-    return <BundleLink url={url} title={title}/>
-  })
+    const triangleClasses = classNames({
+      triangle: true,
+      down: this.state.open
+    })
 
-  return (
-    <li className='bundle'>
-      <div className='title-bar'>
-        <div className={triangleClasses}></div>
-        <h4 onClick={toggle}>{ name }</h4>
-        <div className='controls'>
-          <a href='#' className='btn' title='Open all'>
-            <i className='material-icons' onClick={openLinks}>launch</i>
-          </a>
-          <a href='#' className='btn' title='Add current page'>
-            <i className='material-icons' onClick={addLink}>add</i>
-          </a>
-          <a href='#' className='btn' title='Delete'>
-            <i className='material-icons' onClick={deleteBundle}>delete</i>
-          </a>
+    const bundleLinks = this.props.links.map(({url, title}) => {
+      return <BundleLink url={url} title={title}/>
+    })
+
+    return (
+      <li className='bundle'>
+        <div className='title-bar'>
+          <div className={triangleClasses}></div>
+          <h4 onClick={this.toggle}>{ this.props.name }</h4>
+          <div className='controls'>
+            <a href='#' className='btn' title='Open all'>
+              <i className='material-icons' onClick={this.openLinks}>launch</i>
+            </a>
+            <a href='#' className='btn' title='Add current page'>
+              <i className='material-icons' onClick={this.addLink}>add</i>
+            </a>
+            <a href='#' className='btn' title='Delete'>
+              <i className='material-icons' onClick={this.deleteBundle}>delete</i>
+            </a>
+          </div>
         </div>
-      </div>
-      <ul className={linksClasses}>
-        { bundleLinks }
-      </ul>
-    </li>
-  )
-}
+        <ul className={linksClasses}>
+          { bundleLinks }
+        </ul>
+      </li>
+    )
+  }
+})

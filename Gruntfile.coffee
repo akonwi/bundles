@@ -12,8 +12,7 @@ module.exports = (grunt) ->
         transform: ['babelify']
       dist:
         files:
-          'dist/app.js': ['lib/chrome-storage.js', 'src/commands.js', 'src/popup.jsx', 'src/bundle.js', 'src/bundle-store.js']
-          'dist/specs.js': ['spec/*.js']
+          'dist/app.js': ['src/popup.jsx']
     watch:
       styles:
         files: 'styles.sass'
