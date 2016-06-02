@@ -1,4 +1,4 @@
-import ChromeStorage from '../lib/chrome-storage'
+import {create, SYNC} from '../lib/chrome-storage'
 import * as BundleStore from './bundle-store'
 import * as BundleEventStore from './event-store'
 import Navbar from './components/navbar.jsx'
@@ -34,7 +34,7 @@ import * as Commands from './commands'
       return BundleRepository.delete(id)
     },
     [Commands.AddLink.name]: ({id, title, url}) => {
-      return BundleRepository.load(id).then(bundle => bundle.addLink({title, url}))
+      return BundleRepository.load(id).then(bundle => bundle.addLink({title, url}, bundle.state))
     }
   }
 
@@ -71,7 +71,7 @@ import * as Commands from './commands'
   }
 
   const renderBundlelist = () => {
-    return BundleStore.get().then((bundles) => {
+    return BundleStore.get().then(bundles => {
       ReactDOM.render(<BundleList bundles={bundles} dispatch={BundleFlow.dispatch}/>, document.querySelector('.content'))
     })
     .catch(error => console.error("Couldn't render BundleList: " + error) )
@@ -82,7 +82,7 @@ import * as Commands from './commands'
     renderNavbar()
   }
 
-  const storage = ChromeStorage('sync')
+  const storage = create(SYNC)
   storage.onChange(changes => {
     Object.keys(changes).some(key => {
       if (key === 'bundles') {

@@ -4,6 +4,7 @@
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+exports.create = create;
 
 function _defineProperty(obj, key, value) {
   if (key in obj) {
@@ -13,9 +14,15 @@ function _defineProperty(obj, key, value) {
   }return obj;
 }
 
-var version = { value: '0.0.4' };
+var version = { value: '1.0.1' };
 
-exports['default'] = function () {
+var LOCAL = "local";
+exports.LOCAL = LOCAL;
+var SYNC = "sync";
+
+exports.SYNC = SYNC;
+
+function create() {
   var type = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
   var _chrome = chrome;
   var runtime = _chrome.runtime;
@@ -23,7 +30,7 @@ exports['default'] = function () {
   var storage = null;
 
   if (type === null) throw new Error("Please specify which type of storage to use. (local or sync)");
-  if (type === "local") storage = chrome.storage.local;else if (type === "sync") storage = chrome.storage.sync;
+  if (type === LOCAL) storage = chrome.storage.local;else if (type === SYNC) storage = chrome.storage.sync;
 
   var ChromeStorage = {};
   Object.defineProperties(ChromeStorage, {
@@ -77,8 +84,8 @@ exports['default'] = function () {
       value: function value(key) {
         return new Promise(function (resolve, reject) {
           storage.get(key, function (results) {
-            if (key.trim !== undefined) results = results[key];
             if (runtime.lastError) return reject(runtime.lastError);
+            if (key.trim !== undefined) results = results[key];
             resolve(results);
           });
         });
@@ -119,9 +126,7 @@ exports['default'] = function () {
     }
   });
   return Object.preventExtensions(ChromeStorage);
-};
-
-module.exports = exports['default'];
+}
 
 
 },{}],2:[function(require,module,exports){
@@ -135,13 +140,9 @@ exports.add = add;
 exports.addLinkToBundle = addLinkToBundle;
 exports.remove = remove;
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 var _libChromeStorage = require('../lib/chrome-storage');
 
-var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
-
-var storage = (0, _libChromeStorage2['default'])('sync');
+var storage = (0, _libChromeStorage.create)(_libChromeStorage.SYNC);
 var BUNDLES = 'bundles';
 
 var save = function save(bundles) {
@@ -506,13 +507,9 @@ Object.defineProperty(exports, '__esModule', {
 exports.add = add;
 exports.getEvents = getEvents;
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 var _libChromeStorage = require('../lib/chrome-storage');
 
-var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
-
-var storage = (0, _libChromeStorage2['default'])('sync');
+var storage = (0, _libChromeStorage.create)(_libChromeStorage.SYNC);
 var EVENTS = 'events';
 
 var save = function save(events) {
@@ -535,15 +532,13 @@ function getEvents() {
 },{"../lib/chrome-storage":1}],11:[function(require,module,exports){
 'use strict';
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var _libChromeStorage = require('../lib/chrome-storage');
-
-var _libChromeStorage2 = _interopRequireDefault(_libChromeStorage);
 
 var _bundleStore = require('./bundle-store');
 
@@ -604,7 +599,7 @@ var Commands = _interopRequireWildcard(_commands);
     var url = _ref3.url;
 
     return BundleRepository.load(id).then(function (bundle) {
-      return bundle.addLink({ title: title, url: url });
+      return bundle.addLink({ title: title, url: url }, bundle.state);
     });
   }), _BundleCommandHandlers);
 
@@ -653,7 +648,7 @@ var Commands = _interopRequireWildcard(_commands);
     renderNavbar();
   };
 
-  var storage = (0, _libChromeStorage2['default'])('sync');
+  var storage = (0, _libChromeStorage.create)(_libChromeStorage.SYNC);
   storage.onChange(function (changes) {
     Object.keys(changes).some(function (key) {
       if (key === 'bundles') {

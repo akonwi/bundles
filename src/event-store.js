@@ -1,6 +1,6 @@
-import ChromeStorage from '../lib/chrome-storage'
+import {create, SYNC} from '../lib/chrome-storage'
 
-const storage = ChromeStorage('sync')
+const storage = create(SYNC)
 const EVENTS  = 'events'
 
 const save = (events) => storage.set(EVENTS, events)

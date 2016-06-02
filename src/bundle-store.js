@@ -1,6 +1,6 @@
-import ChromeStorage from '../lib/chrome-storage'
+import {create, SYNC} from '../lib/chrome-storage'
 
-const storage = ChromeStorage('sync')
+const storage = create(SYNC)
 const BUNDLES  = 'bundles'
 
 const save = (bundles) => storage.set(BUNDLES, bundles)
