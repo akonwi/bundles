@@ -258,10 +258,13 @@ exports['default'] = React.createClass({
     var _this = this;
 
     chrome.tabs.getSelected(null, function (_ref2) {
-      var title = _ref2.title;
       var url = _ref2.url;
+      var title = _ref2.title;
 
-      _this.props.dispatch((0, _commands.AddLink)({ id: _this.props.id, title: title, url: url }));
+      var existing = _this.props.links.find(function (link) {
+        return url === link.url && title === link.title;
+      });
+      if (existing === undefined) _this.props.dispatch((0, _commands.AddLink)({ id: _this.props.id, title: title, url: url }));
     });
   },
 

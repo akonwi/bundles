@@ -12,8 +12,10 @@ export default React.createClass({
   },
 
   addLink(e) {
-    chrome.tabs.getSelected(null, ({title, url}) => {
-      this.props.dispatch(AddLink({id: this.props.id, title, url}))
+    chrome.tabs.getSelected(null, ({url, title}) => {
+      let existing = this.props.links.find(link => url === link.url && title === link.title)
+      if (existing === undefined)
+        this.props.dispatch(AddLink({id: this.props.id, title, url}))
     })
   },
 
