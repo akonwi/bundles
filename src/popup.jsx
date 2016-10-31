@@ -34,7 +34,7 @@ import * as Commands from './commands'
       return BundleRepository.delete(id)
     },
     [Commands.AddLink.name]: ({id, title, url}) => {
-      return BundleRepository.load(id).then(bundle => bundle.addLink({title, url}, bundle.state))
+      return BundleRepository.load(id).then(bundle => bundle.addLink({title, url}))
     }
   }
 
@@ -66,6 +66,11 @@ import * as Commands from './commands'
 
   let isCreating = false
 
+  const toggleCreating = () => {
+    isCreating = !isCreating
+    renderNavbar()
+  }
+
   const renderNavbar = () => {
     ReactDOM.render(<Navbar dispatch={BundleFlow.dispatch} isCreating={isCreating} toggleCreating={toggleCreating}/>, document.querySelector('.navbar'))
   }
@@ -77,10 +82,6 @@ import * as Commands from './commands'
     .catch(error => console.error("Couldn't render BundleList: " + error) )
   }
 
-  const toggleCreating = () => {
-    isCreating = !isCreating
-    renderNavbar()
-  }
 
   const storage = create(SYNC)
   storage.onChange(changes => {
