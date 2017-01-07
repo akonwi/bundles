@@ -1,4 +1,4 @@
-import BundleLink from './bundle-link.jsx'
+import BundleLink from './BundleLink.jsx'
 import * as BundleStore from '../bundle-store'
 import {DeleteBundle, AddLink} from '../commands'
 
