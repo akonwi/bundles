@@ -1,3 +1,4 @@
+import React from 'react'
 import BundleItem from './BundleItem.jsx'
 
 export default ({bundles, dispatch}) => {
