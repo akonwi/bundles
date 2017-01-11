@@ -4378,6 +4378,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
 var _BundleItem = require('./BundleItem.jsx');
 
 var _BundleItem2 = _interopRequireDefault(_BundleItem);
@@ -4388,20 +4392,19 @@ exports.default = function (_ref) {
   var bundles = _ref.bundles,
       dispatch = _ref.dispatch;
 
-
   var bundleItems = Object.keys(bundles).map(function (id) {
     var item = bundles[id];
-    return React.createElement(_BundleItem2.default, { dispatch: dispatch, id: id, name: item.name, links: item.links });
+    return _react2.default.createElement(_BundleItem2.default, { dispatch: dispatch, id: id, name: item.name, links: item.links });
   });
 
-  return React.createElement(
+  return _react2.default.createElement(
     'ul',
     { className: 'bundles' },
     bundleItems
   );
 };
 
-},{"./BundleItem.jsx":36}],39:[function(require,module,exports){
+},{"./BundleItem.jsx":36,"react":33}],39:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4409,27 +4412,41 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (_ref) {
-  var isCreating = _ref.isCreating,
-      onClick = _ref.onClick;
+  var onClick = _ref.onClick;
 
-  var text = isCreating ? 'Cancel' : 'New';
-  return React.createElement(
+  return _react2.default.createElement(
     'a',
     { className: 'nav-btn', href: '#', onClick: onClick },
-    text
+    'Cancel'
   );
 };
 
-},{}],40:[function(require,module,exports){
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+},{"react":33}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createBundleBtn = require('./create-bundle-btn.jsx');
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _createBundleBtn2 = _interopRequireDefault(_createBundleBtn);
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _NewBundleButton = require('./NewBundleButton.jsx');
+
+var _NewBundleButton2 = _interopRequireDefault(_NewBundleButton);
+
+var _CancelButton = require('./CancelButton.jsx');
+
+var _CancelButton2 = _interopRequireDefault(_CancelButton);
 
 var _newBundleInput = require('./new-bundle-input.jsx');
 
@@ -4437,34 +4454,85 @@ var _newBundleInput2 = _interopRequireDefault(_newBundleInput);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (_ref) {
-  var dispatch = _ref.dispatch,
-      isCreating = _ref.isCreating,
-      toggleCreating = _ref.toggleCreating;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  var logoInput = isCreating ? React.createElement(_newBundleInput2.default, { dispatch: dispatch }) : React.createElement(
-    'h2',
-    { className: 'logo' },
-    'Bundles'
-  );
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Navbar = function (_React$Component) {
+  _inherits(Navbar, _React$Component);
+
+  function Navbar(props) {
+    _classCallCheck(this, Navbar);
+
+    var _this = _possibleConstructorReturn(this, (Navbar.__proto__ || Object.getPrototypeOf(Navbar)).call(this, props));
+
+    _this.state = {
+      isCreating: false
+    };
+    return _this;
+  }
+
+  _createClass(Navbar, [{
+    key: 'toggleCreating',
+    value: function toggleCreating() {
+      this.setState({ isCreating: !this.state.isCreating });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var isCreating = this.state.isCreating;
+      var toggleCreating = this.toggleCreating.bind(this);
+
+      var logoInput = isCreating ? _react2.default.createElement(_newBundleInput2.default, { dispatch: this.props.dispatch }) : _react2.default.createElement(
+        'h2',
+        { className: 'logo' },
+        'Bundles'
+      );
+      var button = isCreating ? _react2.default.createElement(_CancelButton2.default, { onClick: toggleCreating }) : _react2.default.createElement(_NewBundleButton2.default, { onClick: toggleCreating });
+
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement('div', { className: 'nav-block small left' }),
+        _react2.default.createElement(
+          'div',
+          { className: 'nav-block big' },
+          logoInput
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'nav-block small right' },
+          button
+        )
+      );
+    }
+  }]);
+
+  return Navbar;
+}(_react2.default.Component);
+
+exports.default = Navbar;
+
+},{"./CancelButton.jsx":39,"./NewBundleButton.jsx":41,"./new-bundle-input.jsx":42,"react":33}],41:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (_ref) {
+  var onClick = _ref.onClick;
+
   return React.createElement(
-    'div',
-    null,
-    React.createElement('div', { className: 'nav-block small left' }),
-    React.createElement(
-      'div',
-      { className: 'nav-block big' },
-      logoInput
-    ),
-    React.createElement(
-      'div',
-      { className: 'nav-block small right' },
-      React.createElement(_createBundleBtn2.default, { isCreating: isCreating, onClick: toggleCreating })
-    )
+    'a',
+    { className: 'nav-btn', href: '#', onClick: onClick },
+    'New'
   );
 };
 
-},{"./create-bundle-btn.jsx":39,"./new-bundle-input.jsx":41}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4489,7 +4557,7 @@ exports.default = function (_ref) {
   return React.createElement('input', { className: 'new-bundle-input', autoFocus: true, onKeyUp: onKeyUp, type: 'text', placeholder: 'Bundle name...' });
 };
 
-},{"../commands":35}],42:[function(require,module,exports){
+},{"../commands":35}],43:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4520,7 +4588,7 @@ function getEvents() {
   });
 }
 
-},{"../lib/chrome-storage":1}],43:[function(require,module,exports){
+},{"../lib/chrome-storage":1}],44:[function(require,module,exports){
 'use strict';
 
 var _chromeStorage = require('../lib/chrome-storage');
@@ -4533,13 +4601,13 @@ var _eventStore = require('./event-store');
 
 var BundleEventStore = _interopRequireWildcard(_eventStore);
 
-var _navbar = require('./components/navbar.jsx');
+var _Navbar = require('./components/Navbar.jsx');
 
-var _navbar2 = _interopRequireDefault(_navbar);
+var _Navbar2 = _interopRequireDefault(_Navbar);
 
-var _bundleList = require('./components/bundle-list.jsx');
+var _BundleList = require('./components/BundleList.jsx');
 
-var _bundleList2 = _interopRequireDefault(_bundleList);
+var _BundleList2 = _interopRequireDefault(_BundleList);
 
 var _commands = require('./commands');
 
@@ -4628,12 +4696,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   };
 
   var renderNavbar = function renderNavbar() {
-    ReactDOM.render(React.createElement(_navbar2.default, { dispatch: BundleFlow.dispatch, isCreating: isCreating, toggleCreating: toggleCreating }), document.querySelector('.navbar'));
+    ReactDOM.render(React.createElement(_Navbar2.default, { dispatch: BundleFlow.dispatch, isCreating: isCreating, toggleCreating: toggleCreating }), document.querySelector('.navbar'));
   };
 
   var renderBundlelist = function renderBundlelist() {
     return BundleStore.get().then(function (bundles) {
-      ReactDOM.render(React.createElement(_bundleList2.default, { bundles: bundles, dispatch: BundleFlow.dispatch }), document.querySelector('.content'));
+      ReactDOM.render(React.createElement(_BundleList2.default, { bundles: bundles, dispatch: BundleFlow.dispatch }), document.querySelector('.content'));
     }).catch(function (error) {
       return console.error("Couldn't render BundleList: " + error);
     });
@@ -4656,4 +4724,4 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   renderBundlelist();
 })();
 
-},{"../lib/chrome-storage":1,"./bundle-store":34,"./commands":35,"./components/bundle-list.jsx":38,"./components/navbar.jsx":40,"./event-store":42}]},{},[43]);
+},{"../lib/chrome-storage":1,"./bundle-store":34,"./commands":35,"./components/BundleList.jsx":38,"./components/Navbar.jsx":40,"./event-store":43}]},{},[44]);

@@ -1,8 +1,8 @@
 import {create, SYNC} from '../lib/chrome-storage'
 import * as BundleStore from './bundle-store'
 import * as BundleEventStore from './event-store'
-import Navbar from './components/navbar.jsx'
-import BundleList from './components/bundle-list.jsx'
+import Navbar from './components/Navbar.jsx'
+import BundleList from './components/BundleList.jsx'
 import * as Commands from './commands'
 
 (() => {
