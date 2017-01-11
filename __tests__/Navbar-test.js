@@ -1,8 +1,6 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import Navbar from '../src/components/Navbar'
-import NewBundleButton from '../src/components/NewBundleButton'
-import CancelButton from '../src/components/CancelButton'
 import NewBundleInput from '../src/components/new-bundle-input'
 
 describe("Navbar", () => {
@@ -17,7 +15,7 @@ describe("Navbar", () => {
           <h2 className='logo'>Bundles</h2>
         </div>
         <div className='nav-block small right'>
-          <NewBundleButton/>
+          <a className='nav-btn' href='#'>New</a>
         </div>
       </div>
     ))
@@ -25,7 +23,7 @@ describe("Navbar", () => {
 
   describe("when the create button is clicked", () => {
     beforeAll(() => {
-      navbar.find(NewBundleButton).simulate('click')
+      navbar.find('.nav-btn').simulate('click')
     })
 
     it("state.isCreating becomes true", () => expect(navbar.state().isCreating).toBe(true))
@@ -35,7 +33,7 @@ describe("Navbar", () => {
     })
 
     it("renders a CancelButton", () => {
-      expect(navbar.find(CancelButton).exists()).toBe(true)
+      expect(navbar.find('.nav-btn').text()).toBe('Cancel')
     })
   })
 })

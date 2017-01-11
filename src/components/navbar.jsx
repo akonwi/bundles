@@ -1,6 +1,4 @@
 import React from 'react'
-import NewBundleButton from './NewBundleButton.jsx'
-import CancelButton from './CancelButton.jsx'
 import NewBundleInput from './new-bundle-input.jsx'
 
 export default class Navbar extends React.Component {
@@ -20,7 +18,7 @@ export default class Navbar extends React.Component {
     const toggleCreating = this.toggleCreating.bind(this)
 
     const logoInput = isCreating ? <NewBundleInput dispatch={this.props.dispatch}/> : <h2 className='logo'>Bundles</h2>
-    const button = isCreating ? <CancelButton onClick={toggleCreating}/> : <NewBundleButton onClick={toggleCreating}/>
+    const button = <a className='nav-btn' href='#' onClick={toggleCreating}>{isCreating ? 'Cancel' : 'New'}</a>
 
     return (
       <div>
