@@ -1,3 +1,5 @@
+spawn = require('child_process').spawnSync
+
 module.exports = (grunt) ->
   grunt.initConfig
     sass:
@@ -17,14 +19,18 @@ module.exports = (grunt) ->
       styles:
         files: 'styles.sass'
         tasks: 'sass'
-      jsx:
-        files: 'src/**/**.jsx'
-        tasks: 'browserify'
       js:
         files: ['src/**/**.js']
-        tasks: 'browserify'
+        tasks: ['test', 'browserify', 'dist:dev']
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.registerTask 'default', ['sass', 'browserify', 'watch']
+  grunt.registerTask 'default', ['watch']
+  grunt.registerTask 'test', () ->
+    {status} = spawn 'npm', ['test'], stdio: 'inherit'
+    status is 0
+  grunt.registerTask 'dist:dev', () ->
+    grunt.log.writeln 'Copying to live folder...'
+    {status} = spawn 'npm', ['run', 'dist:dev'], stdio: 'inherit'
+    status is 0
