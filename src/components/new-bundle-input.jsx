@@ -1,10 +1,14 @@
+import React from 'react'
 import {CreateBundle} from '../commands'
 
-export default ({dispatch}) => {
+export default ({dispatch, onComplete}) => {
   const onKeyUp = ({keyCode, target}) => {
     if (keyCode === 13) {
       const name = target.value.trim()
-      if (name.length > 0) dispatch(CreateBundle({name}))
+      if (name.length > 0) {
+        dispatch(CreateBundle({name}))
+        onComplete()
+      }
     }
   }
 

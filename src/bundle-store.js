@@ -37,3 +37,13 @@ export function remove(id) {
   .then(save)
   .catch(err => { console.error(err) })
 }
+
+export function onChange(fn) {
+  storage.onChange(changes => {
+    Object.keys(changes).some(key => {
+      if (key === 'bundles') {
+        get().then(fn)
+      }
+    })
+  })
+}

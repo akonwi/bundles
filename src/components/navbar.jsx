@@ -17,11 +17,11 @@ export default class Navbar extends React.Component {
     const isCreating = this.state.isCreating
     const toggleCreating = this.toggleCreating.bind(this)
 
-    const logoInput = isCreating ? <NewBundleInput dispatch={this.props.dispatch}/> : <h2 className='logo'>Bundles</h2>
+    const logoInput = isCreating ? <NewBundleInput dispatch={this.props.dispatch} onComplete={toggleCreating}/> : <h2 className='logo'>Bundles</h2>
     const button = <a className='nav-btn' href='#' onClick={toggleCreating}>{isCreating ? 'Cancel' : 'New'}</a>
 
     return (
-      <div>
+      <div className="navbar">
         <div className='nav-block small left'></div>
         <div className='nav-block big'>{logoInput}</div>
         <div className='nav-block small right'>{button}</div>

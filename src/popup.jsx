@@ -1,8 +1,8 @@
-import {create, SYNC} from '../lib/chrome-storage'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './components/App.jsx'
 import * as BundleStore from './bundle-store'
 import * as BundleEventStore from './event-store'
-import Navbar from './components/Navbar.jsx'
-import BundleList from './components/BundleList.jsx'
 import * as Commands from './commands'
 
 (() => {
@@ -64,38 +64,9 @@ import * as Commands from './commands'
     commandHandlers: BundleCommandHandlers
   })
 
-  let isCreating = false
 
-  const toggleCreating = () => {
-    isCreating = !isCreating
-    renderNavbar()
-  }
-
-  const renderNavbar = () => {
-    ReactDOM.render(<Navbar dispatch={BundleFlow.dispatch} isCreating={isCreating} toggleCreating={toggleCreating}/>, document.querySelector('.navbar'))
-  }
-
-  const renderBundlelist = () => {
-    return BundleStore.get().then(bundles => {
-      ReactDOM.render(<BundleList bundles={bundles} dispatch={BundleFlow.dispatch}/>, document.querySelector('.content'))
-    })
-    .catch(error => console.error("Couldn't render BundleList: " + error) )
-  }
-
-
-  const storage = create(SYNC)
-  storage.onChange(changes => {
-    Object.keys(changes).some(key => {
-      if (key === 'bundles') {
-        renderBundlelist()
-        if (isCreating) {
-          toggleCreating()
-          return true
-        }
-      }
-    })
+  BundleStore.get().then(bundles => {
+    ReactDOM.render(<App dispatch={BundleFlow.dispatch} bundles={bundles}/>, document.querySelector('.main'))
   })
-
-  renderNavbar()
-  renderBundlelist()
+  .catch(error => console.error("Couldn't render: " + error) )
 })()
