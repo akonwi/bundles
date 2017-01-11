@@ -12,7 +12,7 @@ module.exports = (grunt) ->
         transform: ['babelify']
       dist:
         files:
-          'dist/app.js': ['src/popup.js']
+          'dist/app.js': ['src/index.js']
     watch:
       styles:
         files: 'styles.sass'
