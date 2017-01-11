@@ -20804,7 +20804,7 @@ var App = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
     _this.state = {
-      bundles: props.bundles
+      bundles: {}
     };
     return _this;
   }
@@ -20814,6 +20814,9 @@ var App = function (_React$Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
+      BundleStore.get().then(function (bundles) {
+        return _this2.setState({ bundles: bundles });
+      });
       BundleStore.onChange(function (bundles) {
         return _this2.setState({ bundles: bundles });
       });
@@ -20821,11 +20824,18 @@ var App = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      var list = void 0;
+      if (Object.keys(this.state.bundles).length === 0) list = _react2.default.createElement(
+        'div',
+        { className: 'loading' },
+        'Loading...'
+      );else list = _react2.default.createElement(_BundleList2.default, { dispatch: this.props.dispatch, bundles: this.state.bundles });
+
       return _react2.default.createElement(
         'div',
         null,
         _react2.default.createElement(_Navbar2.default, { dispatch: this.props.dispatch }),
-        _react2.default.createElement(_BundleList2.default, { dispatch: this.props.dispatch, bundles: this.state.bundles })
+        list
       );
     }
   }]);
@@ -21282,11 +21292,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     commandHandlers: BundleCommandHandlers
   });
 
-  BundleStore.get().then(function (bundles) {
-    _reactDom2.default.render(_react2.default.createElement(_App2.default, { dispatch: BundleFlow.dispatch, bundles: bundles }), document.querySelector('.main'));
-  }).catch(function (error) {
-    return console.error("Couldn't render: " + error);
-  });
+  _reactDom2.default.render(_react2.default.createElement(_App2.default, { dispatch: BundleFlow.dispatch }), document.querySelector('.main'));
 })();
 
 },{"./bundle-store":180,"./commands":181,"./components/App.jsx":182,"./event-store":188,"react":179,"react-dom":28}]},{},[189]);

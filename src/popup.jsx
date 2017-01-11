@@ -64,9 +64,5 @@ import * as Commands from './commands'
     commandHandlers: BundleCommandHandlers
   })
 
-
-  BundleStore.get().then(bundles => {
-    ReactDOM.render(<App dispatch={BundleFlow.dispatch} bundles={bundles}/>, document.querySelector('.main'))
-  })
-  .catch(error => console.error("Couldn't render: " + error) )
+  ReactDOM.render(<App dispatch={BundleFlow.dispatch}/>, document.querySelector('.main'))
 })()
