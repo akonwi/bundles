@@ -20773,11 +20773,11 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Navbar = require('./Navbar.jsx');
+var _Navbar = require('./Navbar');
 
 var _Navbar2 = _interopRequireDefault(_Navbar);
 
-var _BundleList = require('./BundleList.jsx');
+var _BundleList = require('./BundleList');
 
 var _BundleList2 = _interopRequireDefault(_BundleList);
 
@@ -20804,7 +20804,7 @@ var App = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
     _this.state = {
-      bundles: {}
+      bundles: null
     };
     return _this;
   }
@@ -20814,22 +20814,20 @@ var App = function (_React$Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      BundleStore.get().then(function (bundles) {
+      var setState = function setState(bundles) {
         return _this2.setState({ bundles: bundles });
-      });
-      BundleStore.onChange(function (bundles) {
-        return _this2.setState({ bundles: bundles });
-      });
+      };
+      BundleStore.get().then(setState);
+      BundleStore.onChange(setState);
     }
   }, {
     key: 'render',
     value: function render() {
-      var list = void 0;
-      if (Object.keys(this.state.bundles).length === 0) list = _react2.default.createElement(
+      var list = this.state.bundles ? _react2.default.createElement(_BundleList2.default, { dispatch: this.props.dispatch, bundles: this.state.bundles }) : _react2.default.createElement(
         'div',
         { className: 'loading' },
         'Loading...'
-      );else list = _react2.default.createElement(_BundleList2.default, { dispatch: this.props.dispatch, bundles: this.state.bundles });
+      );
 
       return _react2.default.createElement(
         'div',
@@ -20845,7 +20843,7 @@ var App = function (_React$Component) {
 
 exports.default = App;
 
-},{"../bundle-store":180,"./BundleList.jsx":185,"./Navbar.jsx":186,"react":179}],183:[function(require,module,exports){
+},{"../bundle-store":180,"./BundleList":185,"./Navbar":186,"react":179}],183:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20860,7 +20858,7 @@ var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-var _BundleLink = require('./BundleLink.jsx');
+var _BundleLink = require('./BundleLink');
 
 var _BundleLink2 = _interopRequireDefault(_BundleLink);
 
@@ -20975,7 +20973,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../bundle-store":180,"../commands":181,"./BundleLink.jsx":184,"classnames":2,"react":179}],184:[function(require,module,exports){
+},{"../bundle-store":180,"../commands":181,"./BundleLink":184,"classnames":2,"react":179}],184:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21018,7 +21016,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _BundleItem = require('./BundleItem.jsx');
+var _BundleItem = require('./BundleItem');
 
 var _BundleItem2 = _interopRequireDefault(_BundleItem);
 
@@ -21040,7 +21038,7 @@ exports.default = function (_ref) {
   );
 };
 
-},{"./BundleItem.jsx":183,"react":179}],186:[function(require,module,exports){
+},{"./BundleItem":183,"react":179}],186:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21053,7 +21051,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _NewBundleInput = require('./NewBundleInput.jsx');
+var _NewBundleInput = require('./NewBundleInput');
 
 var _NewBundleInput2 = _interopRequireDefault(_NewBundleInput);
 
@@ -21124,7 +21122,7 @@ var Navbar = function (_React$Component) {
 
 exports.default = Navbar;
 
-},{"./NewBundleInput.jsx":187,"react":179}],187:[function(require,module,exports){
+},{"./NewBundleInput":187,"react":179}],187:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21201,7 +21199,7 @@ var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _App = require('./components/App.jsx');
+var _App = require('./components/App');
 
 var _App2 = _interopRequireDefault(_App);
 
@@ -21295,4 +21293,4 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   _reactDom2.default.render(_react2.default.createElement(_App2.default, { dispatch: BundleFlow.dispatch }), document.querySelector('.main'));
 })();
 
-},{"./bundle-store":180,"./commands":181,"./components/App.jsx":182,"./event-store":188,"react":179,"react-dom":28}]},{},[189]);
+},{"./bundle-store":180,"./commands":181,"./components/App":182,"./event-store":188,"react":179,"react-dom":28}]},{},[189]);

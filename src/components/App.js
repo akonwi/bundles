@@ -1,6 +1,6 @@
 import React from 'react'
-import Navbar from './Navbar.jsx'
-import BundleList from './BundleList.jsx'
+import Navbar from './Navbar'
+import BundleList from './BundleList'
 import * as BundleStore from '../bundle-store'
 
 class App extends React.Component {

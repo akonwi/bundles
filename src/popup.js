@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './components/App.jsx'
+import App from './components/App'
 import * as BundleStore from './bundle-store'
 import * as BundleEventStore from './event-store'
 import * as Commands from './commands'

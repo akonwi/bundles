@@ -1,5 +1,5 @@
 import React from 'react'
-import NewBundleInput from './NewBundleInput.jsx'
+import NewBundleInput from './NewBundleInput'
 
 export default class Navbar extends React.Component {
   constructor(props) {

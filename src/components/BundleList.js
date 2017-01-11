@@ -1,5 +1,5 @@
 import React from 'react'
-import BundleItem from './BundleItem.jsx'
+import BundleItem from './BundleItem'
 
 export default ({bundles, dispatch}) => {
   const bundleItems = Object.keys(bundles).map(id => {
