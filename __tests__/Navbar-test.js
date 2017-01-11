@@ -1,7 +1,7 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import Navbar from '../src/components/Navbar'
-import NewBundleInput from '../src/components/new-bundle-input'
+import NewBundleInput from '../src/components/NewBundleInput'
 
 describe("Navbar", () => {
   const dispatch = new Function

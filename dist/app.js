@@ -21043,9 +21043,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _newBundleInput = require('./new-bundle-input.jsx');
+var _NewBundleInput = require('./NewBundleInput.jsx');
 
-var _newBundleInput2 = _interopRequireDefault(_newBundleInput);
+var _NewBundleInput2 = _interopRequireDefault(_NewBundleInput);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21080,7 +21080,7 @@ var Navbar = function (_React$Component) {
       var isCreating = this.state.isCreating;
       var toggleCreating = this.toggleCreating.bind(this);
 
-      var logoInput = isCreating ? _react2.default.createElement(_newBundleInput2.default, { dispatch: this.props.dispatch, onComplete: toggleCreating }) : _react2.default.createElement(
+      var logoInput = isCreating ? _react2.default.createElement(_NewBundleInput2.default, { dispatch: this.props.dispatch, onComplete: toggleCreating }) : _react2.default.createElement(
         'h2',
         { className: 'logo' },
         'Bundles'
@@ -21114,7 +21114,7 @@ var Navbar = function (_React$Component) {
 
 exports.default = Navbar;
 
-},{"./new-bundle-input.jsx":187,"react":179}],187:[function(require,module,exports){
+},{"./NewBundleInput.jsx":187,"react":179}],187:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
