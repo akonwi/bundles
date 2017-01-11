@@ -25,6 +25,9 @@
     "react-dom": "^15.4.2"
   },
   "scripts": {
+    "build": "grunt browserify",
+    "copy-to-dev": "cp dist/app.js ../bundles_v2/dist",
+    "dist-dev": "npm run build && npm run copy-to-dev",
     "test": "jest"
   }
 }
