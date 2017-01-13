@@ -24,8 +24,9 @@ export function addLinkToBundle(id, link) {
   .then(bundles => {
     let bundle = bundles[id]
     bundle.links.push(link)
-    save(bundles)
+    return bundles
   })
+  .then(save)
   .catch(err => { console.error(err) })
 }
 

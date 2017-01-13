@@ -3,7 +3,7 @@ import {create, SYNC} from '../lib/chrome-storage'
 const storage = create(SYNC)
 const EVENTS  = 'events'
 
-const save = (events) => storage.set(EVENTS, events)
+const save = events => storage.set(EVENTS, events)
 
 export function add(event) {
   getEvents()
