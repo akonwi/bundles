@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import {defineAggregate, Event, Repository, EventBus, Flow} from 'qubits'
 import App from './components/App'
 import * as BundleStore from './bundle-store'
 import * as BundleEventStore from './event-store'
@@ -9,7 +10,7 @@ import * as Commands from './commands'
   // taken from: https://gist.github.com/jed/982883
   const idGenerator = (a) => a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,idGenerator)
 
-  const Bundle = eventuality.defineAggregate({
+  const Bundle = defineAggregate({
     idGenerator,
     name: 'Bundle',
     state: {
@@ -19,12 +20,12 @@ import * as Commands from './commands'
     methods: {
       addLink(link) {
         this.state.links.push(link)
-        return eventuality.Event({name: 'LinkAddedToBundleEvent', aggregateId: this.id, payload: link, state: this.state})
+        return Event({name: 'LinkAddedToBundleEvent', aggregateId: this.id, payload: link, state: this.state})
       }
     }
   })
 
-  const BundleRepository = eventuality.Repository('Bundle', Bundle, BundleEventStore)
+  const BundleRepository = Repository('Bundle', Bundle, BundleEventStore)
 
   const BundleCommandHandlers = {
     [Commands.CreateBundle.name]: ({name}) => {
@@ -38,8 +39,6 @@ import * as Commands from './commands'
     }
   }
 
-  const BundleEventBus = eventuality.EventBus()
-
   const BundleCreatedEventListener = event => {
     BundleStore.add(Object.assign({}, event.state, {id: event.aggregateId}))
   }
@@ -52,13 +51,15 @@ import * as Commands from './commands'
     BundleStore.addLinkToBundle(event.aggregateId, event.payload)
   }
 
+  const BundleEventBus = EventBus()
+
   BundleEventBus.registerListeners({
     BundleCreatedEvent: [BundleCreatedEventListener],
     BundleDeletedEvent: [BundleDeletedEventListener],
     LinkAddedToBundleEvent: [LinkAddedToBundleEventListener]
   })
 
-  const BundleFlow = eventuality.Flow({
+  const BundleFlow = Flow({
     eventBus: BundleEventBus,
     eventStore: BundleEventStore,
     commandHandlers: BundleCommandHandlers
