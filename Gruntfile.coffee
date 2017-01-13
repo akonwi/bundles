@@ -20,7 +20,7 @@ module.exports = (grunt) ->
         files: 'styles.sass'
         tasks: 'sass'
       js:
-        files: ['src/**/**.js']
+        files: ['src/**/**.js', '__tests__/**/**.js']
         tasks: ['test', 'browserify', 'dist:dev']
 
   grunt.loadNpmTasks 'grunt-contrib-sass'

@@ -21073,6 +21073,41 @@ function onChange(fn) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+exports.default = function (repository) {
+  var _ref4;
+
+  return _ref4 = {}, _defineProperty(_ref4, _commands.CreateBundle.name, function (_ref) {
+    var name = _ref.name;
+
+    return repository.add({ name: name });
+  }), _defineProperty(_ref4, _commands.DeleteBundle.name, function (_ref2) {
+    var id = _ref2.id;
+
+    return repository.delete(id);
+  }), _defineProperty(_ref4, _commands.AddLink.name, function (_ref3) {
+    var id = _ref3.id,
+        title = _ref3.title,
+        url = _ref3.url;
+
+    return repository.load(id).then(function (bundle) {
+      return bundle.addLink({ title: title, url: url });
+    });
+  }), _ref4;
+};
+
+var _qubits = require('qubits');
+
+var _commands = require('./commands');
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+},{"./commands":191,"qubits":35}],191:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.CreateBundle = CreateBundle;
 exports.DeleteBundle = DeleteBundle;
 exports.AddLink = AddLink;
@@ -21096,7 +21131,7 @@ function AddLink(_ref3) {
   return { name: 'AddLink', message: { id: id, title: title, url: url } };
 }
 
-},{}],191:[function(require,module,exports){
+},{}],192:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21179,7 +21214,7 @@ var App = function (_React$Component) {
 
 exports.default = App;
 
-},{"../bundle-store":189,"./BundleList":194,"./Navbar":195,"react":188}],192:[function(require,module,exports){
+},{"../bundle-store":189,"./BundleList":195,"./Navbar":196,"react":188}],193:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21309,7 +21344,7 @@ exports.default = _react2.default.createClass({
   }
 });
 
-},{"../bundle-store":189,"../commands":190,"./BundleLink":193,"classnames":2,"react":188}],193:[function(require,module,exports){
+},{"../bundle-store":189,"../commands":191,"./BundleLink":194,"classnames":2,"react":188}],194:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21341,7 +21376,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"react":188}],194:[function(require,module,exports){
+},{"react":188}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21374,7 +21409,7 @@ exports.default = function (_ref) {
   );
 };
 
-},{"./BundleItem":192,"react":188}],195:[function(require,module,exports){
+},{"./BundleItem":193,"react":188}],196:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21458,7 +21493,7 @@ var Navbar = function (_React$Component) {
 
 exports.default = Navbar;
 
-},{"./NewBundleInput":196,"react":188}],196:[function(require,module,exports){
+},{"./NewBundleInput":197,"react":188}],197:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21493,7 +21528,7 @@ exports.default = function (_ref) {
   return _react2.default.createElement('input', { className: 'new-bundle-input', autoFocus: true, onKeyUp: onKeyUp, type: 'text', placeholder: 'Bundle name...' });
 };
 
-},{"../commands":190,"react":188}],197:[function(require,module,exports){
+},{"../commands":191,"react":188}],198:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21524,7 +21559,7 @@ function getEvents() {
   });
 }
 
-},{"../lib/chrome-storage":1}],198:[function(require,module,exports){
+},{"../lib/chrome-storage":1}],199:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21549,6 +21584,10 @@ var _eventStore = require('./event-store');
 
 var BundleEventStore = _interopRequireWildcard(_eventStore);
 
+var _commandHandlers = require('./command-handlers');
+
+var _commandHandlers2 = _interopRequireDefault(_commandHandlers);
+
 var _commands = require('./commands');
 
 var Commands = _interopRequireWildcard(_commands);
@@ -21557,11 +21596,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 (function () {
-  var _BundleCommandHandler;
-
   // taken from: https://gist.github.com/jed/982883
   var idGenerator = function idGenerator(a) {
     return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, idGenerator);
@@ -21583,24 +21618,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   });
 
   var BundleRepository = (0, _qubits.Repository)('Bundle', Bundle, BundleEventStore);
-
-  var BundleCommandHandlers = (_BundleCommandHandler = {}, _defineProperty(_BundleCommandHandler, Commands.CreateBundle.name, function (_ref) {
-    var name = _ref.name;
-
-    return BundleRepository.add({ name: name });
-  }), _defineProperty(_BundleCommandHandler, Commands.DeleteBundle.name, function (_ref2) {
-    var id = _ref2.id;
-
-    return BundleRepository.delete(id);
-  }), _defineProperty(_BundleCommandHandler, Commands.AddLink.name, function (_ref3) {
-    var id = _ref3.id,
-        title = _ref3.title,
-        url = _ref3.url;
-
-    return BundleRepository.load(id).then(function (bundle) {
-      return bundle.addLink({ title: title, url: url });
-    });
-  }), _BundleCommandHandler);
 
   var BundleCreatedEventListener = function BundleCreatedEventListener(event) {
     BundleStore.add(Object.assign({}, event.state, { id: event.aggregateId }));
@@ -21625,10 +21642,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   var BundleFlow = (0, _qubits.Flow)({
     eventBus: BundleEventBus,
     eventStore: BundleEventStore,
-    commandHandlers: BundleCommandHandlers
+    commandHandlers: (0, _commandHandlers2.default)(BundleRepository)
   });
 
   _reactDom2.default.render(_react2.default.createElement(_App2.default, { dispatch: BundleFlow.dispatch }), document.querySelector('.main'));
 })();
 
-},{"./bundle-store":189,"./commands":190,"./components/App":191,"./event-store":197,"qubits":35,"react":188,"react-dom":37}]},{},[198]);
+},{"./bundle-store":189,"./command-handlers":190,"./commands":191,"./components/App":192,"./event-store":198,"qubits":35,"react":188,"react-dom":37}]},{},[199]);

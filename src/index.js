@@ -4,6 +4,7 @@ import {defineAggregate, Event, Repository, EventBus, Flow} from 'qubits'
 import App from './components/App'
 import * as BundleStore from './bundle-store'
 import * as BundleEventStore from './event-store'
+import BundleCommandHandlers from './command-handlers'
 import * as Commands from './commands'
 
 (() => {
@@ -26,18 +27,6 @@ import * as Commands from './commands'
   })
 
   const BundleRepository = Repository('Bundle', Bundle, BundleEventStore)
-
-  const BundleCommandHandlers = {
-    [Commands.CreateBundle.name]: ({name}) => {
-      return BundleRepository.add({name})
-    },
-    [Commands.DeleteBundle.name]: ({id}) => {
-      return BundleRepository.delete(id)
-    },
-    [Commands.AddLink.name]: ({id, title, url}) => {
-      return BundleRepository.load(id).then(bundle => bundle.addLink({title, url}))
-    }
-  }
 
   const BundleCreatedEventListener = event => {
     BundleStore.add(Object.assign({}, event.state, {id: event.aggregateId}))
@@ -62,7 +51,7 @@ import * as Commands from './commands'
   const BundleFlow = Flow({
     eventBus: BundleEventBus,
     eventStore: BundleEventStore,
-    commandHandlers: BundleCommandHandlers
+    commandHandlers: BundleCommandHandlers(BundleRepository)
   })
 
   ReactDOM.render(<App dispatch={BundleFlow.dispatch}/>, document.querySelector('.main'))
