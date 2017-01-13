@@ -11,10 +11,10 @@ describe("Command Handlers", () => {
   }
   const repository = {
     add({name}) {
-      if (name === 'foobar') return createdEvent
+      if (name === 'foobar') return Promise.resolve(createdEvent)
     },
     delete(id) {
-      if (id === 'foobar') return deletedEvent
+      if (id === 'foobar') return Promise.resolve(deletedEvent)
     },
     load(id) {
       if (id === 'foobar') return Promise.resolve(bundle)
@@ -24,13 +24,13 @@ describe("Command Handlers", () => {
 
   describe("CreateBundle command handler", () => {
     it("Calls ::add on the repository", () => {
-      expect(CreateBundle({name: 'foobar'})).toBe(createdEvent)
+      CreateBundle({name: 'foobar'}).then(event => expect(event).toBe(createdEvent))
     })
   })
 
   describe("DeleteBundle command handler", () => {
     it("Calls ::delete on the repository", () => {
-      expect(DeleteBundle({id: 'foobar'})).toBe(deletedEvent)
+      DeleteBundle({id: 'foobar'}).then(event => expect(event).toBe(deletedEvent))
     })
   })
 
