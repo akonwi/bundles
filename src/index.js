@@ -5,6 +5,7 @@ import App from './components/App'
 import * as BundleStore from './bundle-store'
 import * as BundleEventStore from './event-store'
 import BundleCommandHandlers from './command-handlers'
+import BundleEventListeners from './event-listeners'
 import * as Commands from './commands'
 
 (() => {
@@ -28,25 +29,10 @@ import * as Commands from './commands'
 
   const BundleRepository = Repository('Bundle', Bundle, BundleEventStore)
 
-  const BundleCreatedEventListener = event => {
-    BundleStore.add(Object.assign({}, event.state, {id: event.aggregateId}))
-  }
-
-  const BundleDeletedEventListener = event => {
-    BundleStore.remove(event.aggregateId)
-  }
-
-  const LinkAddedToBundleEventListener = event => {
-    BundleStore.addLinkToBundle(event.aggregateId, event.payload)
-  }
 
   const BundleEventBus = EventBus()
 
-  BundleEventBus.registerListeners({
-    BundleCreatedEvent: [BundleCreatedEventListener],
-    BundleDeletedEvent: [BundleDeletedEventListener],
-    LinkAddedToBundleEvent: [LinkAddedToBundleEventListener]
-  })
+  BundleEventBus.registerListeners(BundleEventListeners(BundleStore))
 
   const BundleFlow = Flow({
     eventBus: BundleEventBus,

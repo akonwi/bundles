@@ -21529,6 +21529,33 @@ exports.default = function (_ref) {
 };
 
 },{"../commands":191,"react":188}],198:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (store) {
+  var BundleCreatedEventListener = function BundleCreatedEventListener(event) {
+    store.add(Object.assign({}, event.state, { id: event.aggregateId }));
+  };
+
+  var BundleDeletedEventListener = function BundleDeletedEventListener(event) {
+    store.remove(event.aggregateId);
+  };
+
+  var LinkAddedToBundleEventListener = function LinkAddedToBundleEventListener(event) {
+    store.addLinkToBundle(event.aggregateId, event.payload);
+  };
+
+  return {
+    BundleCreatedEvent: [BundleCreatedEventListener],
+    BundleDeletedEvent: [BundleDeletedEventListener],
+    LinkAddedToBundleEvent: [LinkAddedToBundleEventListener]
+  };
+};
+
+},{}],199:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21559,7 +21586,7 @@ function getEvents() {
   });
 }
 
-},{"../lib/chrome-storage":1}],199:[function(require,module,exports){
+},{"../lib/chrome-storage":1}],200:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21587,6 +21614,10 @@ var BundleEventStore = _interopRequireWildcard(_eventStore);
 var _commandHandlers = require('./command-handlers');
 
 var _commandHandlers2 = _interopRequireDefault(_commandHandlers);
+
+var _eventListeners = require('./event-listeners');
+
+var _eventListeners2 = _interopRequireDefault(_eventListeners);
 
 var _commands = require('./commands');
 
@@ -21619,25 +21650,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
   var BundleRepository = (0, _qubits.Repository)('Bundle', Bundle, BundleEventStore);
 
-  var BundleCreatedEventListener = function BundleCreatedEventListener(event) {
-    BundleStore.add(Object.assign({}, event.state, { id: event.aggregateId }));
-  };
-
-  var BundleDeletedEventListener = function BundleDeletedEventListener(event) {
-    BundleStore.remove(event.aggregateId);
-  };
-
-  var LinkAddedToBundleEventListener = function LinkAddedToBundleEventListener(event) {
-    BundleStore.addLinkToBundle(event.aggregateId, event.payload);
-  };
-
   var BundleEventBus = (0, _qubits.EventBus)();
 
-  BundleEventBus.registerListeners({
-    BundleCreatedEvent: [BundleCreatedEventListener],
-    BundleDeletedEvent: [BundleDeletedEventListener],
-    LinkAddedToBundleEvent: [LinkAddedToBundleEventListener]
-  });
+  BundleEventBus.registerListeners((0, _eventListeners2.default)(BundleStore));
 
   var BundleFlow = (0, _qubits.Flow)({
     eventBus: BundleEventBus,
@@ -21648,4 +21663,4 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   _reactDom2.default.render(_react2.default.createElement(_App2.default, { dispatch: BundleFlow.dispatch }), document.querySelector('.main'));
 })();
 
-},{"./bundle-store":189,"./command-handlers":190,"./commands":191,"./components/App":192,"./event-store":198,"qubits":35,"react":188,"react-dom":37}]},{},[199]);
+},{"./bundle-store":189,"./command-handlers":190,"./commands":191,"./components/App":192,"./event-listeners":198,"./event-store":199,"qubits":35,"react":188,"react-dom":37}]},{},[200]);
