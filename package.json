@@ -1,6 +1,6 @@
 {
   "name": "bundles",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "devDependencies": {
     "babel": "^5.4.7",
     "babel-jest": "^18.0.0",
@@ -27,6 +27,7 @@
   },
   "scripts": {
     "dist:dev": "cp dist/app.js ../bundles_live/dist",
-    "test": "jest"
+    "test": "jest",
+    "dist": "sh ./build.sh"
   }
 }
