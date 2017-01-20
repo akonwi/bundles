@@ -11,7 +11,7 @@ describe("BundleItem", () => {
   it("renders a li with the links and function buttons", () => {
     const bundleItem = shallow(<BundleItem name={name} links={[link]}/>)
     expect(bundleItem.is('li')).toBe(true)
-    expect(bundleItem.find('.links').children().length).toBe(1)
+    expect(bundleItem.find('#links').children().length).toBe(1)
     expect(bundleItem.find('h4').text()).toBe(name)
   })
 
@@ -19,13 +19,9 @@ describe("BundleItem", () => {
     it("toggles the state and classes of the ", () => {
       const bundleItem = shallow(<BundleItem name={name} links={[link]}/>)
       expect(bundleItem.state().open).toBe(false)
-      expect(bundleItem.find('.triangle').hasClass('down')).toBe(false)
-      expect(bundleItem.find('.links').hasClass('open')).toBe(false)
 
       bundleItem.find('h4').simulate('click')
       expect(bundleItem.state().open).toBe(true)
-      expect(bundleItem.find('.triangle').hasClass('down')).toBe(true)
-      expect(bundleItem.find('.links').hasClass('open')).toBe(true)
     })
   })
 
@@ -43,7 +39,7 @@ describe("BundleItem", () => {
           tabs: { create: jest.fn() }
         }
 
-        const openButton = bundleItem.find('.controls').children().first()
+        const openButton = bundleItem.find('#controls').children().first()
         expect(openButton.is('a[title="Open all"]')).toBe(true)
         openButton.find('i').simulate('click')
         expect(chrome.tabs.create).toHaveBeenCalledWith({url: link.url})
@@ -66,7 +62,7 @@ describe("BundleItem", () => {
           name: 'AddLink'
         }
 
-        const addButton = bundleItem.find('.controls').children().at(1)
+        const addButton = bundleItem.find('#controls').children().at(1)
         expect(addButton.is('a[title="Add current page"]')).toBe(true)
         addButton.find('i').simulate('click')
         expect(dispatch).toHaveBeenCalledWith(expectedCommand)
@@ -82,7 +78,7 @@ describe("BundleItem", () => {
           name: 'DeleteBundle'
         }
 
-        const deleteButton = bundleItem.find('.controls').children().last()
+        const deleteButton = bundleItem.find('#controls').children().last()
         expect(deleteButton.is('a[title="Delete"]')).toBe(true)
         deleteButton.find('i').simulate('click')
         expect(dispatch).toHaveBeenCalledWith(expectedCommand)

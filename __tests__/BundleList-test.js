@@ -15,7 +15,7 @@ describe("BundleList", () => {
     const list = shallow(<BundleList bundles={bundles} dispatch={dispatch}/>)
 
     expect(list.matchesElement(
-      <ul className='bundles'>
+      <ul>
         <BundleItem dispatch={dispatch} id='id1' name={bundles.id1.name} links={bundles.id1.links}/>
         <BundleItem dispatch={dispatch} id='id2' name={bundles.id2.name} links={bundles.id2.links}/>
       </ul>

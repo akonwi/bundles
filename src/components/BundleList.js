@@ -1,6 +1,11 @@
 import React from 'react'
 import BundleItem from './BundleItem'
 
+const bundlesStyle = {
+  listStyleType: 'none',
+  padding: '0 .5rem 0 .5rem'
+}
+
 export default ({bundles, dispatch}) => {
   const bundleItems = Object.keys(bundles).map(id => {
     let item = bundles[id]
@@ -8,7 +13,7 @@ export default ({bundles, dispatch}) => {
   })
 
   return (
-    <ul className='bundles'>
+    <ul style={bundlesStyle}>
       { bundleItems }
     </ul>
   )

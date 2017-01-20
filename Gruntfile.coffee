@@ -2,13 +2,6 @@ spawn = require('child_process').spawnSync
 
 module.exports = (grunt) ->
   grunt.initConfig
-    sass:
-      dist:
-        options:
-          style: 'compressed'
-          update: true
-        files:
-          'styles.css': 'styles.sass'
     browserify:
       options:
         transform: ['babelify']
@@ -17,13 +10,12 @@ module.exports = (grunt) ->
           'dist/app.js': ['src/index.js']
     watch:
       styles:
-        files: 'styles.sass'
-        tasks: 'sass'
+        files: 'styles.css'
+        tasks: ['dist:dev']
       js:
         files: ['src/**/**.js', '__tests__/**/**.js']
         tasks: ['test', 'browserify', 'dist:dev']
 
-  grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.registerTask 'default', ['watch']

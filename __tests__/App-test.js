@@ -13,7 +13,7 @@ describe("App", () => {
     expect(app.matchesElement(
       <div>
         <Navbar dispatch={dispatch}/>
-        <div className='loading'>Loading...</div>
+        <div>Loading...</div>
       </div>
     )).toBe(true)
   })

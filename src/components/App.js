@@ -3,6 +3,11 @@ import Navbar from './Navbar'
 import BundleList from './BundleList'
 import * as BundleStore from '../bundle-store'
 
+const loadingStyle = {
+  textAlign: 'center',
+  margin: '.5rem'
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -21,7 +26,7 @@ class App extends React.Component {
     const list = this.state.bundles ?
       <BundleList dispatch={this.props.dispatch} bundles={this.state.bundles}/>
       :
-      <div className='loading'>Loading...</div>
+      <div style={loadingStyle}>Loading...</div>
 
     return (
       <div>

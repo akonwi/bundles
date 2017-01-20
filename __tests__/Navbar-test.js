@@ -10,20 +10,20 @@ describe("Navbar", () => {
   it("renders", () => {
     expect(navbar.matchesElement(
       <div>
-        <div className='nav-block small left'></div>
-        <div className='nav-block big'>
-          <h2 className='logo'>Bundles</h2>
+        <div></div>
+        <div>
+          <h2>Bundles</h2>
         </div>
-        <div className='nav-block small right'>
-          <a className='nav-btn' href='#'>New</a>
+        <div>
+          <a href='#'>New</a>
         </div>
       </div>
-    ))
+    )).toBe(true)
   })
 
   describe("when the create button is clicked", () => {
     beforeAll(() => {
-      navbar.find('.nav-btn').simulate('click')
+      navbar.find('#nav-btn').simulate('click')
     })
 
     it("state.isCreating becomes true", () => expect(navbar.state().isCreating).toBe(true))
@@ -33,7 +33,7 @@ describe("Navbar", () => {
     })
 
     it("renders a CancelButton", () => {
-      expect(navbar.find('.nav-btn').text()).toBe('Cancel')
+      expect(navbar.find('#nav-btn').text()).toBe('Cancel')
     })
   })
 })

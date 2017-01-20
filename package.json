@@ -13,20 +13,19 @@
     "grunt": "*",
     "grunt-babel": "^6.0.0",
     "grunt-browserify": "^5.0.0",
-    "grunt-contrib-sass": "*",
     "grunt-contrib-watch": "*",
     "jest": "^18.1.0",
     "react-addons-test-utils": "^15.4.1",
     "react-test-renderer": "^15.4.2"
   },
   "dependencies": {
-    "classnames": "^2.2.5",
+    "aphrodite": "^1.1.0",
     "qubits": "^1.0.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
   "scripts": {
-    "dist:dev": "cp dist/app.js ../bundles_live/dist",
+    "dist:dev": "cp dist/app.js ../bundles_live/dist && cp ./styles.css ../bundles_live/",
     "test": "jest",
     "dist": "sh ./build.sh"
   }
