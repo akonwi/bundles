@@ -27,7 +27,7 @@ import * as Commands from './commands'
     }
   })
 
-  const BundleRepository = Repository('Bundle', Bundle, BundleEventStore)
+  const BundleRepository = Repository(Bundle, BundleEventStore)
 
   const BundleFlow = Flow({
     eventBus: EventBus(BundleEventListeners(BundleStore)),
