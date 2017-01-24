@@ -9,15 +9,15 @@ const styles = StyleSheet.create({
     borderBottom: '.1rem solid grey',
     padding: '.4rem'
   },
-  bundleRowChildren: {
-    verticalAlign: 'middle',
-    display: 'inline-block'
-  },
   anchors: {
     margin: '0 .2rem'
   },
   conrols: {
     float: 'right'
+  },
+  bundleRow: {
+    display: 'flex',
+    justifyContent: 'space-between'
   },
   icons: {
     fontFamily: 'Material Icons',
@@ -39,6 +39,10 @@ const styles = StyleSheet.create({
     ':hover': {
       cursor: 'pointer'
     }
+  },
+  title: {
+    display: 'flex',
+    alignItems: 'center'
   },
   triangle: {
     content: "",
@@ -93,7 +97,6 @@ export default React.createClass({
       this.state.open && styles['links.open']
     )
     const triangleClasses = css(
-      styles.bundleRowChildren,
       styles.triangle,
       this.state.open && styles.down
     )
@@ -106,19 +109,23 @@ export default React.createClass({
 
     return (
       <li className={css(styles.bundles)}>
-        <div>
-          <div id='triangle' className={triangleClasses}></div>
-          <h4 className={css(styles.h4Style, styles.bundleRowChildren)} onClick={this.toggle}>{ this.props.name }</h4>
-          <div id='controls' className={css(styles.conrols, styles.bundleRowChildren)}>
-            <a href='#' className={anchorsStyles} title='Open all'>
-              <i className={icons} onClick={this.openLinks}>launch</i>
-            </a>
-            <a href='#' className={anchorsStyles} title='Add current page'>
-              <i className={icons} onClick={this.addLink}>add</i>
-            </a>
-            <a href='#' className={anchorsStyles} title='Delete'>
-              <i className={icons} onClick={this.deleteBundle}>delete</i>
-            </a>
+        <div className={css(styles.bundleRow)}>
+          <div className={css(styles.title)}>
+            <div id='triangle' className={triangleClasses}></div>
+            <h4 className={css(styles.h4Style)} onClick={this.toggle}>{ this.props.name }</h4>
+          </div>
+          <div>
+            <div id='controls' className={css(styles.conrols)}>
+              <a href='#' className={anchorsStyles} title='Open all'>
+                <i className={icons} onClick={this.openLinks}>launch</i>
+              </a>
+              <a href='#' className={anchorsStyles} title='Add current page'>
+                <i className={icons} onClick={this.addLink}>add</i>
+              </a>
+              <a href='#' className={anchorsStyles} title='Delete'>
+                <i className={icons} onClick={this.deleteBundle}>delete</i>
+              </a>
+            </div>
           </div>
         </div>
         <ul id='links' className={linksClasses}>

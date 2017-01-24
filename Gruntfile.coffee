@@ -18,7 +18,7 @@ module.exports = (grunt) ->
 
   grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.registerTask 'default', ['watch']
+  grunt.registerTask 'default', ['browserify', 'dist:dev', 'watch']
   grunt.registerTask 'test', () ->
     {status} = spawn 'npm', ['test'], stdio: 'inherit'
     status is 0
