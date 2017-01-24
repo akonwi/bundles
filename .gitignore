@@ -3,5 +3,5 @@ node_modules
 .module-cache/
 ./*.js
 *.map
-./dist/app.js
+dist/app.js
 .DS_*
