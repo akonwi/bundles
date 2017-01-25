@@ -4,10 +4,12 @@ describe("Command Handlers", () => {
   const title = 'title'
   const url = 'url'
   const createdEvent = {name: 'bundleCreatedEvent'}
+  const editedEvent = {name: 'bundleEditedEvent'}
   const deletedEvent = {name: 'bundleDeletedEvent'}
   const linkAddedEvent = {name: 'linkAddedEvent'}
   const bundle = {
-    addLink: () => linkAddedEvent
+    addLink: () => linkAddedEvent,
+    edit: () => editedEvent
   }
   const repository = {
     add({name}) {
@@ -20,11 +22,17 @@ describe("Command Handlers", () => {
       if (id === 'foobar') return Promise.resolve(bundle)
     }
   }
-  const {CreateBundle, DeleteBundle, AddLink} = CommandHandlers(repository)
+  const {CreateBundle, EditBundle, DeleteBundle, AddLink} = CommandHandlers(repository)
 
   describe("CreateBundle command handler", () => {
     it("Calls ::add on the repository", () => {
       CreateBundle({name: 'foobar'}).then(event => expect(event).toBe(createdEvent))
+    })
+  })
+
+  describe("EditBundle command handler", () => {
+    it("Calls ::edit on the bundle", () => {
+      return EditBundle({id: 'foobar', name: 'barfoo'}).then(event => expect(event).toBe(editedEvent))
     })
   })
 

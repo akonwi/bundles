@@ -1,6 +1,7 @@
 import React from 'react'
 import {StyleSheet, css} from 'aphrodite'
 import NewBundleInput from './NewBundleInput'
+import EditBundleInput from './EditBundleInput'
 
 const navBlockStyles = StyleSheet.create({
   base: {
@@ -56,8 +57,20 @@ export default class Navbar extends React.Component {
     const isCreating = this.state.isCreating
     const toggleCreating = this.toggleCreating.bind(this)
 
-    const logoInput = isCreating ? <NewBundleInput dispatch={this.props.dispatch} onComplete={toggleCreating}/> : <h2 style={styles.logo}>Bundles</h2>
-    const button = <a id='nav-btn' style={styles.navBtn} href='#' onClick={toggleCreating}>{isCreating ? 'Cancel' : 'New'}</a>
+    let logoInput;
+    let button;
+    if (isCreating) {
+      logoInput = <NewBundleInput dispatch={this.props.dispatch} onComplete={toggleCreating}/>
+      button = <a id='nav-btn' style={styles.navBtn} href='#' onClick={toggleCreating}>Cancel</a>
+    }
+    else if (this.props.isEditing) {
+      logoInput = <EditBundleInput dispatch={this.props.dispatch} onComplete={this.props.toggleEditing} editProps={this.props.editProps}/>
+      button = <a id='nav-btn' style={styles.navBtn} href='#' onClick={this.props.toggleEditing}>Cancel</a>
+    }
+    else {
+      logoInput = <h2 style={styles.logo}>Bundles</h2>
+      button = <a id='nav-btn' style={styles.navBtn} href='#' onClick={toggleCreating}>New</a>
+    }
 
     return (
       <div style={styles.navbar}>

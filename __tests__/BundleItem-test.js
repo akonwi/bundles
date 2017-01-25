@@ -27,10 +27,11 @@ describe("BundleItem", () => {
 
   describe("control buttons", () => {
     const dispatch = jest.fn()
+    const toggleEditing = jest.fn()
     let bundleItem
 
     beforeEach(() => {
-      bundleItem = shallow(<BundleItem id={itemId} name={name} links={[link]} dispatch={dispatch}/>)
+      bundleItem = shallow(<BundleItem id={itemId} name={name} links={[link]} dispatch={dispatch} toggleEditing={toggleEditing}/>)
     })
 
     describe("the open button", () => {
@@ -66,6 +67,15 @@ describe("BundleItem", () => {
         expect(addButton.is('a[title="Add current page"]')).toBe(true)
         addButton.find('i').simulate('click')
         expect(dispatch).toHaveBeenCalledWith(expectedCommand)
+      })
+    })
+
+    describe("the edit button", () => {
+      it("calls the toggleEditing function", () => {
+        const editButton = bundleItem.find('#controls').children().at(2)
+        expect(editButton.is('a[title="Edit"]')).toBe(true)
+        editButton.find('i').simulate('click')
+        expect(toggleEditing).toHaveBeenCalledWith({name, id: itemId})
       })
     })
 

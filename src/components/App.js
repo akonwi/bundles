@@ -22,15 +22,22 @@ class App extends React.Component {
     BundleStore.onChange(setState)
   }
 
+  toggleEditing(props) {
+    this.setState({
+      isEditing: !this.state.isEditing,
+      editProps: props
+    })
+  }
+
   render() {
     const list = this.state.bundles ?
-      <BundleList dispatch={this.props.dispatch} bundles={this.state.bundles}/>
+      <BundleList dispatch={this.props.dispatch} toggleEditing={this.toggleEditing.bind(this)} bundles={this.state.bundles}/>
       :
       <div style={loadingStyle}>Loading...</div>
 
     return (
       <div>
-        <Navbar dispatch={this.props.dispatch}/>
+        <Navbar dispatch={this.props.dispatch} toggleEditing={this.toggleEditing.bind(this)} isEditing={this.state.isEditing} editProps={this.state.editProps}/>
         { list }
       </div>
     )

@@ -5,10 +5,12 @@ describe("Event Listeners", () => {
   const store = {
     add: jest.fn(),
     remove: jest.fn(),
-    addLinkToBundle: jest.fn()
+    addLinkToBundle: jest.fn(),
+    update: jest.fn()
   }
   const listeners = EventListeners(store)
   const onBundleCreatedListeners = listeners.BundleCreatedEvent
+  const onBundleEditedListeners = listeners.BundleEditedEvent
   const onBundleDeletedListeners = listeners.BundleDeletedEvent
   const onLinkAddedToBundleListeners = listeners.LinkAddedToBundleEvent
 
@@ -20,6 +22,18 @@ describe("Event Listeners", () => {
       }
       onBundleCreatedListeners.forEach(fn => fn(event))
       expect(store.add).toBeCalledWith({name: 'foobar', links: [], id: aggregateId})
+    })
+  })
+
+  describe("BundleEditedEvent listener", () => {
+    it("Calls ::update on the bundle store", () => {
+      const event = {
+        aggregateId,
+        payload: {name: 'barfoo'},
+        state: { name: 'barfoo', links: [] }
+      }
+      onBundleEditedListeners.forEach(fn => fn(event))
+      expect(store.update).toBeCalledWith(aggregateId, {name: 'barfoo'})
     })
   })
 

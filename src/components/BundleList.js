@@ -6,10 +6,10 @@ const bundlesStyle = {
   padding: '0 .5rem 0 .5rem'
 }
 
-export default ({bundles, dispatch}) => {
+export default ({bundles, dispatch, toggleEditing}) => {
   const bundleItems = Object.keys(bundles).map(id => {
     let item = bundles[id]
-    return <BundleItem dispatch={dispatch} id={id} name={item.name} links={item.links}/>
+    return <BundleItem dispatch={dispatch} toggleEditing={toggleEditing} id={id} name={item.name} links={item.links}/>
   })
 
   return (

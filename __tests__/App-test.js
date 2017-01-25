@@ -42,5 +42,17 @@ describe("App", () => {
         </div>
       )).toBe(true)
     })
+    
+    describe("when the state.isEditing is true", () => {
+      it("passes that state to Navbar", () => {
+        app.setState({isEditing: true})
+        expect(app.matchesElement(
+          <div>
+            <Navbar dispatch={dispatch} isEditing={true}/>
+            <BundleList dispatch={dispatch} bundles={state.bundles}/>
+          </div>
+        )).toBe(true)
+      })
+    })
   })
 })

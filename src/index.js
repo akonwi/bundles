@@ -23,6 +23,10 @@ import * as Commands from './commands'
       addLink(link) {
         this.state.links.push(link)
         return Event({name: 'LinkAddedToBundleEvent', aggregateId: this.id, payload: link, state: this.state})
+      },
+      edit(name) {
+        this.state.name = name
+        return Event({name: 'BundleEditedEvent', aggregateId: this.id, payload: {name}, state: this.state})
       }
     }
   })

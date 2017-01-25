@@ -122,6 +122,9 @@ export default React.createClass({
               <a href='#' className={anchorsStyles} title='Add current page'>
                 <i className={icons} onClick={this.addLink}>add</i>
               </a>
+              <a href='#' className={anchorsStyles} title='Edit'>
+                <i className={icons} onClick={() => this.props.toggleEditing({name: this.props.name, id: this.props.id})}>edit</i>
+              </a>
               <a href='#' className={anchorsStyles} title='Delete'>
                 <i className={icons} onClick={this.deleteBundle}>delete</i>
               </a>

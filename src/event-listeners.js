@@ -3,6 +3,10 @@ export default function(store) {
     store.add(Object.assign({}, event.state, {id: event.aggregateId}))
   }
 
+  const BundleEditedEventListener = event => {
+    store.update(event.aggregateId, event.payload)
+  }
+
   const BundleDeletedEventListener = event => {
     store.remove(event.aggregateId)
   }
@@ -13,6 +17,7 @@ export default function(store) {
 
   return {
     BundleCreatedEvent: [BundleCreatedEventListener],
+    BundleEditedEvent: [BundleEditedEventListener],
     BundleDeletedEvent: [BundleDeletedEventListener],
     LinkAddedToBundleEvent: [LinkAddedToBundleEventListener]
   }

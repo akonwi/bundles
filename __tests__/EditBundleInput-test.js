@@ -1,16 +1,20 @@
 import React from 'react'
 import {shallow} from 'enzyme'
-import NewBundleInput from '../src/components/NewBundleInput'
-import {CreateBundle} from '../src/commands'
+import EditBundleInput from '../src/components/EditBundleInput'
+import {EditBundle} from '../src/commands'
 
-describe("NewBundleInput", () => {
+describe("EditBundleInput", () => {
   const dispatch = jest.fn()
   const onComplete = jest.fn()
-  const input = shallow(<NewBundleInput dispatch={dispatch} onComplete={onComplete}/>)
+  const editProps = {
+    id: 'foo',
+    name: 'Foobar'
+  }
+  const input = shallow(<EditBundleInput dispatch={dispatch} onComplete={onComplete} editProps={editProps}/>)
 
   it("renders an input", () => {
     expect(input.matchesElement(
-      <input className='new-bundle-input' autoFocus type='text' placeholder='Bundle name...' />
+      <input className='new-bundle-input' autoFocus type='text' defaultValue={editProps.name}/>
     )).toBe(true)
   })
 
@@ -27,8 +31,8 @@ describe("NewBundleInput", () => {
   describe("when the input has text", () => {
     describe("when the enter key is pressed", () => {
       it("dispatches a CreateBundle command and calls onComplete", () => {
-        input.simulate('keyup', {keyCode: 13, target: {value: 'foobar'}})
-        expect(dispatch).toBeCalledWith(CreateBundle({name: 'foobar'}))
+        input.simulate('keyup', {keyCode: 13, target: {value: 'Barfoo'}})
+        expect(dispatch).toBeCalledWith(EditBundle({id: editProps.id, name: 'Barfoo'}))
         expect(onComplete).toBeCalled()
       })
     })

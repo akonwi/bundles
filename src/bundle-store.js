@@ -19,6 +19,16 @@ export function add({id, name, links}) {
   .catch(err => { console.error(err) })
 }
 
+export function update(id, {name}) {
+  storage.get(BUNDLES)
+  .then(bundles => {
+    bundles[id].name = name
+    return bundles
+  })
+  .then(save)
+  .catch(console.error)
+}
+
 export function addLinkToBundle(id, link) {
   get()
   .then(bundles => {
