@@ -28,6 +28,10 @@ import * as Commands from './commands'
         this.state.name = name
         return Event({name: 'BundleEditedEvent', aggregateId: this.id, payload: {name}, state: this.state})
       }
+    },
+    sourcing: {
+      LinkAddedToBundleEvent: (payload, bundle) => bundle.addLink(payload),
+      BundleEditedEvent: (payload, bundle) => bundle.edit(payload.name)
     }
   })
 
