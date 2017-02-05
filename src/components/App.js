@@ -9,35 +9,25 @@ const loadingStyle = {
 }
 
 class App extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      bundles: null
-    }
-  }
-
   componentDidMount() {
-    const setState = bundles => this.setState({bundles})
-    BundleStore.get().then(setState)
-    BundleStore.onChange(setState)
-  }
-
-  toggleEditing(props) {
-    this.setState({
-      isEditing: !this.state.isEditing,
-      editProps: props
-    })
+    BundleStore.get()
+    .then(bundles => this.props.store.dispatch({type: 'INITIALIZE', bundles}))
+    .catch(console.err)
   }
 
   render() {
-    const list = this.state.bundles ?
-      <BundleList dispatch={this.props.dispatch} toggleEditing={this.toggleEditing.bind(this)} bundles={this.state.bundles}/>
+    const store = this.props.store
+    const state = store.getState()
+    const bundles = state.bundles
+
+    const list = bundles ?
+      <BundleList bundles={bundles} dispatch={store.dispatch}/>
       :
       <div style={loadingStyle}>Loading...</div>
 
     return (
       <div>
-        <Navbar dispatch={this.props.dispatch} toggleEditing={this.toggleEditing.bind(this)} isEditing={this.state.isEditing} editProps={this.state.editProps}/>
+        <Navbar dispatch={store.dispatch} isEditing={state.isEditing} editProps={state.bundleToEdit}/>
         { list }
       </div>
     )

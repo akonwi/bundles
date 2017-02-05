@@ -14,7 +14,8 @@ module.exports = (grunt) ->
         tasks: ['dist:dev']
       js:
         files: ['src/**/**.js', '__tests__/**/**.js']
-        tasks: ['test', 'browserify', 'dist:dev']
+        tasks: ['browserify', 'dist:dev']
+        # tasks: ['test', 'browserify', 'dist:dev']
 
   grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-contrib-watch'

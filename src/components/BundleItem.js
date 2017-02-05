@@ -2,7 +2,7 @@ import React from 'react'
 import {StyleSheet, css} from 'aphrodite'
 import BundleLink from './BundleLink'
 import * as BundleStore from '../bundle-store'
-import {DeleteBundle, AddLink} from '../commands'
+import {deleteBundle, addLink, toggleEditing} from '../actions'
 
 const styles = StyleSheet.create({
   bundles: {
@@ -80,15 +80,24 @@ export default React.createClass({
   addLink(e) {
     chrome.tabs.getSelected(null, ({url, title}) => {
       let existing = this.props.links.find(link => url === link.url && title === link.title)
-      if (existing === undefined)
-        this.props.dispatch(AddLink({id: this.props.id, title, url}))
+      if (existing === undefined) {
+        BundleStore.addLinkToBundle(this.props.id, {title, url})
+        .then(() => this.props.dispatch(addLink(this.props.id, {title, url})))
+      }
     })
   },
 
-  deleteBundle(e) { this.props.dispatch(DeleteBundle({id: this.props.id})) },
+  deleteBundle(e) {
+    BundleStore.remove(this.props.id)
+    .then(() => this.props.dispatch(deleteBundle(this.props.id)))
+  },
 
   toggle(e) {
     this.setState({open: !this.state.open})
+  },
+
+  toggleEditing() {
+    this.props.dispatch(toggleEditing(this.props.id, this.props.name))
   },
 
   render() {
@@ -123,7 +132,7 @@ export default React.createClass({
                 <i className={icons} onClick={this.addLink}>add</i>
               </a>
               <a href='#' className={anchorsStyles} title='Edit'>
-                <i className={icons} onClick={() => this.props.toggleEditing({name: this.props.name, id: this.props.id})}>edit</i>
+                <i className={icons} onClick={this.toggleEditing}>edit</i>
               </a>
               <a href='#' className={anchorsStyles} title='Delete'>
                 <i className={icons} onClick={this.deleteBundle}>delete</i>

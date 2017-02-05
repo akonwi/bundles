@@ -2,6 +2,7 @@ import React from 'react'
 import {StyleSheet, css} from 'aphrodite'
 import NewBundleInput from './NewBundleInput'
 import EditBundleInput from './EditBundleInput'
+import {toggleEditing} from '../actions'
 
 const navBlockStyles = StyleSheet.create({
   base: {
@@ -53,9 +54,14 @@ export default class Navbar extends React.Component {
     this.setState({isCreating: !this.state.isCreating})
   }
 
+  toggleEditing() {
+    this.props.dispatch(toggleEditing())
+  }
+
   render() {
     const isCreating = this.state.isCreating
     const toggleCreating = this.toggleCreating.bind(this)
+    const toggleEditing = this.toggleEditing.bind(this)
 
     let logoInput;
     let button;
@@ -64,8 +70,8 @@ export default class Navbar extends React.Component {
       button = <a id='nav-btn' style={styles.navBtn} href='#' onClick={toggleCreating}>Cancel</a>
     }
     else if (this.props.isEditing) {
-      logoInput = <EditBundleInput dispatch={this.props.dispatch} onComplete={this.props.toggleEditing} editProps={this.props.editProps}/>
-      button = <a id='nav-btn' style={styles.navBtn} href='#' onClick={this.props.toggleEditing}>Cancel</a>
+      logoInput = <EditBundleInput dispatch={this.props.dispatch} onComplete={toggleEditing} editProps={this.props.editProps}/>
+      button = <a id='nav-btn' style={styles.navBtn} href='#' onClick={toggleEditing}>Cancel</a>
     }
     else {
       logoInput = <h2 style={styles.logo}>Bundles</h2>

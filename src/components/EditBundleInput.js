@@ -1,5 +1,6 @@
 import React from 'react'
-import {EditBundle} from '../commands'
+import {renameBundle} from '../actions'
+import * as BundleStore from '../bundle-store'
 
 const style = {
   display: 'block',
@@ -19,8 +20,10 @@ export default ({dispatch, onComplete, editProps}) => {
     if (keyCode === 13) {
       const name = target.value.trim()
       if (name.length > 0) {
-        dispatch(EditBundle({id: editProps.id, name}))
-        onComplete()
+        BundleStore.update(editProps.id, name).then(() => {
+          dispatch(renameBundle({id: editProps.id, name}))
+          onComplete()
+        })
       }
     }
   }
