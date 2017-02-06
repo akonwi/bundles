@@ -22,11 +22,11 @@ import * as Commands from './commands'
     methods: {
       addLink(link) {
         this.state.links.push(link)
-        return Event({name: 'LinkAddedToBundleEvent', aggregateId: this.id, payload: link, state: this.state})
+        return Event({name: 'LinkAddedToBundleEvent', aggregateId: this.id, payload: link})
       },
       edit(name) {
         this.state.name = name
-        return Event({name: 'BundleEditedEvent', aggregateId: this.id, payload: {name}, state: this.state})
+        return Event({name: 'BundleEditedEvent', aggregateId: this.id, payload: {name}})
       }
     },
     sourcing: {

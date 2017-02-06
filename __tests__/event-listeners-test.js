@@ -18,7 +18,7 @@ describe("Event Listeners", () => {
     it("Calls ::add on the bundle store", () => {
       const event = {
         aggregateId,
-        state: { name: 'foobar', links: [] }
+        payload: { name: 'foobar'}
       }
       onBundleCreatedListeners.forEach(fn => fn(event))
       expect(store.add).toBeCalledWith({name: 'foobar', links: [], id: aggregateId})

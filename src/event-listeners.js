@@ -1,6 +1,6 @@
 export default function(store) {
   const BundleCreatedEventListener = event => {
-    store.add(Object.assign({}, event.state, {id: event.aggregateId}))
+    store.add(Object.assign({}, event.payload, {id: event.aggregateId, links: []}))
   }
 
   const BundleEditedEventListener = event => {

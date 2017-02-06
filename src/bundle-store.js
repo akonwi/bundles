@@ -6,24 +6,28 @@ const BUNDLES  = 'bundles'
 const save = (bundles) => storage.set(BUNDLES, bundles)
 
 export function get() {
-  return storage.get(BUNDLES).then(bundles =>bundles || {})
+  return storage.get(BUNDLES).then(bundles => bundles || [])
 }
 
 export function add({id, name, links}) {
-  storage.get(BUNDLES)
-  .then((bundles={}) => {
-    bundles[id] = {id, name, links}
+  get()
+  .then(bundles => {
+    bundles.push({id, name, links})
     return bundles
   })
   .then(save)
-  .catch(err => { console.error(err) })
+  .catch(console.error)
 }
 
 export function update(id, {name}) {
-  storage.get(BUNDLES)
+  get()
   .then(bundles => {
-    bundles[id].name = name
-    return bundles
+    return bundles.map(bundle => {
+      if (bundle.id === id)
+        return Object.assign({}, bundle, {name})
+      else
+        return bundle
+    })
   })
   .then(save)
   .catch(console.error)
@@ -32,21 +36,23 @@ export function update(id, {name}) {
 export function addLinkToBundle(id, link) {
   get()
   .then(bundles => {
-    let bundle = bundles[id]
-    bundle.links.push(link)
-    return bundles
+    return bundles.map(bundle => {
+      if (bundle.id === id)
+        return Object.assign({}, bundle, {links: bundle.links.concat(link)})
+      else
+        return bundle
+    })
   })
   .then(save)
-  .catch(err => { console.error(err) })
+  .catch(console.error)
 }
 
 export function remove(id) {
   get().then(bundles => {
-    delete bundles[id]
-    return bundles
+    return bundles.filter(bundle => bundle.id !== id)
   })
   .then(save)
-  .catch(err => { console.error(err) })
+  .catch(console.error)
 }
 
 export function onChange(fn) {
