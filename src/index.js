@@ -16,21 +16,19 @@ import App from './components/App'
       return Object.assign({}, state, {bundles: action.bundles})
     }
     if (action.type === 'ADD_BUNDLE') {
+      return Object.assign({}, state, {bundles: state.bundles.concat(action.bundle)})
+    }
+    if (action.type === 'DELETE_BUNDLE') {
       const newState = {
-        bundles: Object.assign({}, state.bundles, {[action.bundle.id]: action.bundle})
+        bundles: state.bundles.filter(bundle => bundle.id !== action.id)
       }
       return Object.assign({}, state, newState)
     }
-    if (action.type === 'DELETE_BUNDLE') {
-      const newState = Object.assign({}, state)
-      delete newState.bundles[action.id]
-      return newState
-    }
     if (action.type === 'ADD_LINK_TO_BUNDLE') {
-      const bundle = state.bundles[action.id]
-      const newBundle = Object.assign({}, bundle, {links: bundle.links.concat(action.link)})
-      const newBundles = Object.assign({}, state.bundles, {[action.id]: newBundle})
-      return Object.assign({}, state, {bundles: newBundles})
+      const newState = {
+        bundles: state.bundles.map(bundle => bundle.id === action.id ? Object.assign({}, bundle, {links: bundle.links.concat(action.link)}): bundle)
+      }
+      return Object.assign({}, state, newState)
     }
     if (action.type === 'TOGGLE_EDITING') {
       const newState = {
@@ -40,10 +38,10 @@ import App from './components/App'
       return Object.assign({}, state, newState)
     }
     if (action.type === 'RENAME_BUNDLE') {
-      const bundle = state.bundles[action.id]
-      const newBundle = Object.assign({}, bundle, {name: action.name})
-      const newBundles = Object.assign({}, state.bundles, {[action.id]: newBundle})
-      return Object.assign({}, state, {bundles: newBundles})
+      const newState = {
+        bundles: state.bundles.map(bundle => bundle.id === action.id ? Object.assign({}, bundle, {name: action.name}) : bundle)
+      }
+      return Object.assign({}, state, newState)
     }
     return state
   }

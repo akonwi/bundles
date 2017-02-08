@@ -7,10 +7,9 @@ const bundlesStyle = {
 }
 
 export default ({bundles, dispatch, toggleEditing}) => {
-  const bundleItems = Object.keys(bundles).map(id => {
-    let item = bundles[id]
-    return <BundleItem dispatch={dispatch} toggleEditing={toggleEditing} id={id} name={item.name} links={item.links}/>
-  })
+  const bundleItems = bundles.map(({id, name, links}) => (
+    <BundleItem dispatch={dispatch} toggleEditing={toggleEditing} id={id} name={name} links={links}/>
+  ))
 
   return (
     <ul style={bundlesStyle}>
